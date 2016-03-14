@@ -1,0 +1,24 @@
+<resources>
+        <string name="menu_activity_settings">Ustawienia</string>
+
+    <!-- Strings related to Settings -->
+    <!-- String for  General settings -->
+    <string name="pref_category_title_general">Ogólne</string>
+
+    <string name="pref_reading_store_how_long">Ustaw przechowywanie czytań</string>
+
+    <!-- String for Connection settings -->
+    <string name="pref_category_title_connection">Połączenie</string>
+
+    <string name="pref_wifi_proxy_enable">Włącz proxy Wi-Fi</string>
+    <string name="pref_wifi_proxy_host">Host proxy Wi-Fi</string>
+    <string name="pref_wifi_proxy_port">Port proxy Wi-Fi</string>
+
+
+    <string name="pref_category_title_advanced">Zaawansowane</string>
+    <string name="pref_adv_title">Ustawienia zaawansowane</string>
+    <string name="pref_adv_summary">Ustawienia przeznaczone dla zaawansowanych użytkowników</string>
+    <string name="pref_adv_server_uri">Adres (uri) serwisu REST na OnJest/Slowo</string>
+
+
+</resources>

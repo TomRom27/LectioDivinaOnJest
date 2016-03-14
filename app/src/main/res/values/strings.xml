@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Lectio Divina - On Jest</string>
+    <string name="app_sub_name">Rozważania Słowa Bożego na każdy dzień</string>
+    <string name="title_activity_readings">Lectio Divina - Modlitwa ze Słowem Bożym</string>
+    <string name="action_about_lectio">Lectio Divina</string>
+    <string name="action_about_us">O autorach</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="action_refresh">Odśwież</string>
+    <string name="action_clear">Usuń rozważania</string>
+    <string name="action_exit">Zakończ</string>
+    <string name="text_are_you_sure_to_delete">Usunąć wszystkie rozważania?</string>
+    <string name="text_yes">Tak</string>
+    <string name="text_no">Nie</string>
+    <string name="text_no_readings">Brak rozważań</string>
+    <string name="html_empty_reading_content"><![CDATA[<html><p>Brak rozważań</p>Użyj opcji Odśwież z menu aby pobrać najnowsze rozważania</html>]]></string>
+    <string name="text_refreshing_started">Rozpoczęto pobieranie rozważań</string>
+    <string name="text_refreshing_in_progress">Trwa pobieranie rozważań</string>
+    <string name="text_refreshing_ended">Pobrano %d nowych rozważań</string>
+    <string name="title_activity_about_lectio">Lectio Divina</string>
+    <string name="button_close">Zamknij</string>
+    <string name="title_activity_about_us">O autorach</string>
+    <string name="versionTextFormat" >Wersja: %1$s (%2$d)</string>
+
+</resources>

@@ -1,0 +1,64 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:defaultValue="10"
+        android:inputType="number"
+        android:key="@string/pref_reading_store_how_long"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_reading_store_how_long" />
+
+    <PreferenceCategory android:title="@string/pref_category_title_advanced">
+
+        <!-- This PreferenceScreen tag sends the user to a new fragment of
+             preferences.  If running in a large screen, they can be embedded
+             inside of the overall preferences UI. -->
+        <PreferenceScreen
+            android:summary="@string/pref_adv_summary"
+            android:title="@string/pref_adv_title">
+            <!-- Arbitrary key/value pairs can be included for fragment arguments
+            <extra
+                android:name="someKey"
+                android:value="somePrefValue" />
+                android:fragment="com.tr.onjestslowo.app.SettingsActivity$AdvancedPreferenceFragment"
+
+                 -->
+            <EditTextPreference
+                android:defaultValue="http://www.onjest.pl/slowo/?json=get_date_posts&amp;date=%s&amp;include=title,date,content"
+                android:inputType="textUri"
+                android:key="@string/pref_adv_server_uri"
+                android:maxLines="1"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/pref_adv_server_uri" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_category_title_connection">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_wifi_proxy_enable"
+            android:title="@string/pref_wifi_proxy_enable" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="@string/pref_wifi_proxy_enable"
+            android:inputType="textUri"
+            android:key="@string/pref_wifi_proxy_host"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_wifi_proxy_host" />
+
+        <EditTextPreference
+            android:defaultValue="8080"
+            android:dependency="@string/pref_wifi_proxy_enable"
+            android:inputType="number"
+            android:key="@string/pref_wifi_proxy_port"
+            android:selectAllOnFocus="true"
+            android:title="@string/pref_wifi_proxy_port" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -2,20 +2,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_red"
+    android:background="?attr/app_backgroundImg"
     tools:context="com.tr.onjestslowo.app.AboutLectioActivity">
+
+    <android.support.v7.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"/>
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginBottom="@dimen/reading_inner_margin"
-        android:layout_marginLeft="@dimen/reading_inner_margin"
-        android:layout_marginRight="@dimen/reading_inner_margin">
+        android:layout_marginBottom="?attr/scrollView_marginBottom"
+        android:layout_marginLeft  ="?attr/scrollView_marginLeft"
+        android:layout_marginRight ="?attr/scrollView_marginRight">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@drawable/bg_w_old_paper"
+            android:background="?attr/webViewHost_backgroundImg"
             android:orientation="vertical">
 
             <!-- the web view is transparent thanks to programmatically setting the background color-->
@@ -27,14 +34,9 @@
 
             <Button
                 android:id="@+id/buttonClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|bottom"
-                android:layout_marginBottom="@dimen/reading_inner_margin"
-                android:background="@color/reading_title_color_brownish"
+                style="@style/closeButton_style"
                 android:onClick="onCloseClick"
-                android:text="@string/button_close"
-                android:textColor="@color/cream_white" />
+                android:visibility="?attr/closeButton_visibility"/>
 
         </LinearLayout>
     </ScrollView>

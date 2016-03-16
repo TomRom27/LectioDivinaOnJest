@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- custom attributes, used for styling -->
+
+    <attr name="app_backgroundImg" format="string"/>
+
+    <attr name="scrollView_marginBottom" format="dimension"/>
+    <attr name="scrollView_marginLeft" format="dimension"/>
+    <attr name="scrollView_marginRight" format="dimension"/>
+
+    <attr name="webViewHost_backgroundImg" format="string"/>
+
+    <attr name="closeButton_visibility" format="integer"/> <!-- 0 visible,1 - invisible, 2 - gone -->
+</resources>

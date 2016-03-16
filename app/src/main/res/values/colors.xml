@@ -20,4 +20,8 @@
     <color name="reading_title_color_brownish">#ff7e4b38</color>
     <color name="cream_white">#fff7e8cb</color>
 
+    <color name="primary">#83371B</color>
+    <color name="primaryDark">#5F2D17</color>
+    <color name="accent">#F7E8CB</color>
+
 </resources>

@@ -5,8 +5,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="AppTheme.Classics"/>
 
-    <!-- style for <5.0 -->
-    <style name="AppTheme.Classics" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- style -->
+    <style name="AppTheme.Classics" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
 
         <item name="app_backgroundImg">@drawable/bg_red</item>
@@ -17,23 +17,33 @@
 
         <item name="webViewHost_backgroundImg">@drawable/bg_w_old_paper</item>
 
-        <item name="closeButton_visibility">0</item>
+        <item name="closeButton_visibility">0</item> <!-- visible -->
 
+        <item name="actionBarStyle">@style/ActionBar.Classic</item>
+
+        <item name="actionOverflowButtonStyle">@style/ClassicMenuButton</item>
+        <item name="android:actionOverflowButtonStyle">@style/ClassicMenuButton</item>
         <!-- the below declaration is for API level >=11
             (so it can cause warning displayed if min target is 10)
-        -->
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
 
-        <!-- Support library compatibility i.e. for target 10 and below -->
-        <item name="actionBarStyle">@style/MyActionBar</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        -->
+
+    </style>
+    <style name="ClassicMenuButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_refresh</item>
     </style>
 
     <!-- ActionBar styles -->
-    <style name="MyActionBar"
-        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <style name="ActionBar.Classic" parent="">
         <item name="android:background">@drawable/bg_red_top_long</item>
     </style>
+
+<!--
+        <item name="android:layout_height">42dp</item>
+http://stackoverflow.com/questions/26300480/how-to-change-option-menu-icon-in-the-action-bar
+-->
 
     <!-- Material -->
     <style name="AppTheme.Target" parent="Theme.AppCompat">

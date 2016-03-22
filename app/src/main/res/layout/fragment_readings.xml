@@ -2,16 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_red"
+    android:background="?attr/app_backgroundImg"
     tools:context="com.tr.onjestslowo.app.ReadingsActivity.ReadingPlaceholderFragment">
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:background="@drawable/bg_w_old_paper"
-            android:layout_marginLeft="@dimen/reading_inner_margin"
-            android:layout_marginRight="@dimen/reading_inner_margin"
-            android:layout_marginBottom="@dimen/reading_inner_margin">
+            android:background="?attr/webViewHost_backgroundImg"
+            android:layout_marginLeft="?attr/scrollView_marginLeft"
+            android:layout_marginRight="?attr/scrollView_marginRight"
+            android:layout_marginBottom="?scrollView_marginBottom">
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/readingWebView"
-                android:fontFamily="sans-serif-condensed" />
+                android:fontFamily="sans-serif-condensed"/>
             <!-- thw web view is transparent thanks to programmatically setting the background color-->
 
         </LinearLayout>

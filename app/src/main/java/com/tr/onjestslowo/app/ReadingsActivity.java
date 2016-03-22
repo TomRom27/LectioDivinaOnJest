@@ -19,11 +19,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,7 +43,7 @@ import com.tr.tools.UIHelper;
 import com.tr.tools.Logger;
 
 
-public class ReadingsActivity extends ActionBarActivity {
+public class ReadingsActivity extends AppCompatActivity {
 
     private String ARG_SELECTED_DATE = "SelectedDate";
     public static String LOG_TAG = "ReadingActivity";
@@ -77,10 +80,11 @@ public class ReadingsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_readings);
 
-        //
 
-//        boolean hasMenuKey =  ViewConfiguration.get(this).hasPermanentMenuKey();
-//        Logger.debug(LOG_TAG, "Device has meny key: "+Boolean.toString(hasMenuKey));
+
+        // set toolbar as actionbar for the activity
+        Toolbar toolbar = (Toolbar) findViewById(R.id.readingsToolBar);
+        setSupportActionBar(toolbar);
 
         // customize action bar (app title bar)
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();

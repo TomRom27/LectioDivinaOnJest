@@ -18,7 +18,6 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,7 +31,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -391,6 +392,8 @@ public class ReadingsActivity extends AppCompatActivity {
         private static final String ARG_READING_TITLE = "reading_title";
         private static final String ARG_READING_DATE = "reading_date";
         private static final String ARG_READING_CONTENT = "reading_content";
+        private static final String ARG_READING_ZOOM = "reading_zoom";
+        private static final int ZOOM_STEP_PERCENT = 10;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -412,7 +415,7 @@ public class ReadingsActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_readings, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_readings, container, false);
 
             TextView titleView = (TextView) rootView.findViewById(R.id.titleView);
             WebView contentView = (WebView) rootView.findViewById(R.id.readingWebView);
@@ -424,10 +427,11 @@ public class ReadingsActivity extends AppCompatActivity {
                 title = this.getArguments().getString(ARG_READING_TITLE);
                 //String date = this.getArguments().getString(ARG_READING_DATE);
                 content = this.getArguments().getString(ARG_READING_CONTENT);
-
+                setWebViewZoom(rootView, this.getArguments().getInt(ARG_READING_ZOOM,100));
             } else {
                 title = rootView.getContext().getResources().getString(R.string.text_no_readings);
                 content = rootView.getContext().getResources().getString(R.string.html_empty_reading_content);
+                setWebViewZoom(rootView, 100); // default zoom = 100%
             }
 
             titleView.setText(title);
@@ -437,13 +441,56 @@ public class ReadingsActivity extends AppCompatActivity {
 
             // the below makes the web view transparent !!!
             contentView.setBackgroundColor(0x00000000);
-            // if api-level >=11
-            //cView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 
-            return rootView;
+            // assign handlers for zooming buttons
+            // zoom in
+            LinearLayout zoomButton;
+            zoomButton = (LinearLayout) rootView.findViewById(R.id.button_zoomIn);
+            zoomButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int newZoom = increaseWebViewZoom(rootView, ZOOM_STEP_PERCENT);
+
+                }
+            });
+            // zoom out
+            zoomButton = (LinearLayout) rootView.findViewById(R.id.button_zoomOut);
+            zoomButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int newZoom = increaseWebViewZoom(rootView,-ZOOM_STEP_PERCENT);;
+                }
+            });
+
+             return rootView;
         }
     }
+
     //</editor-fold> // ReadingPlaceholderFragment
+
+
+    //<editor-fold desc="Web view zooming related">
+    public static WebView findWebView(View rootView) {
+         return (WebView) rootView.findViewById(R.id.readingWebView);
+    }
+    public static int increaseWebViewZoom(View rootView, int percentIncrease) {
+        int textZoom = 100;
+        WebView contentView = findWebView(rootView);
+        if (contentView != null) {
+            WebSettings settings = contentView.getSettings();
+            textZoom = settings.getTextZoom();
+            textZoom = textZoom +Math.round(textZoom*percentIncrease/100);
+            if (textZoom<0)
+                textZoom=1;
+            settings.setTextZoom(textZoom);
+        }
+        return textZoom;
+    }
+    public static void setWebViewZoom(View rootView, int textZoom) {
+        WebView contentView = (WebView) rootView.findViewById(R.id.readingWebView);
+        contentView.getSettings().setTextZoom(textZoom);
+    }
+    //</editor-fold>
 
     //<editor-fold desc="Yes/No dialog for readings clear">
     DialogInterface.OnClickListener clearReadingsDialogListener = new DialogInterface.OnClickListener() {

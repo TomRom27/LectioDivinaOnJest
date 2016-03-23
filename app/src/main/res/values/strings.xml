@@ -10,6 +10,7 @@
     <string name="action_refresh">Odśwież</string>
     <string name="action_clear">Usuń rozważania</string>
     <string name="action_exit">Zakończ</string>
+    <string name="action_zooming">Zoom</string>
     <string name="text_are_you_sure_to_delete">Usunąć wszystkie rozważania?</string>
     <string name="text_yes">Tak</string>
     <string name="text_no">Nie</string>

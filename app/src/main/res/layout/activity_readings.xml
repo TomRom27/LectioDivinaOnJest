@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
@@ -35,7 +34,7 @@
         android:visibility="visible">
 
         <fragment
-            class="com.tr.onjestslowo.app.ReadingsActivity$ReadingPlaceholderFragment"
+            class="com.tr.onjestslowo.app.ReadingPlaceholderFragment"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             tools:layout="@layout/fragment_readings" />

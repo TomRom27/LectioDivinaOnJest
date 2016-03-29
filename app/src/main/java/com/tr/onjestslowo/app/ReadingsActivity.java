@@ -44,9 +44,12 @@ import com.tr.tools.UIHelper;
 import com.tr.tools.Logger;
 
 
-public class ReadingsActivity extends AppCompatActivity {
+public class ReadingsActivity extends AppCompatActivity
+implements ReadingPlaceholderFragment.OnZoomChangedListener {
 
     private String ARG_SELECTED_DATE = "SelectedDate";
+    private String ARG_READING_ZOOM = "reading_zoom";
+
     public static String LOG_TAG = "ReadingActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -71,6 +74,12 @@ public class ReadingsActivity extends AppCompatActivity {
     List<Reading> mLoadedReadings;
     Boolean mMenuEnabled;
     ReadingService mReadingService;
+
+    /**
+     * current zoom for the reading
+     */
+    int mZoom;
+
     // we use this to cancel the tasks (or actually to prevent them to complete)
     // when activity was re-created
     // ('cause in this case we should start everything from the beginning)
@@ -108,6 +117,8 @@ public class ReadingsActivity extends AppCompatActivity {
 
         mMenuEnabled = true;
 
+        mZoom = getInitialZoom();
+
         // this variable must be static as we share it between different instances
         // of this class
         // scenario: refresh task is running when screen rotation occurs
@@ -123,6 +134,10 @@ public class ReadingsActivity extends AppCompatActivity {
         }
         else
             Logger.debug(LOG_TAG,"Another launch, no need to show AboutLectio");
+    }
+
+    private int getInitialZoom() {
+        return 100; // todo??? to get from Preferences
     }
 
     //<editor-fold desc="activity overrides">
@@ -169,6 +184,7 @@ public class ReadingsActivity extends AppCompatActivity {
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
         savedInstanceState.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(mSelectedDate));
+        savedInstanceState.putInt(ARG_READING_ZOOM, mZoom);
     }
 
     @Override
@@ -181,8 +197,21 @@ public class ReadingsActivity extends AppCompatActivity {
             mSelectedDate = DateHelper.fromInternalString(savedInstanceState.getString(ARG_SELECTED_DATE));
         else
             mSelectedDate = DateHelper.getToday();
+
+        if (savedInstanceState.containsKey(ARG_READING_ZOOM))
+            mZoom = savedInstanceState.getInt(ARG_READING_ZOOM);
+        else
+            mZoom = getInitialZoom();
     }
 
+    // implementation of the ReadingPlaceholderFragment interface i.e. to react on fragment's zoom changed
+    @Override
+    public void OnZoomChanged(int newZoom) {
+        mZoom = newZoom;
+
+
+        //this.getSupportFragmentManager().
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -336,6 +365,7 @@ public class ReadingsActivity extends AppCompatActivity {
         mNM.notify(REFRESH_NOTIFICATION_ID, notification);
     }
 
+
     //<editor-fold> refresh status bar notification
 
     //<editor-fold desc="ReadingsPagerAdapter implementation">
@@ -356,7 +386,7 @@ public class ReadingsActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             // for the reading wanted by position
             Reading reading = mLoadedReadings.get(position);
-            return ReadingPlaceholderFragment.newInstance(reading.Title, reading.DateParsed, reading.Content);
+            return ReadingPlaceholderFragment.newInstance(reading.Title, reading.DateParsed, reading.Content, mZoom);
         }
 
         @Override
@@ -428,12 +458,12 @@ public class ReadingsActivity extends AppCompatActivity {
         private int mNewReadingsCount;
 
         public RefreshAndDisplayReadingsTask(ReadingsActivity activity) {
-            mActivity = new WeakReference<ReadingsActivity>(activity);
+            mActivity = new WeakReference<>(activity);
             mNewReadingsCount = 0;
         }
 
         protected List<Reading> doInBackground(Void... params) {
-            List<Reading> loadedReadings = null;
+            List<Reading> loadedReadings;
 
             mRefreshTaskCancelled = false;
             try {
@@ -451,10 +481,9 @@ public class ReadingsActivity extends AppCompatActivity {
                 // log it
                 Logger.error(ReadingsActivity.LOG_TAG, "Exception when refreshing the readings", ex);
                 // return empty list
-                loadedReadings = new ArrayList<Reading>();
+                loadedReadings = new ArrayList<>();
                 // the task is ended, so hide notification
                 mActivity.get().hideRefreshInProgressNotification();
-            } finally {
             }
             return loadedReadings;
         }

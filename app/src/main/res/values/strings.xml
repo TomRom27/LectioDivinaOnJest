@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Lectio Divina - On Jest</string>
-    <string name="app_sub_name">Rozważania Słowa Bożego na każdy dzień</string>
-    <string name="title_activity_readings">Lectio Divina - Modlitwa ze Słowem Bożym</string>
+    <string name="app_sub_name">Modlitwa ze Słowem Bożym</string>
+    <string name="title_activity_readings">Lectio Divina - On Jest</string>
     <string name="action_about_lectio">Lectio Divina</string>
     <string name="action_about_us">O autorach</string>
     <string name="action_settings">Ustawienia</string>

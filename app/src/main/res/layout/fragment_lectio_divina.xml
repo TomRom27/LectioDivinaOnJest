@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.tr.onjestslowo.app.ReadingsActivity.LectioDivinaFragment">
+
+    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/readingPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:visibility="gone"
+        tools:context="com.tr.onjestslowo.app.ReadingsActivity" />
+
+    <FrameLayout
+        android:id="@+id/emptyReadingContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="visible">
+
+        <fragment
+            class="com.tr.onjestslowo.app.ReadingPlaceholderFragment"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            tools:layout="@layout/fragment_readings" />
+    </FrameLayout>
+
+</FrameLayout>

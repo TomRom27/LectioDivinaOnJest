@@ -280,6 +280,7 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
     //<editor-fold desc="private methods">
 
     private void displayReadings(List<Reading> loadedReadings) {
+        // todo use Lectio Fragment
         mLoadedReadings = loadedReadings;
         if (mLoadedReadings.size() > 0) {
             showReadingPager();

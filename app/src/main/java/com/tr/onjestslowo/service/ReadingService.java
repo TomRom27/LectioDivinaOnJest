@@ -38,10 +38,10 @@ public class ReadingService {
         this.context = context;
     }
 
-    public List<Reading> loadReadings() {
+    public ArrayList<Reading> loadReadings() {
         Logger.debug(LOG_TAG, "Starting to load readings from db.");
 
-        List<Reading> list = new ArrayList<Reading>();
+        ArrayList<Reading> list = new ArrayList<>();
         int count = 0;
         mReadingDS.open();
 
@@ -96,8 +96,8 @@ public class ReadingService {
         }
     }
 
-    private List<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
-        List<Reading> newReadings = new ArrayList<Reading>();
+    private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
+        ArrayList<Reading> newReadings = new ArrayList<>();
         HttpConnection httpConnection = new HttpConnection(this.context);
 
         // set proxy, if needed - only for WiFi connections
@@ -133,8 +133,8 @@ public class ReadingService {
         return newReadings;
     }
 
-    private List<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection) {
-        List<Reading> readings = new ArrayList<Reading>();
+    private ArrayList<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection) {
+        ArrayList<Reading> readings = new ArrayList<>();
 
         // prepare specific url for current date
         String actualOnJestUrl = String.format(onJestUrlForOneDay, formatDateForOnJestServer(currentDate));

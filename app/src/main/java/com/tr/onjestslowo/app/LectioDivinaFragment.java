@@ -2,6 +2,7 @@ package com.tr.onjestslowo.app;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +15,9 @@ import android.view.ViewGroup;
 
 import com.tr.onjestslowo.app.R;
 import com.tr.onjestslowo.model.Reading;
+import com.tr.onjestslowo.service.ReadingService;
 import com.tr.tools.DateHelper;
+import com.tr.tools.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,46 +34,29 @@ public class LectioDivinaFragment extends Fragment {
     private static final String ARG_READINGS = "lectiodivina_readings";
     private static final String ARG_SELECTED_DATE = "SelectedDate";
 
+    private static String LOG_TAG = "LectioDivinaFragment";
+
     ReadingsPagerAdapter mReadingsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     ViewPager mViewPager;
-
-    /**
-     * indicates the date of currently selected reading
-     */
     Date mSelectedDate;
-
     ArrayList<Reading> mLoadedReadings;
-
     int mZoom;
+    ReadingService mReadingService;
 
-    private OnParentMenuStateListener mListener;
+    private OnLectioDivinaFragmentListener mListener;
 
     public LectioDivinaFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param zoom Zoom percent for the view.
-     * @param readings list of readings to display; ArrayList to be able to use putParcelableArrayList
      * @return A new instance of fragment LectioDivinaFragment.
      *
      */
-    public static LectioDivinaFragment newInstance(ArrayList<Reading> readings, Date selectedDate, int zoom) {
+    public static LectioDivinaFragment newInstance() {
         LectioDivinaFragment fragment = new LectioDivinaFragment();
 
-        Bundle args = new Bundle();
 
-        args.putParcelableArrayList(ARG_READINGS, readings);
-        args.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(selectedDate));
-        args.putInt(ARG_ZOOM, zoom);
-        fragment.setArguments(args);
 
         return fragment;
     }
@@ -83,6 +69,13 @@ public class LectioDivinaFragment extends Fragment {
             mSelectedDate = DateHelper.fromInternalString(getArguments().getString(ARG_SELECTED_DATE));
             mZoom = getArguments().getInt(ARG_ZOOM);
         }
+        else
+        {
+            mSelectedDate = DateHelper.getToday();
+            mZoom = getInitialZoom();
+            // mLoadedReadings ???
+        }
+
     }
 
     @Override
@@ -97,31 +90,61 @@ public class LectioDivinaFragment extends Fragment {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) rootView.findViewById(R.id.readingPager);
 
+        // load from db and display all readings - async
+        new LoadAndDisplayReadingsTask().execute();
+
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void disableMenu() {
-        if (mListener != null) {
-            mListener.onMenuStateRequest(false);
-        }
+
+    @Override
+    public void onSaveInstanceState(Bundle args) {
+        // todo
+        args.putParcelableArrayList(ARG_READINGS, mLoadedReadings);
+        args.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(mSelectedDate));
+        args.putInt(ARG_ZOOM, mZoom);
     }
 
-    public void enableMenu() {
-        if (mListener != null) {
-            mListener.onMenuStateRequest(true);
-        }
+    // todo onRestoreInstanceState
+//    @Override
+//    public void onRestoreInstanceState(Bundle args) {
+//
+//        // todo
+//        // Restore UI state from the savedInstanceState.
+//        // This bundle has also been passed to onCreate.
+//
+////        if (savedInstanceState.containsKey(ARG_SELECTED_DATE))
+////            mSelectedDate = DateHelper.fromInternalString(savedInstanceState.getString(ARG_SELECTED_DATE));
+////        else
+////            mSelectedDate = DateHelper.getToday();
+////
+////        if (savedInstanceState.containsKey(ARG_READING_ZOOM))
+////            mZoom = savedInstanceState.getInt(ARG_READING_ZOOM);
+////        else
+//            mZoom = getInitialZoom();
+//    }
+
+    private int getInitialZoom() {
+        return 100; // todo??? to get from Preferences
     }
+    private ReadingService getReadingService() {
+        if (mListener != null) {
+            return mListener.onGetReadingService();
+        }
+        else
+            return null;
+    }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnParentMenuStateListener) {
-//            mListener = (OnParentMenuStateListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof OnLectioDivinaFragmentListener) {
+            mListener = (OnLectioDivinaFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnLectioDivinaFragmentListener");
+        }
     }
 
     @Override
@@ -130,7 +153,7 @@ public class LectioDivinaFragment extends Fragment {
         mListener = null;
     }
 
-    public void DisplayReadings(ArrayList<Reading> readings) {
+    public void displayReadings(ArrayList<Reading> readings) {
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_READINGS, readings);
         mLoadedReadings = readings;
@@ -172,6 +195,22 @@ public class LectioDivinaFragment extends Fragment {
         return -1;
     }
 
+    private class LoadAndDisplayReadingsTask extends AsyncTask<Void, Integer, ArrayList<Reading>> {
+
+        protected ArrayList<Reading> doInBackground(Void... params) {
+            ArrayList<Reading> loadedReadings;
+
+            Logger.debug(LOG_TAG, "Loading readings async - started");
+            loadedReadings = mReadingService.loadReadings();
+
+            return loadedReadings;
+        }
+
+        protected void onPostExecute(ArrayList<Reading> loadedReadings) {
+            Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
+            displayReadings(loadedReadings);
+        }
+    }
     //<editor-fold desc="ReadingsPagerAdapter implementation">
 
     /**
@@ -220,7 +259,7 @@ public class LectioDivinaFragment extends Fragment {
          * "http://developer.android.com/training/basics/fragments/communicating.html"
          * >Communicating with Other Fragments</a> for more information.
          */
-    public interface OnParentMenuStateListener {
-        void onMenuStateRequest(boolean isEnabled);
+    public interface OnLectioDivinaFragmentListener {
+        ReadingService onGetReadingService();
     }
 }

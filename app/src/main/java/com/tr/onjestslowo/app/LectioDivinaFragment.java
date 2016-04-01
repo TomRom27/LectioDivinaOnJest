@@ -90,6 +90,7 @@ public class LectioDivinaFragment extends Fragment {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) rootView.findViewById(R.id.readingPager);
 
+        mReadingService = mListener.onGetReadingService();
         // load from db and display all readings - async
         new LoadAndDisplayReadingsTask().execute();
 

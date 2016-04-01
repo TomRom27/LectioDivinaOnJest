@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -45,7 +46,8 @@ import com.tr.tools.Logger;
 
 
 public class ReadingsActivity extends AppCompatActivity
-implements ReadingPlaceholderFragment.OnZoomChangedListener {
+implements ReadingPlaceholderFragment.OnZoomChangedListener,
+        LectioDivinaFragment.OnLectioDivinaFragmentListener {
 
     private String ARG_SELECTED_DATE = "SelectedDate";
     private String ARG_READING_ZOOM = "reading_zoom";
@@ -59,19 +61,11 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    ReadingsPagerAdapter mReadingsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
 
     /**
      * indicates the date of currently selected reading
      */
     Date mSelectedDate;
-
-    List<Reading> mLoadedReadings;
     Boolean mMenuEnabled;
     ReadingService mReadingService;
 
@@ -105,15 +99,19 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
 
         mReadingService = new ReadingService(this);
         // Create the adapter that will return a fragment for each of the loaded reading
-        mReadingsPagerAdapter = new ReadingsPagerAdapter(getSupportFragmentManager());
+//ld        mReadingsPagerAdapter = new ReadingsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.readingPager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.mainTabsPager);
+        viewPager .setAdapter(new MainTabsPagerAdapter(getSupportFragmentManager(), ReadingsActivity.this));
 
+        // Give the TabLayout the ViewPager
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.mainTabs);
+        tabLayout.setupWithViewPager(viewPager );
 
         mSelectedDate = DateHelper.getToday();
         // load from db and display all readings - async
-        new LoadAndDisplayReadingsTask().execute();
+//ld        new LoadAndDisplayReadingsTask().execute();
 
         mMenuEnabled = true;
 
@@ -140,6 +138,10 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
         return 100; // todo??? to get from Preferences
     }
 
+    public ReadingService onGetReadingService()
+    {
+        return mReadingService;
+    }
     //<editor-fold desc="activity overrides">
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -212,15 +214,6 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
 
         //this.getSupportFragmentManager().
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
@@ -270,23 +263,26 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
         // remove all readings
         mReadingService.clearReadings();
 
-        // refresh internal list
-        mLoadedReadings.clear();
-
-        displayReadings(mLoadedReadings);
+        displayReadings(new ArrayList<Reading>());
     }
     //</editor-fold>
 
     //<editor-fold desc="private methods">
 
+    private LectioDivinaFragment findLectioDivinaFragment()
+    {
+        for (Fragment f : getSupportFragmentManager().getFragments() )
+            if (f instanceof LectioDivinaFragment)
+                return (LectioDivinaFragment)f;
+
+        return null;
+    }
     private void displayReadings(List<Reading> loadedReadings) {
         // todo use Lectio Fragment
-        mLoadedReadings = loadedReadings;
-        if (mLoadedReadings.size() > 0) {
-            showReadingPager();
-        } else {
-            showEmptyReading();
-        }
+        LectioDivinaFragment lectioFragment = findLectioDivinaFragment();
+        if ((lectioFragment != null) &&
+                (lectioFragment.isVisible()))
+            lectioFragment.displayReadings((ArrayList<Reading>)loadedReadings);
     }
 
     private void disableAppMenu() {
@@ -297,37 +293,6 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
         mMenuEnabled = true;
     }
 
-    private void showEmptyReading() {
-        // hide pager
-        mViewPager.setVisibility(View.GONE);
-        // show empty reading view
-        findViewById(R.id.emptyReadingContainer).setVisibility(View.VISIBLE);
-    }
-
-    private void showReadingPager() {
-        findViewById(R.id.emptyReadingContainer).setVisibility(View.GONE);
-        mViewPager.setVisibility(View.VISIBLE);
-
-        mViewPager.setAdapter(mReadingsPagerAdapter);
-
-        int selectedDateReadingIndex = getReadingIndexByDate(mSelectedDate);
-        if (selectedDateReadingIndex < 0) {
-            // if reading for current date wasn't found, we get last reading
-            selectedDateReadingIndex = mLoadedReadings.size() - 1;
-            mSelectedDate = mLoadedReadings.get(selectedDateReadingIndex).DateParsed;
-        }
-
-        mViewPager.setCurrentItem(selectedDateReadingIndex);
-    }
-
-    private int getReadingIndexByDate(Date date) {
-        for (Reading reading : mLoadedReadings)
-            if (reading.DateParsed.equals(date))
-                return mLoadedReadings.indexOf(reading);
-
-        // if we are here, reading with date was not found
-        return -1;
-    }
     //</editor-fold>
 
 
@@ -369,41 +334,39 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
 
     //<editor-fold> refresh status bar notification
 
-    //<editor-fold desc="ReadingsPagerAdapter implementation">
+    //<editor-fold desc="MainTabsPagerAdapter implementation">
+        public class MainTabsPagerAdapter extends FragmentPagerAdapter {
+        final int PAGE_COUNT = 2;
+        private Context context;
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class ReadingsPagerAdapter extends FragmentStatePagerAdapter {
-
-        public ReadingsPagerAdapter(FragmentManager fm) {
+        public MainTabsPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            // for the reading wanted by position
-            Reading reading = mLoadedReadings.get(position);
-            return ReadingPlaceholderFragment.newInstance(reading.Title, reading.DateParsed, reading.Content, mZoom);
+            this.context = context;
         }
 
         @Override
         public int getCount() {
-            if (mLoadedReadings != null)
-                return mLoadedReadings.size();
-            else
-                return 0;
+            return PAGE_COUNT;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position)
+            {
+                case 0: return LectioDivinaFragment.newInstance();
+                case 1: return new ShortContemplationsFragment();
+                default: return null;
+            }
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            if (mLoadedReadings != null)
-                return mLoadedReadings.get(position).Title;
-            else
-                return null;
+            switch (position)
+            {
+                case 0: return getResources().getString(R.string.tab_LectioDivina);
+                case 1: return getResources().getString(R.string.tab_ShortContemplation);
+                default: return "";
+            }
         }
     }
     //</editor-fold>
@@ -425,28 +388,6 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener {
         }
     };
     //</editor-fold>
-
-    //<editor-fold desc="LoadAndDisplayReadingsTask implementation">
-
-    private class LoadAndDisplayReadingsTask extends AsyncTask<Void, Integer, List<Reading>> {
-
-        protected List<Reading> doInBackground(Void... params) {
-            List<Reading> loadedReadings;
-
-            Logger.debug(LOG_TAG, "Loading readings async - started");
-            loadedReadings = mReadingService.loadReadings();
-
-            return loadedReadings;
-        }
-
-        protected void onPostExecute(List<Reading> loadedReadings) {
-            Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
-            displayReadings(loadedReadings);
-        }
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="LoadAndDisplayReadingsTask implementation">
 
     // we declare this class as static due to it's dependency on activity
     // if outer class is referenced within inner class, then it is strong reference

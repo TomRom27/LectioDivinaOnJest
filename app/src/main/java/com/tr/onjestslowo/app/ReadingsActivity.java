@@ -46,8 +46,7 @@ import com.tr.tools.Logger;
 
 
 public class ReadingsActivity extends AppCompatActivity
-implements ReadingPlaceholderFragment.OnZoomChangedListener,
-        LectioDivinaFragment.OnLectioDivinaFragmentListener {
+implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
 
     private String ARG_SELECTED_DATE = "SelectedDate";
     private String ARG_READING_ZOOM = "reading_zoom";
@@ -206,14 +205,6 @@ implements ReadingPlaceholderFragment.OnZoomChangedListener,
             mZoom = getInitialZoom();
     }
 
-    // implementation of the ReadingPlaceholderFragment interface i.e. to react on fragment's zoom changed
-    @Override
-    public void OnZoomChanged(int newZoom) {
-        mZoom = newZoom;
-
-
-        //this.getSupportFragmentManager().
-    }
 
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {

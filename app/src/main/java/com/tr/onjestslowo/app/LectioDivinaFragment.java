@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.tr.onjestslowo.app.R;
 import com.tr.onjestslowo.model.Reading;
@@ -28,11 +29,10 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class LectioDivinaFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ZOOM = "lectiodivina_zoom";
     private static final String ARG_READINGS = "lectiodivina_readings";
     private static final String ARG_SELECTED_DATE = "SelectedDate";
+    private static final int ZOOM_STEP_PERCENT = 10;
 
     private static String LOG_TAG = "LectioDivinaFragment";
 
@@ -82,7 +82,7 @@ public class LectioDivinaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView =  inflater.inflate(R.layout.fragment_lectio_divina, container, false);
+        final View rootView =  inflater.inflate(R.layout.fragment_lectio_divina, container, false);
 
         // Create the adapter that will return a fragment for each of the loaded reading
         mReadingsPagerAdapter = new ReadingsPagerAdapter(getChildFragmentManager());
@@ -91,6 +91,27 @@ public class LectioDivinaFragment extends Fragment {
         mViewPager = (ViewPager) rootView.findViewById(R.id.readingPager);
 
         mReadingService = mListener.onGetReadingService();
+
+        // assign handlers for zooming buttons
+        // zoom in
+        LinearLayout zoomButton;
+        zoomButton = (LinearLayout) rootView.findViewById(R.id.button_zoomIn);
+        zoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                increaseWebViewZoom(rootView, ZOOM_STEP_PERCENT);
+
+            }
+        });
+        // zoom out
+        zoomButton = (LinearLayout) rootView.findViewById(R.id.button_zoomOut);
+        zoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                increaseWebViewZoom(rootView,-ZOOM_STEP_PERCENT);
+            }
+        });
+
         // load from db and display all readings - async
         new LoadAndDisplayReadingsTask().execute();
 
@@ -128,6 +149,17 @@ public class LectioDivinaFragment extends Fragment {
     private int getInitialZoom() {
         return 100; // todo??? to get from Preferences
     }
+
+    private void increaseWebViewZoom(View rootView, int percentIncrease) {
+
+            mZoom = mZoom +Math.round(mZoom*percentIncrease/100);
+            if (mZoom<0)
+                mZoom=1;
+            setZoomForChildren();
+
+
+    }
+
     private ReadingService getReadingService() {
         if (mListener != null) {
             return mListener.onGetReadingService();
@@ -196,6 +228,11 @@ public class LectioDivinaFragment extends Fragment {
         return -1;
     }
 
+    private void setZoomForChildren()
+    {
+        // todo
+        // for(Fragment f: mViewPager.getfr
+    }
     private class LoadAndDisplayReadingsTask extends AsyncTask<Void, Integer, ArrayList<Reading>> {
 
         protected ArrayList<Reading> doInBackground(Void... params) {

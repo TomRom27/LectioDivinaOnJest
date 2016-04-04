@@ -9,6 +9,8 @@
 
         <item name="webViewHost_backgroundImg">@color/accent</item>
 
+        <item name="webView_textColor">@color/primary</item>
+
         <item name="closeButton_visibility">2</item>
 
 <!--

@@ -14,6 +14,8 @@
 
         <item name="webViewHost_backgroundImg">@drawable/bg_w_old_paper</item>
 
+        <item name="webView_textColor">@color/primary</item>
+
         <item name="closeButton_visibility">0</item> <!-- visible -->
 
         <item name="actionBarStyle">@style/ActionBar.Classic</item>
@@ -37,6 +39,16 @@
         <item name="android:background">@drawable/bg_red_top_long</item>
     </style>
 
+    <style name="AppTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/AppTabTextAppearance</item>
+        <item name="tabSelectedTextColor">?attr/colorPrimaryDark</item>
+        <item name="android:background">?attr/colorAccent</item>
+        <item name="tabIndicatorColor">?attr/colorPrimaryDark</item>
+    </style>
+
+    <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
     <!-- buttons styles -->
     <!-- Close button style -->
     <style name="closeButton_style">

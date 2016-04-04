@@ -2,7 +2,10 @@ package com.tr.onjestslowo.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,9 +103,28 @@ public class ReadingPlaceholderFragment extends Fragment {
         }
 
         titleView.setText(title);
+
+        // we must use some trick in order to display content in wanted (not black" color
+        String color =  "white";
+        if (rootView.getContext()!=null) {
+            // here we retrive a color, defined in the app them by custom attr. webView_textColor
+            Context context = rootView.getContext();
+            TypedValue typedValue = new TypedValue();
+
+            Resources.Theme theme = context.getTheme();
+            theme.resolveAttribute(R.attr.webView_textColor, typedValue, true);
+            int webviewTextColor = typedValue.data;
+
+            //now convert the int color to hex string
+            color = String.format("#%06X", (0xFFFFFF &webviewTextColor ) );
+        }
+        String coloredContent = "<font color=\"" +
+                color+
+                "\">" +content+ "</font>";
+
         // we use loadDataWithBaseURL rather then loadData as the latter doesn't display
         // national characters correctly
-        contentView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
+        contentView.loadDataWithBaseURL(null,  coloredContent, "text/html", "UTF-8", null);
 
         // the below makes the web view transparent !!!
         contentView.setBackgroundColor(0x00000000);

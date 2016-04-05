@@ -26,9 +26,14 @@
         android:title="@string/action_exit"
         android:orderInCategory="600"
         app:showAsAction="never" />
-    <item android:id="@+id/action_zooming"
+    <item android:id="@+id/action_zoom_invisible"
         android:title="@string/action_zooming"
         android:icon="@drawable/ic_format_size_white"
         android:orderInCategory="700"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_zoom_visible"
+        android:title="@string/action_zooming"
+        android:icon="@drawable/ic_format_size_white"
+        android:orderInCategory="800"
         app:showAsAction="ifRoom" />
 </menu>

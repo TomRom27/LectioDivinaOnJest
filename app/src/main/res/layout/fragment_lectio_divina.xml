@@ -21,6 +21,7 @@
             tools:context="com.tr.onjestslowo.app.ReadingsActivity" />
 
         <LinearLayout
+            android:id="@+id/zoom_buttons"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center_horizontal|bottom"
@@ -44,8 +45,8 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/app_name"
-
+                    android:contentDescription="@string/action_zoomout"
+                    android:alpha=".75"
                     android:src="@drawable/ic_zoom_out_black" />
 
             </LinearLayout>
@@ -64,7 +65,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/app_name"
+                    android:contentDescription="@string/action_zoomin"
                     android:alpha=".75"
                     android:src="@drawable/ic_zoom_in_black" />
 

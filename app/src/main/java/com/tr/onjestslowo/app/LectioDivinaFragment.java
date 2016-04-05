@@ -51,11 +51,9 @@ public class LectioDivinaFragment extends Fragment {
 
     /**
      * @return A new instance of fragment LectioDivinaFragment.
-     *
      */
     public static LectioDivinaFragment newInstance() {
         LectioDivinaFragment fragment = new LectioDivinaFragment();
-
 
 
         return fragment;
@@ -68,12 +66,10 @@ public class LectioDivinaFragment extends Fragment {
             mLoadedReadings = getArguments().getParcelableArrayList(ARG_READINGS);
             mSelectedDate = DateHelper.fromInternalString(getArguments().getString(ARG_SELECTED_DATE));
             mZoom = getArguments().getInt(ARG_ZOOM);
-        }
-        else
-        {
+        } else {
             mSelectedDate = DateHelper.getToday();
             mZoom = getInitialZoom();
-            // mLoadedReadings ???
+            mLoadedReadings = new ArrayList<>();
         }
 
     }
@@ -82,7 +78,7 @@ public class LectioDivinaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View rootView =  inflater.inflate(R.layout.fragment_lectio_divina, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_lectio_divina, container, false);
 
         // Create the adapter that will return a fragment for each of the loaded reading
         mReadingsPagerAdapter = new ReadingsPagerAdapter(getChildFragmentManager());
@@ -92,6 +88,22 @@ public class LectioDivinaFragment extends Fragment {
 
         mReadingService = mListener.onGetReadingService();
 
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                getSelectedDateByReadingIndex(position);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                getSelectedDateByReadingIndex(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         // assign handlers for zooming buttons
         // zoom in
         LinearLayout zoomButton;
@@ -108,7 +120,7 @@ public class LectioDivinaFragment extends Fragment {
         zoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                increaseWebViewZoom(rootView,-ZOOM_STEP_PERCENT);
+                increaseWebViewZoom(rootView, -ZOOM_STEP_PERCENT);
             }
         });
 
@@ -118,53 +130,39 @@ public class LectioDivinaFragment extends Fragment {
         return rootView;
     }
 
+    public void showZoom(boolean zoomEnabled) {
+        View zoomView = getView().findViewById(R.id.zoom_buttons);
+        if (zoomView != null) {
+            if (zoomEnabled)
+                zoomView.setVisibility(View.VISIBLE);
+            else
+                zoomView.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle args) {
-        // todo
         args.putParcelableArrayList(ARG_READINGS, mLoadedReadings);
         args.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(mSelectedDate));
         args.putInt(ARG_ZOOM, mZoom);
     }
-
-    // todo onRestoreInstanceState
-//    @Override
-//    public void onRestoreInstanceState(Bundle args) {
-//
-//        // todo
-//        // Restore UI state from the savedInstanceState.
-//        // This bundle has also been passed to onCreate.
-//
-////        if (savedInstanceState.containsKey(ARG_SELECTED_DATE))
-////            mSelectedDate = DateHelper.fromInternalString(savedInstanceState.getString(ARG_SELECTED_DATE));
-////        else
-////            mSelectedDate = DateHelper.getToday();
-////
-////        if (savedInstanceState.containsKey(ARG_READING_ZOOM))
-////            mZoom = savedInstanceState.getInt(ARG_READING_ZOOM);
-////        else
-//            mZoom = getInitialZoom();
-//    }
 
     private int getInitialZoom() {
         return 100; // todo??? to get from Preferences
     }
 
     private void increaseWebViewZoom(View rootView, int percentIncrease) {
-
-            mZoom = mZoom +Math.round(mZoom*percentIncrease/100);
-            if (mZoom<0)
-                mZoom=1;
-            setZoomForChildren();
-
-
+        mZoom = mZoom + Math.round(mZoom * percentIncrease / 100);
+        if (mZoom < 0)
+            mZoom = 1;
+        setZoomForChildren();
+        getArguments().putInt(ARG_ZOOM, mZoom);
     }
 
     private ReadingService getReadingService() {
         if (mListener != null) {
             return mListener.onGetReadingService();
-        }
-        else
+        } else
             return null;
     }
 
@@ -196,6 +194,7 @@ public class LectioDivinaFragment extends Fragment {
             showEmptyReading();
         }
     }
+
     private void showEmptyReading() {
         // hide pager
         mViewPager.setVisibility(View.GONE);
@@ -228,11 +227,20 @@ public class LectioDivinaFragment extends Fragment {
         return -1;
     }
 
-    private void setZoomForChildren()
-    {
-        // todo
-        // for(Fragment f: mViewPager.getfr
+    private void getSelectedDateByReadingIndex(int index) {
+        if ((index >= 0) && (index <= mLoadedReadings.size() - 1))
+            mSelectedDate = mLoadedReadings.get(index).DateParsed;
     }
+
+    private void setZoomForChildren() {
+        // todo
+        for (Fragment f : getChildFragmentManager().getFragments()) {
+            ReadingPlaceholderFragment readingPlaceholderFragment = (ReadingPlaceholderFragment) f;
+            if (readingPlaceholderFragment != null)
+                readingPlaceholderFragment.setWebViewZoom(mZoom);
+        }
+    }
+
     private class LoadAndDisplayReadingsTask extends AsyncTask<Void, Integer, ArrayList<Reading>> {
 
         protected ArrayList<Reading> doInBackground(Void... params) {
@@ -287,16 +295,17 @@ public class LectioDivinaFragment extends Fragment {
         }
     }
     //</editor-fold>
-        /**
-         * This interface must be implemented by activities that contain this
-         * fragment to allow an interaction in this fragment to be communicated
-         * to the activity and potentially other fragments contained in that
-         * activity.
-         * <p/>
-         * See the Android Training lesson <a href=
-         * "http://developer.android.com/training/basics/fragments/communicating.html"
-         * >Communicating with Other Fragments</a> for more information.
-         */
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
     public interface OnLectioDivinaFragmentListener {
         ReadingService onGetReadingService();
     }

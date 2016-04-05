@@ -17,7 +17,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
@@ -27,29 +26,18 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.service.ReadingService;
-import com.tr.tools.DateHelper;
 import com.tr.tools.UIHelper;
 import com.tr.tools.Logger;
 
 
 public class ReadingsActivity extends AppCompatActivity
 implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
-
-    private String ARG_SELECTED_DATE = "SelectedDate";
-    private String ARG_READING_ZOOM = "reading_zoom";
 
     public static String LOG_TAG = "ReadingActivity";
     /**
@@ -61,18 +49,8 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
 
-    /**
-     * indicates the date of currently selected reading
-     */
-    Date mSelectedDate;
     Boolean mMenuEnabled;
     ReadingService mReadingService;
-
-    /**
-     * current zoom for the reading
-     */
-    int mZoom;
-
     // we use this to cancel the tasks (or actually to prevent them to complete)
     // when activity was re-created
     // ('cause in this case we should start everything from the beginning)
@@ -108,13 +86,7 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.mainTabs);
         tabLayout.setupWithViewPager(viewPager );
 
-        mSelectedDate = DateHelper.getToday();
-        // load from db and display all readings - async
-//ld        new LoadAndDisplayReadingsTask().execute();
-
         mMenuEnabled = true;
-
-        mZoom = getInitialZoom();
 
         // this variable must be static as we share it between different instances
         // of this class
@@ -173,6 +145,9 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         } else if (id == R.id.action_exit) {
             exitApp();
             return true;
+        } else if (id == R.id.action_zoom_invisible) {
+            disableZoom();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -184,8 +159,7 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
-        savedInstanceState.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(mSelectedDate));
-        savedInstanceState.putInt(ARG_READING_ZOOM, mZoom);
+//        savedInstanceState.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(mSelectedDate));
     }
 
     @Override
@@ -194,15 +168,11 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
 
-        if (savedInstanceState.containsKey(ARG_SELECTED_DATE))
-            mSelectedDate = DateHelper.fromInternalString(savedInstanceState.getString(ARG_SELECTED_DATE));
-        else
-            mSelectedDate = DateHelper.getToday();
+//        if (savedInstanceState.containsKey(ARG_SELECTED_DATE))
+//            mSelectedDate = DateHelper.fromInternalString(savedInstanceState.getString(ARG_SELECTED_DATE));
+//        else
+//            mSelectedDate = DateHelper.getToday();
 
-        if (savedInstanceState.containsKey(ARG_READING_ZOOM))
-            mZoom = savedInstanceState.getInt(ARG_READING_ZOOM);
-        else
-            mZoom = getInitialZoom();
     }
 
 
@@ -255,6 +225,12 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         mReadingService.clearReadings();
 
         displayReadings(new ArrayList<Reading>());
+    }
+
+    private void disableZoom() {
+        LectioDivinaFragment lectioDivinaFragment = findLectioDivinaFragment();
+        if (lectioDivinaFragment != null)
+            lectioDivinaFragment.showZoom(false);
     }
     //</editor-fold>
 

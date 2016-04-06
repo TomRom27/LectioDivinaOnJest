@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat">
-        <item name="app_backgroundImg">@color/accent</item>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="AppThemeDark"/>
+
+    <style name="AppThemeLight" parent="Theme.AppCompat">
+        <item name="app_backgroundImg">@color/lectioCream</item>
 
         <item name="scrollView_marginBottom">5dp</item>
         <item name="scrollView_marginLeft">5dp</item>
         <item name="scrollView_marginRight">5dp</item>
 
-        <item name="webViewHost_backgroundImg">@color/accent</item>
+        <item name="webViewHost_backgroundImg">@color/lectioCream</item>
 
-        <item name="webView_textColor">@color/primary</item>
+        <item name="webView_textColor">@color/lectioBrown</item>
 
         <item name="closeButton_visibility">2</item>
 
-<!--
-        <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
-        <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
--->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">@color/lectioBrown</item>
+        <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
+        <item name="colorAccent">@color/lectioCream</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="AppThemeDark" parent="AppThemeLight">
+        <item name="app_backgroundImg">@color/lectioDirtyCream</item>
+
+        <item name="webViewHost_backgroundImg">@color/lectioDirtyCream</item>
+
+        <item name="colorPrimary">@color/lectioBrown</item>
+        <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
+        <item name="colorAccent">@color/lectioDirtyCream</item>
     </style>
 </resources>

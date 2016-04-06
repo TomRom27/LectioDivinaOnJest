@@ -14,7 +14,7 @@
 
         <item name="webViewHost_backgroundImg">@drawable/bg_w_old_paper</item>
 
-        <item name="webView_textColor">@color/primary</item>
+        <item name="webView_textColor">@color/lectioBrown</item>
 
         <item name="closeButton_visibility">0</item> <!-- visible -->
 
@@ -23,9 +23,9 @@
         <item name="actionOverflowButtonStyle">@style/ClassicMenuButton</item>
         <item name="android:actionOverflowButtonStyle">@style/ClassicMenuButton</item>
 
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">@color/lectioBrown</item>
+        <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
+        <item name="colorAccent">@color/lectioCream</item>
         <!-- the below declaration is for API level >=11
             (so it can cause warning displayed if min target is 10)
 
@@ -38,6 +38,15 @@
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
+    <style name="AppTheme.Classics.Dark" parent="AppTheme.Classics">
+        <item name="app_backgroundImg">@color/lectioDirtyCream</item>
+
+        <item name="webViewHost_backgroundImg">@color/lectioDirtyCream</item>
+
+        <item name="colorPrimary">@color/lectioBrown</item>
+        <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
+        <item name="colorAccent">@color/lectioDirtyCream</item>
+    </style>
     <!-- ActionBar styles -->
     <style name="ActionBar.Classic" parent="">
         <item name="android:background">@drawable/bg_red_top_long</item>

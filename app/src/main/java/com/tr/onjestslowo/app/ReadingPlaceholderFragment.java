@@ -33,6 +33,10 @@ public class ReadingPlaceholderFragment extends Fragment {
     private static final String ARG_READING_CONTENT = "fragment_reading_content";
     private static final String ARG_READING_ZOOM = "fragment_reading_zoom";
 
+    private static final String SAVED_READING_ZOOM = "fragment_saved_reading_zoom";
+
+    int mZoom;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -61,24 +65,29 @@ public class ReadingPlaceholderFragment extends Fragment {
 
         String title;
         String content;
+        int zoom;
+
         Bundle args = this.getArguments();
         if (args != null) {
             title = this.getArguments().getString(ARG_READING_TITLE);
-            //String date = this.getArguments().getString(ARG_READING_DATE);
             content = this.getArguments().getString(ARG_READING_CONTENT);
-            setWebViewZoom(rootView, this.getArguments().getInt(ARG_READING_ZOOM,100));
+            zoom = this.getArguments().getInt(ARG_READING_ZOOM, 100);
         } else {
             title = rootView.getContext().getResources().getString(R.string.text_no_readings);
             content = rootView.getContext().getResources().getString(R.string.html_empty_reading_content);
-            setWebViewZoom(rootView, 100); // default zoom = 100%
+            zoom = 100; // default zoom = 100%
         }
+        if ((savedInstanceState != null) && (savedInstanceState.containsKey(SAVED_READING_ZOOM)))
+            zoom = savedInstanceState.getInt(SAVED_READING_ZOOM);
 
         titleView.setText(title);
 
+        setWebViewZoom(rootView, zoom);
+
         // we must use some trick in order to display content in wanted (not black" color
-        String color =  "white";
-        if (rootView.getContext()!=null) {
-            // here we retrive a color, defined in the app them by custom attr. webView_textColor
+        String color = "white";
+        if (rootView.getContext() != null) {
+            // here we retrieve a color, defined in the app them by custom attr. webView_textColor
             Context context = rootView.getContext();
             TypedValue typedValue = new TypedValue();
 
@@ -87,11 +96,11 @@ public class ReadingPlaceholderFragment extends Fragment {
             int webviewTextColor = typedValue.data;
 
             //now convert the int color to hex string
-            color = String.format("#%06X", (0xFFFFFF &webviewTextColor ) );
+            color = String.format("#%06X", (0xFFFFFF & webviewTextColor));
         }
         String coloredContent = "<font color=\"" +
-                color+
-                "\">" +content+ "</font>";
+                color +
+                "\">" + content + "</font>";
 
         // we use loadDataWithBaseURL rather then loadData as the latter doesn't display
         // national characters correctly
@@ -103,11 +112,15 @@ public class ReadingPlaceholderFragment extends Fragment {
         return rootView;
     }
 
-    public void setWebViewZoom(int textZoom) {
-        WebView contentView = (WebView) getView().findViewById(R.id.readingWebView);
+    public void onSaveInstanceState(Bundle args) {
+        args.putInt(SAVED_READING_ZOOM, mZoom);
+    }
 
-        if (contentView != null)
-            contentView.getSettings().setTextZoom(textZoom);
+    public void setWebViewZoom(int textZoom) {
+        View view = getView();
+
+        if (view != null)
+            setWebViewZoom(view, textZoom);
     }
 
     public void setWebViewZoom(View view, int textZoom) {
@@ -115,6 +128,7 @@ public class ReadingPlaceholderFragment extends Fragment {
 
         if (contentView != null)
             contentView.getSettings().setTextZoom(textZoom);
+        mZoom = textZoom;
     }
 
 }

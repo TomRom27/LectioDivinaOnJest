@@ -1,5 +1,5 @@
 <resources>
-        <string name="menu_activity_settings">Ustawienia</string>
+    <string name="menu_activity_settings">Ustawienia</string>
 
     <!-- Strings related to Settings -->
     <!-- String for  General settings -->
@@ -20,5 +20,6 @@
     <string name="pref_adv_summary">Ustawienia przeznaczone dla zaawansowanych użytkowników</string>
     <string name="pref_adv_server_uri">Adres (uri) serwisu REST na OnJest/Slowo</string>
 
+    <string name="pref_zoom_on_start">Przyciski zoom widoczne przy starcie</string>
 
 </resources>

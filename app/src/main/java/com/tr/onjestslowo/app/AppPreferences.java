@@ -24,4 +24,12 @@ public class AppPreferences {
         editor.putBoolean(PREF_IS_APP_FIRST, isFirst);
         editor.apply(); // persist changes
     }
+
+    public static Boolean getShowZoomOnStart(Context context) {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(context);
+
+        Boolean showZoom = prefStore.getBoolean(context.getResources().getString(R.string.pref_zoom_on_start), true);
+        return showZoom;
+    }
+
 }

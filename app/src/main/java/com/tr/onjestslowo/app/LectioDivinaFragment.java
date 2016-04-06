@@ -30,17 +30,20 @@ import java.util.List;
  */
 public class LectioDivinaFragment extends Fragment {
     private static final String ARG_ZOOM = "lectiodivina_zoom";
+    private static final String ARG_ZOOM_VISIBLE = "lectiodivina_zoom_visible";
     private static final String ARG_READINGS = "lectiodivina_readings";
-    private static final String ARG_SELECTED_DATE = "SelectedDate";
+    private static final String ARG_SELECTED_DATE = "lectiodivina_selectedDate";
     private static final int ZOOM_STEP_PERCENT = 10;
 
     private static String LOG_TAG = "LectioDivinaFragment";
 
     ReadingsPagerAdapter mReadingsPagerAdapter;
     ViewPager mViewPager;
+    View mEmptyReadingContainer;
     Date mSelectedDate;
     ArrayList<Reading> mLoadedReadings;
     int mZoom;
+    boolean mZoomVisible;
     ReadingService mReadingService;
 
     private OnLectioDivinaFragmentListener mListener;
@@ -62,14 +65,16 @@ public class LectioDivinaFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mLoadedReadings = getArguments().getParcelableArrayList(ARG_READINGS);
-            mSelectedDate = DateHelper.fromInternalString(getArguments().getString(ARG_SELECTED_DATE));
-            mZoom = getArguments().getInt(ARG_ZOOM);
+        if (savedInstanceState != null) {
+            mLoadedReadings = savedInstanceState.getParcelableArrayList(ARG_READINGS);
+            mSelectedDate = DateHelper.fromInternalString(savedInstanceState.getString(ARG_SELECTED_DATE));
+            mZoom = savedInstanceState.getInt(ARG_ZOOM);
+            mZoomVisible = savedInstanceState.getBoolean(ARG_ZOOM_VISIBLE);
         } else {
             mSelectedDate = DateHelper.getToday();
             mZoom = getInitialZoom();
-            mLoadedReadings = new ArrayList<>();
+            mZoomVisible = true;
+            mLoadedReadings = null;
         }
 
     }
@@ -83,6 +88,7 @@ public class LectioDivinaFragment extends Fragment {
         // Create the adapter that will return a fragment for each of the loaded reading
         mReadingsPagerAdapter = new ReadingsPagerAdapter(getChildFragmentManager());
 
+        mEmptyReadingContainer = rootView.findViewById(R.id.emptyReadingContainer);
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) rootView.findViewById(R.id.readingPager);
 
@@ -124,27 +130,36 @@ public class LectioDivinaFragment extends Fragment {
             }
         });
 
+        showZoomForView(rootView);
         // load from db and display all readings - async
-        new LoadAndDisplayReadingsTask().execute();
+        if (mLoadedReadings == null)
+            new LoadAndDisplayReadingsTask().execute();
+        else
+            displayReadings(mLoadedReadings);
 
         return rootView;
     }
 
     public void showZoom(boolean zoomEnabled) {
-        View zoomView = getView().findViewById(R.id.zoom_buttons);
+        mZoomVisible = zoomEnabled;
+        showZoomForView(getView());
+    }
+
+    private void showZoomForView(View rootView ) {
+        View zoomView = rootView.findViewById(R.id.zoom_buttons);
         if (zoomView != null) {
-            if (zoomEnabled)
+            if (mZoomVisible)
                 zoomView.setVisibility(View.VISIBLE);
             else
                 zoomView.setVisibility(View.GONE);
         }
     }
-
     @Override
     public void onSaveInstanceState(Bundle args) {
         args.putParcelableArrayList(ARG_READINGS, mLoadedReadings);
         args.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(mSelectedDate));
         args.putInt(ARG_ZOOM, mZoom);
+        args.putBoolean(ARG_ZOOM_VISIBLE, mZoomVisible);
     }
 
     private int getInitialZoom() {
@@ -156,7 +171,9 @@ public class LectioDivinaFragment extends Fragment {
         if (mZoom < 0)
             mZoom = 1;
         setZoomForChildren();
-        getArguments().putInt(ARG_ZOOM, mZoom);
+        Bundle args = getArguments();
+        if (args !=null)
+            args.putInt(ARG_ZOOM, mZoom);
     }
 
     private ReadingService getReadingService() {
@@ -199,11 +216,11 @@ public class LectioDivinaFragment extends Fragment {
         // hide pager
         mViewPager.setVisibility(View.GONE);
         // show empty reading view
-        getView().findViewById(R.id.emptyReadingContainer).setVisibility(View.VISIBLE);
+        mEmptyReadingContainer.setVisibility(View.VISIBLE);
     }
 
     private void showReadingPager() {
-        getView().findViewById(R.id.emptyReadingContainer).setVisibility(View.GONE);
+        mEmptyReadingContainer.setVisibility(View.GONE);
         mViewPager.setVisibility(View.VISIBLE);
 
         mViewPager.setAdapter(mReadingsPagerAdapter);

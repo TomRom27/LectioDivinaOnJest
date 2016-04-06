@@ -37,9 +37,10 @@ import com.tr.tools.Logger;
 
 
 public class ReadingsActivity extends AppCompatActivity
-implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
+        implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
 
     public static String LOG_TAG = "ReadingActivity";
+    private static String ARG_ZOOM_VISIBLE = "ZoomVisible";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -50,7 +51,9 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
      */
 
     Boolean mMenuEnabled;
+    Boolean mZoomVisible;
     ReadingService mReadingService;
+    Menu mMenu;
     // we use this to cancel the tasks (or actually to prevent them to complete)
     // when activity was re-created
     // ('cause in this case we should start everything from the beginning)
@@ -60,7 +63,6 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_readings);
-
 
 
         // set toolbar as actionbar for the activity
@@ -75,16 +77,14 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         actionBar.setSubtitle(R.string.app_sub_name);
 
         mReadingService = new ReadingService(this);
-        // Create the adapter that will return a fragment for each of the loaded reading
-//ld        mReadingsPagerAdapter = new ReadingsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         ViewPager viewPager = (ViewPager) findViewById(R.id.mainTabsPager);
-        viewPager .setAdapter(new MainTabsPagerAdapter(getSupportFragmentManager(), ReadingsActivity.this));
+        viewPager.setAdapter(new MainTabsPagerAdapter(getSupportFragmentManager(), ReadingsActivity.this));
 
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.mainTabs);
-        tabLayout.setupWithViewPager(viewPager );
+        tabLayout.setupWithViewPager(viewPager);
 
         mMenuEnabled = true;
 
@@ -94,31 +94,45 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         // then we have two instances activity class which must use the same variable
         mRefreshTaskCancelled = true;
 
+        // set only one of the zoom actions visible
+        if ((savedInstanceState!= null) && (savedInstanceState.containsKey(ARG_ZOOM_VISIBLE)))
+            mZoomVisible = savedInstanceState.getBoolean(ARG_ZOOM_VISIBLE);
+        else
+            mZoomVisible = AppPreferences.getShowZoomOnStart(this);
+
         // if the app is launched for very first time, we force user to see
         // AboutLectio activity
         if (AppPreferences.getIsAppFirstLaunch(this)) {
-            Logger.debug(LOG_TAG,"Launched first time, show AboutLectio");
+            Logger.debug(LOG_TAG, "Launched first time, show AboutLectio");
             showAboutLectio();
             AppPreferences.setIsAppFirstLaunch(this, false);
-        }
-        else
-            Logger.debug(LOG_TAG,"Another launch, no need to show AboutLectio");
+        } else
+            Logger.debug(LOG_TAG, "Another launch, no need to show AboutLectio");
     }
 
-    private int getInitialZoom() {
-        return 100; // todo??? to get from Preferences
-    }
-
-    public ReadingService onGetReadingService()
-    {
+    public ReadingService onGetReadingService() {
         return mReadingService;
     }
+
     //<editor-fold desc="activity overrides">
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.readings, menu);
+        mMenu = menu;
+
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mMenuEnabled) {
+            // we need to show/hide zoom actions
+            menu.findItem(R.id.action_zoom_to_hidden).setVisible(mZoomVisible);
+            menu.findItem(R.id.action_zoom_to_visible).setVisible(!mZoomVisible);
+
+        }
+        return mMenuEnabled;// super.onPrepareOptionsMenu(menu); // =false -> menu doesn't show
     }
 
     @Override
@@ -145,8 +159,11 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         } else if (id == R.id.action_exit) {
             exitApp();
             return true;
-        } else if (id == R.id.action_zoom_invisible) {
+        } else if (id == R.id.action_zoom_to_hidden) {
             disableZoom();
+            return true;
+        } else if (id == R.id.action_zoom_to_visible) {
+            enableZoom();
             return true;
         }
 
@@ -159,7 +176,7 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
-//        savedInstanceState.putString(ARG_SELECTED_DATE, DateHelper.toInternalString(mSelectedDate));
+        savedInstanceState.putBoolean(ARG_ZOOM_VISIBLE, mZoomVisible);
     }
 
     @Override
@@ -167,19 +184,9 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         super.onRestoreInstanceState(savedInstanceState);
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
-
-//        if (savedInstanceState.containsKey(ARG_SELECTED_DATE))
-//            mSelectedDate = DateHelper.fromInternalString(savedInstanceState.getString(ARG_SELECTED_DATE));
-//        else
-//            mSelectedDate = DateHelper.getToday();
-
+        mZoomVisible = savedInstanceState.getBoolean(ARG_ZOOM_VISIBLE);
     }
 
-
-    @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-        return mMenuEnabled;// super.onPrepareOptionsMenu(menu); // =false -> menu doesn't show
-    }
     //</editor-fold>
 
     //<editor-fold desc="menu handling methods and reading display">
@@ -231,25 +238,35 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         LectioDivinaFragment lectioDivinaFragment = findLectioDivinaFragment();
         if (lectioDivinaFragment != null)
             lectioDivinaFragment.showZoom(false);
+        mZoomVisible = false;
+        onPrepareOptionsMenu(mMenu);
+    }
+
+    private void enableZoom() {
+        LectioDivinaFragment lectioDivinaFragment = findLectioDivinaFragment();
+        if (lectioDivinaFragment != null)
+            lectioDivinaFragment.showZoom(true);
+        mZoomVisible = true;
+        onPrepareOptionsMenu(mMenu);
     }
     //</editor-fold>
 
     //<editor-fold desc="private methods">
 
-    private LectioDivinaFragment findLectioDivinaFragment()
-    {
-        for (Fragment f : getSupportFragmentManager().getFragments() )
+    private LectioDivinaFragment findLectioDivinaFragment() {
+        for (Fragment f : getSupportFragmentManager().getFragments())
             if (f instanceof LectioDivinaFragment)
-                return (LectioDivinaFragment)f;
+                return (LectioDivinaFragment) f;
 
         return null;
     }
+
     private void displayReadings(List<Reading> loadedReadings) {
         // todo use Lectio Fragment
         LectioDivinaFragment lectioFragment = findLectioDivinaFragment();
         if ((lectioFragment != null) &&
                 (lectioFragment.isVisible()))
-            lectioFragment.displayReadings((ArrayList<Reading>)loadedReadings);
+            lectioFragment.displayReadings((ArrayList<Reading>) loadedReadings);
     }
 
     private void disableAppMenu() {
@@ -270,7 +287,9 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         NotificationManager nm = (NotificationManager) service;
         nm.cancel(REFRESH_NOTIFICATION_ID);
     }
-    static int REFRESH_NOTIFICATION_ID=100012;
+
+    static int REFRESH_NOTIFICATION_ID = 100012;
+
     private static void showRefreshInProgressNotification(Context context) {
 
         // The PendingIntent to launch our activity if the user selects this notification
@@ -283,10 +302,10 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         Notification notification = builder
                 .setSmallIcon(R.drawable.ic_refresh)
-                //.setTicker(context.getResources().getString(R.string.text_refreshing_in_progress))
-                //.setContentInfo("content info")
-                //.setContentTitle("conten title")
-                //.setContentText("content text")
+                        //.setTicker(context.getResources().getString(R.string.text_refreshing_in_progress))
+                        //.setContentInfo("content info")
+                        //.setContentTitle("conten title")
+                        //.setContentText("content text")
                 .setContentIntent(contentIntent)
                 .build();
 
@@ -294,7 +313,7 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         //notification.flags |= Notification.FLAG_ONGOING_EVENT;
         //notification.flags |= Notification.FLAG_NO_CLEAR;
         // Send the notification.
-        NotificationManager mNM = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNM = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNM.notify(REFRESH_NOTIFICATION_ID, notification);
     }
 
@@ -302,7 +321,7 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
     //<editor-fold> refresh status bar notification
 
     //<editor-fold desc="MainTabsPagerAdapter implementation">
-        public class MainTabsPagerAdapter extends FragmentPagerAdapter {
+    public class MainTabsPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
         private Context context;
 
@@ -318,21 +337,25 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position)
-            {
-                case 0: return LectioDivinaFragment.newInstance();
-                case 1: return new ShortContemplationsFragment();
-                default: return null;
+            switch (position) {
+                case 0:
+                    return LectioDivinaFragment.newInstance();
+                case 1:
+                    return new ShortContemplationsFragment();
+                default:
+                    return null;
             }
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position)
-            {
-                case 0: return getResources().getString(R.string.tab_LectioDivina);
-                case 1: return getResources().getString(R.string.tab_ShortContemplation);
-                default: return "";
+            switch (position) {
+                case 0:
+                    return getResources().getString(R.string.tab_LectioDivina);
+                case 1:
+                    return getResources().getString(R.string.tab_ShortContemplation);
+                default:
+                    return "";
             }
         }
     }
@@ -408,7 +431,7 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
             // (that's why we can't use getInt from prefs)
             String key = context.getResources().getString(R.string.pref_reading_store_how_long);
             prefs.KeepReadingsHowLong = Integer.parseInt(prefStore.getString(key, "30"));
-            if ((prefs.KeepReadingsHowLong <7) || (prefs.KeepReadingsHowLong >300))
+            if ((prefs.KeepReadingsHowLong < 7) || (prefs.KeepReadingsHowLong > 300))
                 prefs.KeepReadingsHowLong = 30;
 
             key = context.getResources().getString(R.string.pref_wifi_proxy_enable);
@@ -450,6 +473,8 @@ implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
         public boolean UseProxy;
         public String ProxyHost;
         public int ProxyPort;
+        public boolean ShowZoomOnStart;
+        public boolean DownloadShortContempltion;
 
     }
     //</editor-fold>

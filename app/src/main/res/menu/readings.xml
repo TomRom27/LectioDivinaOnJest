@@ -26,14 +26,15 @@
         android:title="@string/action_exit"
         android:orderInCategory="600"
         app:showAsAction="never" />
-    <item android:id="@+id/action_zoom_invisible"
+    <item android:id="@+id/action_zoom_to_hidden"
         android:title="@string/action_zooming"
         android:icon="@drawable/ic_format_size_white"
         android:orderInCategory="700"
         app:showAsAction="ifRoom" />
-    <item android:id="@+id/action_zoom_visible"
+    <item android:id="@+id/action_zoom_to_visible"
         android:title="@string/action_zooming"
-        android:icon="@drawable/ic_format_size_white"
+        android:icon="@drawable/ic_format_size_dis_white"
+        android:visible="false"
         android:orderInCategory="800"
         app:showAsAction="ifRoom" />
 </menu>

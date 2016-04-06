@@ -22,6 +22,10 @@
 
         <item name="actionOverflowButtonStyle">@style/ClassicMenuButton</item>
         <item name="android:actionOverflowButtonStyle">@style/ClassicMenuButton</item>
+
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorAccent">@color/accent</item>
         <!-- the below declaration is for API level >=11
             (so it can cause warning displayed if min target is 10)
 

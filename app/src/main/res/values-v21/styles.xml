@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
+    <!-- Base application theme.
+    actual is decided in the code, see AppThemeHelper
+    -->
     <style name="AppTheme" parent="AppThemeDark"/>
 
     <style name="AppThemeLight" parent="Theme.AppCompat">
@@ -12,8 +14,6 @@
 
         <item name="webViewHost_backgroundImg">@color/lectioCream</item>
 
-        <item name="webView_textColor">@color/lectioBrown</item>
-
         <item name="closeButton_visibility">2</item>
 
         <item name="colorPrimary">@color/lectioBrown</item>
@@ -23,6 +23,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowNoTitle">true</item>
+
+        <item name="webView_textColor">?attr/colorPrimary</item>
     </style>
 
     <style name="AppThemeDark" parent="AppThemeLight">

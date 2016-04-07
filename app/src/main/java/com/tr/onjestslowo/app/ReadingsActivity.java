@@ -2,7 +2,6 @@ package com.tr.onjestslowo.app;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -14,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
@@ -41,6 +41,7 @@ public class ReadingsActivity extends AppCompatActivity
 
     public static String LOG_TAG = "ReadingActivity";
     private static String ARG_ZOOM_VISIBLE = "ZoomVisible";
+    private static String ARG_IS_THEME_NIGHT = "ThemeNight";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -52,6 +53,7 @@ public class ReadingsActivity extends AppCompatActivity
 
     Boolean mMenuEnabled;
     Boolean mZoomVisible;
+    Boolean mIsThemeNight;
     ReadingService mReadingService;
     Menu mMenu;
     // we use this to cancel the tasks (or actually to prevent them to complete)
@@ -61,6 +63,14 @@ public class ReadingsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // restore state of the theme flag and then apply theme
+        if ((savedInstanceState != null) && (savedInstanceState.containsKey(ARG_IS_THEME_NIGHT)))
+            mIsThemeNight = savedInstanceState.getBoolean(ARG_IS_THEME_NIGHT);
+        else
+            mIsThemeNight = false;
+        // setting the theme must be done before any view output, also before super.onCreate() !!!
+        setAppTheme();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_readings);
 
@@ -95,10 +105,11 @@ public class ReadingsActivity extends AppCompatActivity
         mRefreshTaskCancelled = true;
 
         // set only one of the zoom actions visible
-        if ((savedInstanceState!= null) && (savedInstanceState.containsKey(ARG_ZOOM_VISIBLE)))
+        if ((savedInstanceState != null) && (savedInstanceState.containsKey(ARG_ZOOM_VISIBLE)))
             mZoomVisible = savedInstanceState.getBoolean(ARG_ZOOM_VISIBLE);
         else
             mZoomVisible = AppPreferences.getShowZoomOnStart(this);
+
 
         // if the app is launched for very first time, we force user to see
         // AboutLectio activity
@@ -130,7 +141,9 @@ public class ReadingsActivity extends AppCompatActivity
             // we need to show/hide zoom actions
             menu.findItem(R.id.action_zoom_to_hidden).setVisible(mZoomVisible);
             menu.findItem(R.id.action_zoom_to_visible).setVisible(!mZoomVisible);
-
+            // theme actions
+            menu.findItem(R.id.action_theme_to_night).setVisible(!mIsThemeNight);
+            menu.findItem(R.id.action_theme_to_day).setVisible(mIsThemeNight);
         }
         return mMenuEnabled;// super.onPrepareOptionsMenu(menu); // =false -> menu doesn't show
     }
@@ -165,6 +178,10 @@ public class ReadingsActivity extends AppCompatActivity
         } else if (id == R.id.action_zoom_to_visible) {
             enableZoom();
             return true;
+        } else if ((id == R.id.action_theme_to_night) ||
+                (id == R.id.action_theme_to_day)) {
+            reverseTheme();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -177,6 +194,7 @@ public class ReadingsActivity extends AppCompatActivity
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
         savedInstanceState.putBoolean(ARG_ZOOM_VISIBLE, mZoomVisible);
+        savedInstanceState.putBoolean(ARG_IS_THEME_NIGHT, mIsThemeNight);
     }
 
     @Override
@@ -184,7 +202,11 @@ public class ReadingsActivity extends AppCompatActivity
         super.onRestoreInstanceState(savedInstanceState);
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
-        mZoomVisible = savedInstanceState.getBoolean(ARG_ZOOM_VISIBLE);
+
+        // mZoomVisible and mIsThemeNight have been restored in OnCreate,
+        // so need to restore it here
+        //mZoomVisible = savedInstanceState.getBoolean(ARG_ZOOM_VISIBLE);
+        //mIsThemeNight = savedInstanceState.getBoolean(ARG_IS_THEME_NIGHT);
     }
 
     //</editor-fold>
@@ -249,9 +271,29 @@ public class ReadingsActivity extends AppCompatActivity
         mZoomVisible = true;
         onPrepareOptionsMenu(mMenu);
     }
+
+    private void reverseTheme() {
+        mIsThemeNight = !mIsThemeNight;
+
+        // apply theme
+        setAppTheme();
+        // udpdate menu
+        onPrepareOptionsMenu(mMenu);
+        // the theme changes effect
+        this.recreate();
+    }
     //</editor-fold>
 
     //<editor-fold desc="private methods">
+
+    private void setAppTheme() {
+        int themeId;
+        if (mIsThemeNight)
+            themeId = AppThemeHelper.GetNightThemeId();
+        else
+            themeId = AppThemeHelper.GetDayThemeId();
+        this.setTheme(themeId);
+    }
 
     private LectioDivinaFragment findLectioDivinaFragment() {
         for (Fragment f : getSupportFragmentManager().getFragments())

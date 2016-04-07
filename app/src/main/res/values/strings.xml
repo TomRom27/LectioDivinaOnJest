@@ -13,6 +13,8 @@
     <string name="action_zooming">Zoom</string>
     <string name="action_zoomin">Powiększanie</string>
     <string name="action_zoomout">Pomniejszanie</string>
+    <string name="action_theme_to_night">Zmniejsz jaskrawość</string>
+    <string name="action_theme_to_day">Zwiększ jaskrawość</string>
     <string name="text_are_you_sure_to_delete">Usunąć wszystkie rozważania?</string>
     <string name="text_yes">Tak</string>
     <string name="text_no">Nie</string>

@@ -14,8 +14,6 @@
 
         <item name="webViewHost_backgroundImg">@drawable/bg_w_old_paper</item>
 
-        <item name="webView_textColor">@color/lectioBrown</item>
-
         <item name="closeButton_visibility">0</item> <!-- visible -->
 
         <item name="actionBarStyle">@style/ActionBar.Classic</item>
@@ -32,7 +30,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         -->
-
+        <item name="webView_textColor">?attr/colorPrimary</item>
     </style>
     <style name="ClassicMenuButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
@@ -46,6 +44,8 @@
         <item name="colorPrimary">@color/lectioBrown</item>
         <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
         <item name="colorAccent">@color/lectioDirtyCream</item>
+
+
     </style>
     <!-- ActionBar styles -->
     <style name="ActionBar.Classic" parent="">

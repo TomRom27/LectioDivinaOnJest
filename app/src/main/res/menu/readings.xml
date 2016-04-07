@@ -29,6 +29,7 @@
     <item android:id="@+id/action_zoom_to_hidden"
         android:title="@string/action_zooming"
         android:icon="@drawable/ic_format_size_white"
+        android:visible="true"
         android:orderInCategory="700"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/action_zoom_to_visible"
@@ -36,5 +37,17 @@
         android:icon="@drawable/ic_format_size_dis_white"
         android:visible="false"
         android:orderInCategory="800"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_theme_to_night"
+        android:title="@string/action_theme_to_night"
+        android:icon="@drawable/ic_brightness_5_white"
+        android:visible="true"
+        android:orderInCategory="900"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_theme_to_day"
+        android:title="@string/action_theme_to_day"
+        android:icon="@drawable/ic_brightness_4_white"
+        android:visible="false"
+        android:orderInCategory="1000"
         app:showAsAction="ifRoom" />
 </menu>

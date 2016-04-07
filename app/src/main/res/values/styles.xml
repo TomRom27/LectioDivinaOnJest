@@ -39,6 +39,10 @@
     <style name="AppTheme.Classics.Dark" parent="AppTheme.Classics">
         <item name="app_backgroundImg">@color/lectioDirtyCream</item>
 
+        <item name="scrollView_marginBottom">5dp</item>
+        <item name="scrollView_marginLeft">5dp</item>
+        <item name="scrollView_marginRight">5dp</item>
+
         <item name="webViewHost_backgroundImg">@color/lectioDirtyCream</item>
 
         <item name="colorPrimary">@color/lectioBrown</item>

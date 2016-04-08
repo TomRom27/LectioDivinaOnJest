@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:support-v4:23.2.0'
     compile 'com.android.support:design:23.2.0'
     compile 'com.google.code.gson:gson:2.6.1'
+    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
 }

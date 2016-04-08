@@ -10,4 +10,9 @@
         android:layout_height="match_parent"
         android:text="Short contemplations fragment" />
 
+    <com.joanzapata.pdfview.PDFView
+        android:id="@+id/pdf_short_contemplations"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </FrameLayout>

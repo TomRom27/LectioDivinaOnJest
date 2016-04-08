@@ -3,10 +3,20 @@ package com.tr.onjestslowo.app;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.joanzapata.pdfview.PDFView;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,7 +73,28 @@ public class ShortContemplationsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_short_contemplations, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_short_contemplations, container, false);
+
+        PDFView pdfView = (PDFView) rootView.findViewById(R.id.pdf_short_contemplations);
+
+        String pdfName;
+
+
+        String externalStP = android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+
+        File pdf = new File(externalStP + "/rk160403_br.pdf");
+
+//        pdfView.fromAsset(pdf.getAbsolutePath())
+//                .pages(0, 2, 1, 3, 3, 3)
+//                .defaultPage(1)
+//                .showMinimap(false)
+//                .enableSwipe(true)
+//                        //.onDraw(onDrawListener)
+//                        //.onLoad(onLoadCompleteListener)
+//                        //.onPageChange(onPageChangeListener)
+//                .load();
+
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,3 +136,11 @@ public class ShortContemplationsFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 }
+
+/*
+https://github.com/JoanZapata/android-pdfview
+
+http://stackoverflow.com/questions/2456344/display-pdf-within-app-on-android
+(PdfRenderer class etc.)
+
+ */

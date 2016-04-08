@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -28,6 +29,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.tr.onjestslowo.model.Reading;
@@ -233,7 +236,7 @@ public class ReadingsActivity extends AppCompatActivity
     }
 
     private void refreshReadingsAsync() {
-        showRefreshInProgressNotification(this);
+        showHideProgress(true);
         // show info
         UIHelper.showToast(this, R.string.text_refreshing_started, Toast.LENGTH_SHORT);
         // disable menu
@@ -322,45 +325,20 @@ public class ReadingsActivity extends AppCompatActivity
     //</editor-fold>
 
 
-    //<editor-fold desc="refresh status bar notification">
+    //<editor-fold desc="refresh progress bar">
 
-    private void hideRefreshInProgressNotification() {
-        Object service = getSystemService(NOTIFICATION_SERVICE);
-        NotificationManager nm = (NotificationManager) service;
-        nm.cancel(REFRESH_NOTIFICATION_ID);
-    }
-
-    static int REFRESH_NOTIFICATION_ID = 100012;
-
-    private static void showRefreshInProgressNotification(Context context) {
-
-        // The PendingIntent to launch our activity if the user selects this notification
-        Intent intent = new Intent(context, ReadingsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        Notification notification = builder
-                .setSmallIcon(R.drawable.ic_refresh)
-                        //.setTicker(context.getResources().getString(R.string.text_refreshing_in_progress))
-                        //.setContentInfo("content info")
-                        //.setContentTitle("conten title")
-                        //.setContentText("content text")
-                .setContentIntent(contentIntent)
-                .build();
-
-        // Set the icon, scrolling text and timestamp
-        //notification.flags |= Notification.FLAG_ONGOING_EVENT;
-        //notification.flags |= Notification.FLAG_NO_CLEAR;
-        // Send the notification.
-        NotificationManager mNM = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNM.notify(REFRESH_NOTIFICATION_ID, notification);
+    public void showHideProgress(boolean show)
+    {
+        ProgressBar progressBar =  (ProgressBar) findViewById(R.id.progressBar);
+        if (progressBar != null)
+            if (show)
+                progressBar.setVisibility(View.VISIBLE);
+            else
+                progressBar.setVisibility(View.GONE);
     }
 
 
-    //<editor-fold> refresh status bar notification
+    //<editor-fold> refresh progress bar
 
     //<editor-fold desc="MainTabsPagerAdapter implementation">
     public class MainTabsPagerAdapter extends FragmentPagerAdapter {
@@ -457,7 +435,7 @@ public class ReadingsActivity extends AppCompatActivity
                 // return empty list
                 loadedReadings = new ArrayList<>();
                 // the task is ended, so hide notification
-                mActivity.get().hideRefreshInProgressNotification();
+                mActivity.get().showHideProgress(false);
             }
             return loadedReadings;
         }
@@ -491,7 +469,7 @@ public class ReadingsActivity extends AppCompatActivity
         protected void onPostExecute(List<Reading> loadedReadings) {
 
             // the task is ended, so hide notification
-            mActivity.get().hideRefreshInProgressNotification();
+            mActivity.get().showHideProgress(false);
 
             if (!mRefreshTaskCancelled) {
                 String refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended);

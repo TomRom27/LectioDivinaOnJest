@@ -314,6 +314,10 @@ public class ReadingsActivity extends AppCompatActivity
             lectioFragment.displayReadings((ArrayList<Reading>) loadedReadings);
     }
 
+    private void showFile(String fileName)
+    {
+        // todo
+    }
     private void disableAppMenu() {
         mMenuEnabled = false;
     }
@@ -404,7 +408,7 @@ public class ReadingsActivity extends AppCompatActivity
     // what can result in memory leak if the outer class instance is re-created
     // and this is our case, as an activity is re-created by screen rotation
     // if it happens during Refresh non-static version of RefreshTask could cuase memory leaks
-    private static class RefreshAndDisplayReadingsTask extends AsyncTask<Void, Integer, List<Reading>> {
+    private static class RefreshAndDisplayReadingsTask extends AsyncTask<Void, Integer, RefreshingResult> {
 
         private final WeakReference<ReadingsActivity> mActivity;
         private int mNewReadingsCount;
@@ -414,30 +418,37 @@ public class ReadingsActivity extends AppCompatActivity
             mNewReadingsCount = 0;
         }
 
-        protected List<Reading> doInBackground(Void... params) {
-            List<Reading> loadedReadings;
+        protected RefreshingResult doInBackground(Void... params) {
+
+            RefreshingResult refreshingResult = new RefreshingResult();
 
             mRefreshTaskCancelled = false;
             try {
                 Logger.debug(LOG_TAG, "Getting preferences");
                 OnJestPreferences prefs = getPreferences(mActivity.get());
 
-                Logger.debug(LOG_TAG, "Refreshing readings async - started");
+                Logger.debug(LOG_TAG, "Refreshing readings");
                 mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
                         prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
 
+
+                if (prefs.DownloadShortContemplation) {
+                    Logger.debug(LOG_TAG, "Downloading short contemplations");
+                    refreshingResult.ShortContemplationsFilename = mActivity.get().
+                            mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
+                }
+
                 Logger.debug(LOG_TAG, "Loading readings after refreshing");
-                loadedReadings = mActivity.get().mReadingService.loadReadings();
+                refreshingResult.Readings = mActivity.get().mReadingService.loadReadings();
             } catch (Exception ex) {
                 // in case of exception we
                 // log it
-                Logger.error(ReadingsActivity.LOG_TAG, "Exception when refreshing the readings", ex);
-                // return empty list
-                loadedReadings = new ArrayList<>();
+                Logger.error(ReadingsActivity.LOG_TAG, "Exception when refreshing the data", ex);
+
                 // the task is ended, so hide notification
                 mActivity.get().showHideProgress(false);
             }
-            return loadedReadings;
+            return refreshingResult;
         }
 
         private OnJestPreferences getPreferences(Context context) {
@@ -463,10 +474,16 @@ public class ReadingsActivity extends AppCompatActivity
             key = context.getResources().getString(R.string.pref_wifi_proxy_port);
             prefs.ProxyPort = Integer.parseInt(prefStore.getString(key, "8080"));
 
+            key = context.getResources().getString(R.string.pref_zoom_on_start);
+            prefs.ShowZoomOnStart = prefStore.getBoolean(key, true);
+
+            key = context.getResources().getString(R.string.pref_download_short_contemplation);
+            prefs.DownloadShortContemplation = prefStore.getBoolean(key, true);
+
             return prefs;
         }
 
-        protected void onPostExecute(List<Reading> loadedReadings) {
+        protected void onPostExecute(RefreshingResult refreshingResult) {
 
             // the task is ended, so hide notification
             mActivity.get().showHideProgress(false);
@@ -476,9 +493,15 @@ public class ReadingsActivity extends AppCompatActivity
                 UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
 
                 Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
-                mActivity.get().displayReadings(loadedReadings);
+                mActivity.get().displayReadings(refreshingResult.Readings);
 
                 Logger.debug(LOG_TAG, "Readings displayed");
+                if (refreshingResult.ShortContemplationsFilename != "") {
+                    Logger.debug(LOG_TAG, "Showing short contemplations file");
+                    mActivity.get().showFile(refreshingResult.ShortContemplationsFilename);
+                }
+                else
+                    Logger.debug(LOG_TAG, "Short contemplations filename is empty");
 
                 mActivity.get().enableAppMenu();
             } else
@@ -488,13 +511,24 @@ public class ReadingsActivity extends AppCompatActivity
         }
     }
 
+    private static class RefreshingResult {
+
+        public RefreshingResult()
+        {
+            Readings = new ArrayList<>();
+            ShortContemplationsFilename = "";
+        }
+        public List<Reading> Readings;
+        public String ShortContemplationsFilename;
+    }
+
     private static class OnJestPreferences {
         public int KeepReadingsHowLong;
         public boolean UseProxy;
         public String ProxyHost;
         public int ProxyPort;
         public boolean ShowZoomOnStart;
-        public boolean DownloadShortContempltion;
+        public boolean DownloadShortContemplation;
 
     }
     //</editor-fold>

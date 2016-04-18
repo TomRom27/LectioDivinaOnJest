@@ -30,6 +30,10 @@ public class DateHelper {
         }
     }
 
+    public static String toString(String formatString,  Date date){
+        return new SimpleDateFormat(DATE_INTERNAL_FORMAT).format(date);
+
+    }
     /**
      * @return date with hour:min set to 00:00
      */
@@ -67,8 +71,8 @@ public class DateHelper {
         calendar.setTime(date);
         return makeDate(calendar.get(Calendar.YEAR),
                 // calender returns 0-based month while makeDate uses 1-based, that's why we add 1
-                        calendar.get(Calendar.MONTH)+1,
-                        calendar.get(Calendar.DAY_OF_MONTH)
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH)
         );
     }
 
@@ -102,6 +106,17 @@ public class DateHelper {
 
         return addDay(date, moreDays);
     }
+
+    public static  Date getClosestSunday(Date date) {
+        Calendar c = Calendar.getInstance();
+
+        c.setTime(date);
+
+        int moreDays = Calendar.SATURDAY - c.get(Calendar.DAY_OF_WEEK);
+
+        return addDay(date, moreDays);
+    }
+
 
     public static  Date getPreviousSunday(Date date) {
         Calendar c = Calendar.getInstance();

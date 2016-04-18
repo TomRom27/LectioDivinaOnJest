@@ -56,6 +56,39 @@ public class ReadingService {
         return list;
     }
 
+    public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort) {
+        Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", Boolean.toString(useProxy)));
+
+        try {
+
+            Date contemplationsDate = determineDateOfContemplations();
+
+            String contemplationsFileName = resolveShortContemplationsFileName(contemplationsDate);
+            Logger.debug(LOG_TAG, String.format("Filename is : %s", contemplationsFileName));
+
+            // // TODO: 2016-04-18  
+            return contemplationsFileName;
+        }
+        catch (Exception ex) {
+            // todo
+            return "";
+        }
+    }
+
+    private Date determineDateOfContemplations() {
+        Date closestSunday = DateHelper.getClosestSunday(DateHelper.getToday());
+
+        return closestSunday;
+    }
+
+    private String resolveShortContemplationsFileName(Date sundayDate) {
+        return DateHelper.toString("rkyyMMdd_br", sundayDate);
+    }
+
+    private String getXOne(int year, int month, String fileName) {
+        // http://www.onjest.pl/slowo/wp-content/uploads/2016/04/rk160417_br.pdf
+        return String.format("http://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s",year,month, fileName);
+    }
     public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort) {
         Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));
         int count = 0;
@@ -66,7 +99,7 @@ public class ReadingService {
             Date firstDate, lastDate;
             List<Reading> newReadings;
 
-            rangeDates = determineDateRange(keepLastReadingDaysNumber);
+            rangeDates = determineDateRangeForReadings(keepLastReadingDaysNumber);
             firstDate = rangeDates[0];
             lastDate = rangeDates[1];
 
@@ -163,7 +196,7 @@ public class ReadingService {
     }
 
 
-    private Date[] determineDateRange(int keepLastReadingDaysNumber) {
+    private Date[] determineDateRangeForReadings(int keepLastReadingDaysNumber) {
         Date[] rangeDates = new Date[2];
         Reading lastReading;
         Date firstDate, lastDate;

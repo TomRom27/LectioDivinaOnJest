@@ -45,6 +45,20 @@ public class DateHelper {
         return makeDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
     }
 
+    public static int getYear(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        return calendar.get(Calendar.YEAR);
+    }
+
+    public static int getMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        return calendar.get(Calendar.MONTH)+1;// calendar's set uses 0-based month value !!!
+    }
+
     /**
      * @param year
      * @param realMonth 1-12 month value

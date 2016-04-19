@@ -3,6 +3,7 @@ package com.tr.onjestslowo.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import com.tr.onjestslowo.app.R;
 import com.tr.onjestslowo.model.Converter;
@@ -15,6 +16,7 @@ import com.tr.tools.HttpConnection;
 import com.tr.tools.NetworkHelper;
 import com.tr.tools.Logger;
 
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
@@ -30,11 +32,13 @@ public class ReadingService {
     public static String LOG_TAG = "ReadingService";
 
     private ReadingDataSource mReadingDS;
+    private ShortContemplationDataSource mShortContemplationDS;
     private Context context;
 
     public ReadingService(Context context) {
 
         mReadingDS = new ReadingDataSource(context);
+        mShortContemplationDS = new ShortContemplationDataSource(context);
         this.context = context;
     }
 
@@ -56,25 +60,56 @@ public class ReadingService {
         return list;
     }
 
-    public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort) {
-        Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", Boolean.toString(useProxy)));
-
+    public void clearReadings() {
+        mReadingDS.open();
         try {
-
-            Date contemplationsDate = determineDateOfContemplations();
-
-            String contemplationsFileName = resolveShortContemplationsFileName(contemplationsDate);
-            Logger.debug(LOG_TAG, String.format("Filename is : %s", contemplationsFileName));
-
-            // // TODO: 2016-04-18  
-            return contemplationsFileName;
-        }
-        catch (Exception ex) {
-            // todo
-            return "";
+            mReadingDS.deleteAllReadings();
+        } finally {
+            mReadingDS.close();
         }
     }
 
+    public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort) {
+        Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", Boolean.toString(useProxy)));
+
+        Date contemplationsDate = determineDateOfContemplations();
+
+        String contemplationsFileName = resolveShortContemplationsFileName(contemplationsDate);
+        Logger.debug(LOG_TAG, String.format("Filename is : %s", contemplationsFileName));
+
+        int year, month;
+        year = DateHelper.getYear(contemplationsDate);
+        month = DateHelper.getMonth(contemplationsDate);
+
+        // complete logging inside the mothod, no need to do it here
+        Boolean ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
+
+        if (!ok) {
+            Logger.debug(LOG_TAG, "The previous try didn't work, trying previous month");
+            year = DateHelper.getYear(DateHelper.addDay(contemplationsDate, -15));
+            month = DateHelper.getMonth(DateHelper.addDay(contemplationsDate, -15));
+
+            ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
+            if (!ok) {
+                Logger.debug(LOG_TAG, "Failed for previous month");
+                contemplationsFileName = ""; // empty filename means not file downloaded
+            }
+
+        }
+
+            return contemplationsFileName;
+    }
+
+    private Boolean downloadShortContemplations(int year, int month, String  fileName,
+                                                boolean useProxy, String proxyHost, int proxyPort) {
+        HttpURLConnection connection = null;
+
+        Logger.debug(LOG_TAG, String.format("Trying to get from %d of %d", month, year));
+        // todo
+        return false;
+    }
+
+    //<editor-fold> downloadCurrentShortContemplations private methods>
     private Date determineDateOfContemplations() {
         Date closestSunday = DateHelper.getClosestSunday(DateHelper.getToday());
 
@@ -89,6 +124,63 @@ public class ReadingService {
         // http://www.onjest.pl/slowo/wp-content/uploads/2016/04/rk160417_br.pdf
         return String.format("http://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s",year,month, fileName);
     }
+
+//    InputStream input = null;
+//    OutputStream output = null;
+//    HttpURLConnection connection = null;
+//    try {
+//        URL url = new URL(sUrl[0]);
+//        connection = (HttpURLConnection) url.openConnection();
+//        connection.connect();
+//
+//        // expect HTTP 200 OK, so we don't mistakenly save error report
+//        // instead of the file
+//        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+//            return "Server returned HTTP " + connection.getResponseCode()
+//                    + " " + connection.getResponseMessage();
+//        }
+//
+//        // this will be useful to display download percentage
+//        // might be -1: server did not report the length
+//        int fileLength = connection.getContentLength();
+//
+//        // download the file
+//        input = connection.getInputStream();
+//        output = new FileOutputStream("/sdcard/file_name.extension");
+//
+//        byte data[] = new byte[4096];
+//        long total = 0;
+//        int count;
+//        while ((count = input.read(data)) != -1) {
+//            // allow canceling with back button
+//            if (isCancelled()) {
+//                input.close();
+//                return null;
+//            }
+//            total += count;
+//            // publishing the progress....
+//            if (fileLength > 0) // only if total length is known
+//                publishProgress((int) (total * 100 / fileLength));
+//            output.write(data, 0, count);
+//        }
+//    } catch (Exception e) {
+//        return e.toString();
+//    } finally {
+//        try {
+//            if (output != null)
+//                output.close();
+//            if (input != null)
+//                input.close();
+//        } catch (IOException ignored) {
+//        }
+//
+//        if (connection != null)
+//            connection.disconnect();
+//    }
+//    return null;
+
+    //</editor-fold>
+
     public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort) {
         Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));
         int count = 0;
@@ -120,29 +212,13 @@ public class ReadingService {
     }
 
 
-    public void clearReadings() {
-        mReadingDS.open();
-        try {
-            mReadingDS.deleteAllReadings();
-        } finally {
-            mReadingDS.close();
-        }
-    }
-
+    //<editor-fold> refreshReadings private methods
     private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
         ArrayList<Reading> newReadings = new ArrayList<>();
-        HttpConnection httpConnection = new HttpConnection(this.context);
+        HttpConnection httpConnection;
 
-        // set proxy, if needed - only for WiFi connections
-        if (NetworkHelper.isWiFiConnection()) {
-            if (useProxy) {
-                Logger.debug(LOG_TAG, String.format("Proxy:%s, %d", proxyHost, proxyPort));
-                httpConnection.setProxyServer(proxyHost, proxyPort);
-            } else {
-                Logger.debug(LOG_TAG, "No proxy used");
-                httpConnection.resetProxyServer();
-            }
-        }
+        httpConnection = prepareConnection(useProxy, proxyHost, proxyPort);
+
         if (httpConnection.checkConnectivity()) {
             HttpConnection.CONNECTION_TIMEOUT = 10000; // increase time to 10 secs.
 
@@ -249,6 +325,25 @@ public class ReadingService {
         String uri = getPreferenceString(R.string.pref_adv_server_uri,
                 "http://www.onjest.pl/slowo/?json=get_date_posts&date=%s&include=title,date,content");
         return uri;
+    }
+    //</editor-fold> refreshReadings private methods
+
+
+    @NonNull
+    private HttpConnection prepareConnection(boolean useProxy, String proxyHost, int proxyPort) {
+        HttpConnection httpConnection = new HttpConnection(this.context);
+
+        // set proxy, if needed - only for WiFi connections
+        if (NetworkHelper.isWiFiConnection()) {
+            if (useProxy) {
+                Logger.debug(LOG_TAG, String.format("Proxy:%s, %d", proxyHost, proxyPort));
+                httpConnection.setProxyServer(proxyHost, proxyPort);
+            } else {
+                Logger.debug(LOG_TAG, "No proxy used");
+                httpConnection.resetProxyServer();
+            }
+        }
+        return httpConnection;
     }
 
     private String getPreferenceString(int preferenceResourceId, String defValue) {

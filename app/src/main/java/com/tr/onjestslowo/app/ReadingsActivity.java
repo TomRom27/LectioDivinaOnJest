@@ -5,20 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -314,7 +308,7 @@ public class ReadingsActivity extends AppCompatActivity
             lectioFragment.displayReadings((ArrayList<Reading>) loadedReadings);
     }
 
-    private void showFile(String fileName)
+    private void displayShortContemplations(String fileName)
     {
         // todo
     }
@@ -408,7 +402,7 @@ public class ReadingsActivity extends AppCompatActivity
     // what can result in memory leak if the outer class instance is re-created
     // and this is our case, as an activity is re-created by screen rotation
     // if it happens during Refresh non-static version of RefreshTask could cuase memory leaks
-    private static class RefreshAndDisplayReadingsTask extends AsyncTask<Void, Integer, RefreshingResult> {
+    private static class RefreshAndDisplayReadingsTask extends AsyncTask<Void, Integer, RefreshResult> {
 
         private final WeakReference<ReadingsActivity> mActivity;
         private int mNewReadingsCount;
@@ -418,9 +412,9 @@ public class ReadingsActivity extends AppCompatActivity
             mNewReadingsCount = 0;
         }
 
-        protected RefreshingResult doInBackground(Void... params) {
+        protected RefreshResult doInBackground(Void... params) {
 
-            RefreshingResult refreshingResult = new RefreshingResult();
+            RefreshResult refreshResult = new RefreshResult();
 
             mRefreshTaskCancelled = false;
             try {
@@ -428,18 +422,22 @@ public class ReadingsActivity extends AppCompatActivity
                 OnJestPreferences prefs = getPreferences(mActivity.get());
 
                 Logger.debug(LOG_TAG, "Refreshing readings");
-                mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
-                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
-
+//                mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
+//                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
+                mNewReadingsCount = -1;
 
                 if (prefs.DownloadShortContemplation) {
-                    Logger.debug(LOG_TAG, "Downloading short contemplations");
-                    refreshingResult.ShortContemplationsFilename = mActivity.get().
+                    Logger.debug(LOG_TAG, "Downloading current short contemplations");
+                    refreshResult.ShortContemplationsFilename = mActivity.get().
                             mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
                 }
+                else
+                    Logger.debug(LOG_TAG, "Skipped to download short contemplations");
 
-                Logger.debug(LOG_TAG, "Loading readings after refreshing");
-                refreshingResult.Readings = mActivity.get().mReadingService.loadReadings();
+                Logger.debug(LOG_TAG, String.format("Data refreshing ended (%d readings, %b new short cont.)",
+                        mNewReadingsCount, refreshResult.ShortContemplationsFilename));
+
+                refreshResult.Readings = mActivity.get().mReadingService.loadReadings();
             } catch (Exception ex) {
                 // in case of exception we
                 // log it
@@ -448,7 +446,34 @@ public class ReadingsActivity extends AppCompatActivity
                 // the task is ended, so hide notification
                 mActivity.get().showHideProgress(false);
             }
-            return refreshingResult;
+            return refreshResult;
+        }
+
+        protected void onPostExecute(RefreshResult refreshResult) {
+
+            // the task is ended, so hide notification
+            mActivity.get().showHideProgress(false);
+
+            if (!mRefreshTaskCancelled) {
+                String refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended);
+                UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
+
+                Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
+                mActivity.get().displayReadings(refreshResult.Readings);
+                Logger.debug(LOG_TAG, "Readings displayed");
+
+                if (refreshResult.ShortContemplationsFilename != "") {
+                    Logger.debug(LOG_TAG, "Showing short contemplations file");
+                    mActivity.get().displayShortContemplations(refreshResult.ShortContemplationsFilename);
+                }
+                else
+                    Logger.debug(LOG_TAG, "Short contemplations filename is empty");
+
+                mActivity.get().enableAppMenu();
+            } else
+                Logger.debug(LOG_TAG, "Task is cancelled, nothing displayed");
+
+            mRefreshTaskCancelled = true;
         }
 
         private OnJestPreferences getPreferences(Context context) {
@@ -482,38 +507,11 @@ public class ReadingsActivity extends AppCompatActivity
 
             return prefs;
         }
-
-        protected void onPostExecute(RefreshingResult refreshingResult) {
-
-            // the task is ended, so hide notification
-            mActivity.get().showHideProgress(false);
-
-            if (!mRefreshTaskCancelled) {
-                String refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended);
-                UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
-
-                Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
-                mActivity.get().displayReadings(refreshingResult.Readings);
-
-                Logger.debug(LOG_TAG, "Readings displayed");
-                if (refreshingResult.ShortContemplationsFilename != "") {
-                    Logger.debug(LOG_TAG, "Showing short contemplations file");
-                    mActivity.get().showFile(refreshingResult.ShortContemplationsFilename);
-                }
-                else
-                    Logger.debug(LOG_TAG, "Short contemplations filename is empty");
-
-                mActivity.get().enableAppMenu();
-            } else
-                Logger.debug(LOG_TAG, "Task is cancelled, nothing displayed");
-
-            mRefreshTaskCancelled = true;
-        }
     }
 
-    private static class RefreshingResult {
+    private static class RefreshResult {
 
-        public RefreshingResult()
+        public RefreshResult()
         {
             Readings = new ArrayList<>();
             ShortContemplationsFilename = "";

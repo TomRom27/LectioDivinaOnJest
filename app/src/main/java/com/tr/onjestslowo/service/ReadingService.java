@@ -16,11 +16,16 @@ import com.tr.tools.HttpConnection;
 import com.tr.tools.NetworkHelper;
 import com.tr.tools.Logger;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by bpl2111 on 2014-05-29.
@@ -97,16 +102,60 @@ public class ReadingService {
 
         }
 
-            return contemplationsFileName;
+        return contemplationsFileName;
     }
 
-    private Boolean downloadShortContemplations(int year, int month, String  fileName,
+    private Boolean downloadShortContemplations(int year, int month, String fileName,
                                                 boolean useProxy, String proxyHost, int proxyPort) {
-        HttpURLConnection connection = null;
+        Boolean isOk = false;
+        String fileUrlString = String.format("http://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s", year, month, fileName);
+        Logger.debug(LOG_TAG, String.format("Trying to get from %d of %d at %s", month, year, fileUrlString));
 
-        Logger.debug(LOG_TAG, String.format("Trying to get from %d of %d", month, year));
-        // todo
-        return false;
+        InputStream input = null;
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(fileUrlString);
+
+            if (useProxy) {
+                Logger.debug(LOG_TAG, "Proxy used for connections");
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+                connection = (HttpURLConnection) url.openConnection(proxy);
+            }
+            else
+                connection = (HttpURLConnection) url.openConnection();
+
+            connection.connect();
+
+            // expect HTTP 200 OK, so we don't mistakenly save error report
+            // instead of the file
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                Logger.debug(LOG_TAG, String.format("Error, server returned HTTP %s",
+                        connection.getResponseCode() + " " + connection.getResponseMessage()));
+                connection.disconnect();
+                return false;
+            }
+
+            // download the file
+            input = connection.getInputStream();
+
+            mShortContemplationDS.saveFromStream(fileName, input);
+            isOk = true;
+
+        } catch (Exception ex) {
+            Logger.debug(LOG_TAG, "Something went wrong: " + ex.getMessage());
+            isOk = false;
+
+        } finally {
+            if (connection != null)
+                connection.disconnect();
+            try {
+                if (input != null)
+                    input.close();
+            } catch (Exception ignored) {
+            }
+
+        }
+        return isOk;
     }
 
     //<editor-fold> downloadCurrentShortContemplations private methods>
@@ -119,65 +168,6 @@ public class ReadingService {
     private String resolveShortContemplationsFileName(Date sundayDate) {
         return DateHelper.toString("rkyyMMdd_br", sundayDate);
     }
-
-    private String getXOne(int year, int month, String fileName) {
-        // http://www.onjest.pl/slowo/wp-content/uploads/2016/04/rk160417_br.pdf
-        return String.format("http://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s",year,month, fileName);
-    }
-
-//    InputStream input = null;
-//    OutputStream output = null;
-//    HttpURLConnection connection = null;
-//    try {
-//        URL url = new URL(sUrl[0]);
-//        connection = (HttpURLConnection) url.openConnection();
-//        connection.connect();
-//
-//        // expect HTTP 200 OK, so we don't mistakenly save error report
-//        // instead of the file
-//        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-//            return "Server returned HTTP " + connection.getResponseCode()
-//                    + " " + connection.getResponseMessage();
-//        }
-//
-//        // this will be useful to display download percentage
-//        // might be -1: server did not report the length
-//        int fileLength = connection.getContentLength();
-//
-//        // download the file
-//        input = connection.getInputStream();
-//        output = new FileOutputStream("/sdcard/file_name.extension");
-//
-//        byte data[] = new byte[4096];
-//        long total = 0;
-//        int count;
-//        while ((count = input.read(data)) != -1) {
-//            // allow canceling with back button
-//            if (isCancelled()) {
-//                input.close();
-//                return null;
-//            }
-//            total += count;
-//            // publishing the progress....
-//            if (fileLength > 0) // only if total length is known
-//                publishProgress((int) (total * 100 / fileLength));
-//            output.write(data, 0, count);
-//        }
-//    } catch (Exception e) {
-//        return e.toString();
-//    } finally {
-//        try {
-//            if (output != null)
-//                output.close();
-//            if (input != null)
-//                input.close();
-//        } catch (IOException ignored) {
-//        }
-//
-//        if (connection != null)
-//            connection.disconnect();
-//    }
-//    return null;
 
     //</editor-fold>
 
@@ -215,9 +205,9 @@ public class ReadingService {
     //<editor-fold> refreshReadings private methods
     private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
         ArrayList<Reading> newReadings = new ArrayList<>();
-        HttpConnection httpConnection;
+        HttpConnection httpConnection  = new HttpConnection(this.context);
 
-        httpConnection = prepareConnection(useProxy, proxyHost, proxyPort);
+        prepareConnection(useProxy, proxyHost, proxyPort, httpConnection);
 
         if (httpConnection.checkConnectivity()) {
             HttpConnection.CONNECTION_TIMEOUT = 10000; // increase time to 10 secs.
@@ -268,7 +258,7 @@ public class ReadingService {
         Date limitDate = DateHelper.addDay(DateHelper.getToday(), -1 * keepLastReadingDaysNumber + 1);
         // remove obsolete readings
         int count = mReadingDS.removeOlderReadings(limitDate);
-        Logger.debug(LOG_TAG, Integer.toString(count)+" rows deleted");
+        Logger.debug(LOG_TAG, Integer.toString(count) + " rows deleted");
     }
 
 
@@ -288,7 +278,7 @@ public class ReadingService {
             lastDate = firstDate;
             do
                 lastDate = DateHelper.getNextSaturday(lastDate);
-            while (lastDate.compareTo(DateHelper.getToday())<0);
+            while (lastDate.compareTo(DateHelper.getToday()) < 0);
 
             Logger.debug(LOG_TAG, "Last reading is from " + lastReading.DateParsed.toString());
         } else {
@@ -329,10 +319,7 @@ public class ReadingService {
     //</editor-fold> refreshReadings private methods
 
 
-    @NonNull
-    private HttpConnection prepareConnection(boolean useProxy, String proxyHost, int proxyPort) {
-        HttpConnection httpConnection = new HttpConnection(this.context);
-
+    private void prepareConnection(boolean useProxy, String proxyHost, int proxyPort, HttpConnection httpConnection) {
         // set proxy, if needed - only for WiFi connections
         if (NetworkHelper.isWiFiConnection()) {
             if (useProxy) {
@@ -343,7 +330,7 @@ public class ReadingService {
                 httpConnection.resetProxyServer();
             }
         }
-        return httpConnection;
+
     }
 
     private String getPreferenceString(int preferenceResourceId, String defValue) {

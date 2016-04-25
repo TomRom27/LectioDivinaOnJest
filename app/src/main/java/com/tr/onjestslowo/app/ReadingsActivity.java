@@ -422,9 +422,8 @@ public class ReadingsActivity extends AppCompatActivity
                 OnJestPreferences prefs = getPreferences(mActivity.get());
 
                 Logger.debug(LOG_TAG, "Refreshing readings");
-//                mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
-//                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
-                mNewReadingsCount = -1;
+                mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
+                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
 
                 if (prefs.DownloadShortContemplation) {
                     Logger.debug(LOG_TAG, "Downloading current short contemplations");
@@ -434,7 +433,7 @@ public class ReadingsActivity extends AppCompatActivity
                 else
                     Logger.debug(LOG_TAG, "Skipped to download short contemplations");
 
-                Logger.debug(LOG_TAG, String.format("Data refreshing ended (%d readings, %b new short cont.)",
+                Logger.debug(LOG_TAG, String.format("Data refreshing ended (%d readings, %b new short contemplations)",
                         mNewReadingsCount, refreshResult.ShortContemplationsFilename));
 
                 refreshResult.Readings = mActivity.get().mReadingService.loadReadings();

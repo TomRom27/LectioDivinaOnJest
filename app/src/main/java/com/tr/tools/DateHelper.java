@@ -31,7 +31,7 @@ public class DateHelper {
     }
 
     public static String toString(String formatString,  Date date){
-        return new SimpleDateFormat(DATE_INTERNAL_FORMAT).format(date);
+        return new SimpleDateFormat(formatString).format(date);
 
     }
     /**
@@ -120,17 +120,6 @@ public class DateHelper {
 
         return addDay(date, moreDays);
     }
-
-    public static  Date getClosestSunday(Date date) {
-        Calendar c = Calendar.getInstance();
-
-        c.setTime(date);
-
-        int moreDays = Calendar.SATURDAY - c.get(Calendar.DAY_OF_WEEK);
-
-        return addDay(date, moreDays);
-    }
-
 
     public static  Date getPreviousSunday(Date date) {
         Calendar c = Calendar.getInstance();

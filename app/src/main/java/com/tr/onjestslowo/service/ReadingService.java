@@ -77,32 +77,40 @@ public class ReadingService {
     public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort) {
         Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", Boolean.toString(useProxy)));
 
-        Date contemplationsDate = determineDateOfContemplations();
+        try {
+            Date contemplationsDate = determineDateOfContemplations();
 
-        String contemplationsFileName = resolveShortContemplationsFileName(contemplationsDate);
-        Logger.debug(LOG_TAG, String.format("Filename is : %s", contemplationsFileName));
+            String contemplationsFileName = resolveShortContemplationsFileName(contemplationsDate);
+            Logger.debug(LOG_TAG, String.format("Filename is : %s", contemplationsFileName));
 
-        int year, month;
-        year = DateHelper.getYear(contemplationsDate);
-        month = DateHelper.getMonth(contemplationsDate);
+            int year, month;
+            year = DateHelper.getYear(contemplationsDate);
+            month = DateHelper.getMonth(contemplationsDate);
 
-        // complete logging inside the mothod, no need to do it here
-        Boolean ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
+            // complete logging inside the mothod, no need to do it here
+            Boolean ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
 
-        if (!ok) {
-            Logger.debug(LOG_TAG, "The previous try didn't work, trying previous month");
-            year = DateHelper.getYear(DateHelper.addDay(contemplationsDate, -15));
-            month = DateHelper.getMonth(DateHelper.addDay(contemplationsDate, -15));
 
-            ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
-            if (!ok) {
-                Logger.debug(LOG_TAG, "Failed for previous month");
-                contemplationsFileName = ""; // empty filename means not file downloaded
+            if (ok) {
+                Logger.debug(LOG_TAG, "Short contemplation downloaded Ok");
+            }
+            else {
+                Logger.debug(LOG_TAG, "The previous try didn't work, trying previous month");
+                year = DateHelper.getYear(DateHelper.addDay(contemplationsDate, -15));
+                month = DateHelper.getMonth(DateHelper.addDay(contemplationsDate, -15));
+
+                ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
+                if (!ok) {
+                    Logger.debug(LOG_TAG, "Failed for previous month");
+                    contemplationsFileName = ""; // empty filename means file not downloaded
+                }
             }
 
+            return contemplationsFileName;
+        } catch (Exception ex) {
+            Logger.error(LOG_TAG, "Error when trying to download: "+ex.getMessage());
+            return "";
         }
-
-        return contemplationsFileName;
     }
 
     private Boolean downloadShortContemplations(int year, int month, String fileName,
@@ -135,9 +143,9 @@ public class ReadingService {
                 return false;
             }
 
-            // download the file
+            // start to download the file
             input = connection.getInputStream();
-
+            // ... and save it
             mShortContemplationDS.saveFromStream(fileName, input);
             isOk = true;
 
@@ -160,13 +168,13 @@ public class ReadingService {
 
     //<editor-fold> downloadCurrentShortContemplations private methods>
     private Date determineDateOfContemplations() {
-        Date closestSunday = DateHelper.getClosestSunday(DateHelper.getToday());
+        Date closestSunday = DateHelper.getPreviousSunday(DateHelper.getToday());
 
         return closestSunday;
     }
 
     private String resolveShortContemplationsFileName(Date sundayDate) {
-        return DateHelper.toString("rkyyMMdd_br", sundayDate);
+        return DateHelper.toString("'rk'yyMMdd'_br.pdf'", sundayDate);
     }
 
     //</editor-fold>

@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -18,28 +19,28 @@ public class ShortContemplationDataSource {
         this.context = context;
     }
 
-    public String destinationFolder() {
+    public String defaultDestinationFolder() {
         return android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
 
     }
 
-    public String filePath(String fileName) {
-        return new File(destinationFolder(), fileName).toString();
+    public void saveFromStream(String fileName, InputStream input) throws IOException {
+        String destinationPath = defaultDestinationFolder();
+
+        saveFromStream(fileName, destinationPath, input);
     }
 
-    public void saveFromStream(String fileName, InputStream input) {
+    public void saveFromStream(String fileName, String destinationPath, InputStream input) throws IOException {
 
         OutputStream output = null;
         try {
-            output = new FileOutputStream(filePath(fileName));
+            output = new FileOutputStream(combine(destinationPath, fileName));
 
             byte data[] = new byte[4096];
             int count;
             while ((count = input.read(data)) != -1) {
                 output.write(data, 0, count);
             }
-        } catch (Exception e) {
-            ; // todo how to re-raise the exception???
         } finally {
             try {
                 if (output != null)
@@ -48,5 +49,9 @@ public class ShortContemplationDataSource {
             }
 
         }
+    }
+
+    private String combine(String path, String fileName) {
+        return new File(path, fileName).toString();
     }
 }

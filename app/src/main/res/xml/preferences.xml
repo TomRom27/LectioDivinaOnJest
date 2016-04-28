@@ -2,15 +2,36 @@
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-    <EditTextPreference
-        android:defaultValue="10"
-        android:inputType="number"
-        android:key="@string/pref_reading_store_how_long"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="@string/pref_reading_store_how_long" />
+    <PreferenceCategory android:title="@string/pref_category_title_general">
 
+
+        <EditTextPreference
+            android:defaultValue="10"
+            android:inputType="number"
+            android:key="@string/pref_reading_store_how_long"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_reading_store_how_long" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_download_short_contemplation"
+            android:summary="@string/pref_download_short_contemplation_summary"
+            android:title="@string/pref_download_short_contemplation" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_keep_screen_on"
+            android:summary="@string/pref_keep_screen_on_summary"
+            android:title="@string/pref_keep_screen_on" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_zoom_on_start"
+            android:summary="@string/pref_zoom_on_start_summary"
+            android:title="@string/pref_zoom_on_start" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_title_advanced">
 
         <!-- This PreferenceScreen tag sends the user to a new fragment of
@@ -34,11 +55,19 @@
                 android:selectAllOnFocus="true"
                 android:singleLine="true"
                 android:title="@string/pref_adv_server_uri" />
+
+            <EditTextPreference
+                android:defaultValue="/storage/sdcard/Download"
+                android:inputType="textUri"
+                android:key="@string/pref_short_contemplation_download_path"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:title="@string/pref_short_contemplation_download_path" />
         </PreferenceScreen>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_category_title_connection">
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_wifi_proxy_enable"
             android:title="@string/pref_wifi_proxy_enable" />

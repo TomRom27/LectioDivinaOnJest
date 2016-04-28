@@ -24,9 +24,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.tr.onjestslowo.model.OnJestPreferences;
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.service.ReadingService;
 import com.tr.tools.UIHelper;
@@ -101,23 +103,28 @@ public class ReadingsActivity extends AppCompatActivity
         // then we have two instances activity class which must use the same variable
         mRefreshTaskCancelled = true;
 
+
         // set only one of the zoom actions visible
         if ((savedInstanceState != null) && (savedInstanceState.containsKey(ARG_ZOOM_VISIBLE)))
             mZoomVisible = savedInstanceState.getBoolean(ARG_ZOOM_VISIBLE);
         else
-            mZoomVisible = AppPreferences.getShowZoomOnStart(this);
+            mZoomVisible = AppPreferences.getInstance(this).get().ShowZoomOnStart;
+
+        // prevent screen turn off
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
         // if the app is launched for very first time, we force user to see
         // AboutLectio activity
-        if (AppPreferences.getIsAppFirstLaunch(this)) {
+        if (AppPreferences.getInstance(this).isAppFirstLaunch()) {
             Logger.debug(LOG_TAG, "Launched first time, show AboutLectio");
             showAboutLectio();
-            AppPreferences.setIsAppFirstLaunch(this, false);
+            AppPreferences.getInstance(this).setAppFirstLaunch(false);
         } else
             Logger.debug(LOG_TAG, "Another launch, no need to show AboutLectio");
     }
 
+    // implementation of OnLectioDivinaFragmentListener interface
     public ReadingService onGetReadingService() {
         return mReadingService;
     }
@@ -419,7 +426,7 @@ public class ReadingsActivity extends AppCompatActivity
             mRefreshTaskCancelled = false;
             try {
                 Logger.debug(LOG_TAG, "Getting preferences");
-                OnJestPreferences prefs = getPreferences(mActivity.get());
+                OnJestPreferences prefs = AppPreferences.getInstance(mActivity.get()).get();
 
                 Logger.debug(LOG_TAG, "Refreshing readings");
                 mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
@@ -475,37 +482,6 @@ public class ReadingsActivity extends AppCompatActivity
             mRefreshTaskCancelled = true;
         }
 
-        private OnJestPreferences getPreferences(Context context) {
-            OnJestPreferences prefs = new OnJestPreferences();
-
-            SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(context);
-
-            // remark !!!
-            // we use EditTexPreference to enter the preferences, so they ALWAYS are String
-            // (even if we use inputType=number
-            // (that's why we can't use getInt from prefs)
-            String key = context.getResources().getString(R.string.pref_reading_store_how_long);
-            prefs.KeepReadingsHowLong = Integer.parseInt(prefStore.getString(key, "30"));
-            if ((prefs.KeepReadingsHowLong < 7) || (prefs.KeepReadingsHowLong > 300))
-                prefs.KeepReadingsHowLong = 30;
-
-            key = context.getResources().getString(R.string.pref_wifi_proxy_enable);
-            prefs.UseProxy = prefStore.getBoolean(key, false);
-
-            key = context.getResources().getString(R.string.pref_wifi_proxy_host);
-            prefs.ProxyHost = prefStore.getString(key, "");
-
-            key = context.getResources().getString(R.string.pref_wifi_proxy_port);
-            prefs.ProxyPort = Integer.parseInt(prefStore.getString(key, "8080"));
-
-            key = context.getResources().getString(R.string.pref_zoom_on_start);
-            prefs.ShowZoomOnStart = prefStore.getBoolean(key, true);
-
-            key = context.getResources().getString(R.string.pref_download_short_contemplation);
-            prefs.DownloadShortContemplation = prefStore.getBoolean(key, true);
-
-            return prefs;
-        }
     }
 
     private static class RefreshResult {
@@ -519,15 +495,6 @@ public class ReadingsActivity extends AppCompatActivity
         public String ShortContemplationsFilename;
     }
 
-    private static class OnJestPreferences {
-        public int KeepReadingsHowLong;
-        public boolean UseProxy;
-        public String ProxyHost;
-        public int ProxyPort;
-        public boolean ShowZoomOnStart;
-        public boolean DownloadShortContemplation;
-
-    }
     //</editor-fold>
 
 }

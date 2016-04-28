@@ -19,9 +19,13 @@
     <string name="pref_adv_title">Ustawienia zaawansowane</string>
     <string name="pref_adv_summary">Ustawienia przeznaczone dla zaawansowanych użytkowników</string>
     <string name="pref_adv_server_uri">Adres (uri) serwisu REST na OnJest/Slowo</string>
+    <string name="pref_short_contemplation_download_path">Rozważania krótkie zapisywać w</string>
 
-    <string name="pref_zoom_on_start">Przyciski zoom widoczne przy starcie</string>
-    <string name="pref_download_short_contemplation">Pobierać rozważania krótkie</string>
-
+    <string name="pref_zoom_on_start">Przyciski zoom</string>
+    <string name="pref_zoom_on_start_summary">Przyciski zoom widoczne na ekranie przy starcie aplikacji</string>
+    <string name="pref_keep_screen_on">Blokada wygaszania ekranu</string>
+    <string name="pref_keep_screen_on_summary">Zablokuj przyciemnianie i wygaszanie ekranu w trakcie działania aplikacji</string>
+    <string name="pref_download_short_contemplation">Pobieranie rozważań krótkich</string>
+    <string name="pref_download_short_contemplation_summary">Pobierać PDF z rozważaniami krótkimi (do czytania wymagana dodatkowa aplikacja)</string>
 
 </resources>

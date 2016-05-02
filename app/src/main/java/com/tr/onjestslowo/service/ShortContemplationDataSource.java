@@ -27,19 +27,14 @@ public class ShortContemplationDataSource {
 
     }
 
-    public ArrayList<ShortContemplationsFile> getAll() {
+    public ArrayList<ShortContemplationsFile> getAll()
+            throws Exception {
         ArrayList<ShortContemplationsFile> list = new ArrayList<ShortContemplationsFile>();
 
-        // todo
-        try {
-            list.add(new ShortContemplationsFile("rk160410_br"));
-            list.add(new ShortContemplationsFile("rk160417_br"));
-            list.add(new ShortContemplationsFile("rk160424_br"));
-            list.add(new ShortContemplationsFile("rk160501_br"));
-        }
-        catch (Exception ex) {
-
-        }
+        list.add(new ShortContemplationsFile("rk160410_br"));
+        list.add(new ShortContemplationsFile("rk160417_br"));
+        list.add(new ShortContemplationsFile("rk160424_br"));
+        list.add(new ShortContemplationsFile("rk160501_br")); // todo
 
         return list;
     }

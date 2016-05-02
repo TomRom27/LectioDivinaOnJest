@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import com.tr.onjestslowo.model.ShortContemplationsFile;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Objects;
 
 /**
@@ -51,18 +53,24 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
 
         // Set the Sender number and smsBody to respective TextViews
         titleView.setText(getStartEndDateString(fileObject));
-        subtitleView.setText(getStartEndDateString(fileObject));
+        subtitleView.setText(getStartDateString(fileObject));
 
 
         return view;
     }
 
     private String getStartEndDateString(ShortContemplationsFile fileObject) {
+        Calendar cal=Calendar.getInstance();
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        String month_name = month_date.format(fileObject.FirstDate);
+
         return fileObject.FileName; // todo
     }
 
     private String getStartDateString(ShortContemplationsFile fileObject) {
-        return fileObject.FileName; // todo
+        SimpleDateFormat month_date = new SimpleDateFormat("dddd, dd MMMM yyyy");
+
+        return month_date.format(fileObject.FirstDate);
     }
 
     public ShortContemplationsFile getItem(int position) {

@@ -40,7 +40,7 @@ public class ShortContemplationsFile {
             throw new IllegalArgumentException("Incorrect name, must be at like rk160526_br");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(fileNameDatePattern);
-        String datePart = fileName.substring(2, 6);
+        String datePart = fileName.substring(2, 8);
         return dateFormat.parse(datePart);
     }
 

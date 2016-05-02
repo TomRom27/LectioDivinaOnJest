@@ -68,10 +68,15 @@ public class ReadingService {
 
     public ArrayList<ShortContemplationsFile> getShortContemplationsList() {
         Logger.debug(LOG_TAG, "Getting a list of short contemplation files");
-        ArrayList<ShortContemplationsFile> list = mShortContemplationDS.getAll();
+        try {
+            ArrayList<ShortContemplationsFile> list = mShortContemplationDS.getAll();
 
-        Logger.debug(LOG_TAG, "Contemplation files found: "+ Integer.toString(list.size()));
-        return list;
+            Logger.debug(LOG_TAG, "Contemplation files found: " + Integer.toString(list.size()));
+            return list;
+        } catch (Exception ex) {
+            Logger.debug(LOG_TAG, "Failed to get contemplation files: " + ex.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public void clearReadings() {
@@ -102,8 +107,7 @@ public class ReadingService {
 
             if (ok) {
                 Logger.debug(LOG_TAG, "Short contemplation downloaded Ok");
-            }
-            else {
+            } else {
                 Logger.debug(LOG_TAG, "The previous try didn't work, trying previous month");
                 year = DateHelper.getYear(DateHelper.addDay(contemplationsDate, -15));
                 month = DateHelper.getMonth(DateHelper.addDay(contemplationsDate, -15));
@@ -117,7 +121,7 @@ public class ReadingService {
 
             return contemplationsFileName;
         } catch (Exception ex) {
-            Logger.error(LOG_TAG, "Error when trying to download: "+ex.getMessage());
+            Logger.error(LOG_TAG, "Error when trying to download: " + ex.getMessage());
             return "";
         }
     }
@@ -137,8 +141,7 @@ public class ReadingService {
                 Logger.debug(LOG_TAG, "Proxy used for connections");
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
                 connection = (HttpURLConnection) url.openConnection(proxy);
-            }
-            else
+            } else
                 connection = (HttpURLConnection) url.openConnection();
 
             connection.connect();
@@ -182,7 +185,7 @@ public class ReadingService {
         return closestSunday;
     }
 
-     //</editor-fold>
+    //</editor-fold>
 
     public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort) {
         Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));
@@ -218,7 +221,7 @@ public class ReadingService {
     //<editor-fold> refreshReadings private methods
     private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
         ArrayList<Reading> newReadings = new ArrayList<>();
-        HttpConnection httpConnection  = new HttpConnection(this.context);
+        HttpConnection httpConnection = new HttpConnection(this.context);
 
         prepareConnection(useProxy, proxyHost, proxyPort, httpConnection);
 

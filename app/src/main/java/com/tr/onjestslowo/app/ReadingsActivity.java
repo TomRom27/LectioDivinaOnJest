@@ -36,7 +36,7 @@ import com.tr.tools.Logger;
 
 
 public class ReadingsActivity extends AppCompatActivity
-        implements LectioDivinaFragment.OnLectioDivinaFragmentListener {
+        implements LectioDivinaFragment.OnLectioDivinaFragmentListener, ShortContemplationsFragment.OnShortContempationsListener {
 
     public static String LOG_TAG = "ReadingActivity";
     private static String ARG_ZOOM_VISIBLE = "ZoomVisible";

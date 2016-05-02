@@ -11,6 +11,7 @@ import com.tr.onjestslowo.model.JSONSerializer;
 import com.tr.onjestslowo.model.Post;
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.model.ReadingListResult;
+import com.tr.onjestslowo.model.ShortContemplationsFile;
 import com.tr.tools.DateHelper;
 import com.tr.tools.HttpConnection;
 import com.tr.tools.NetworkHelper;
@@ -65,6 +66,14 @@ public class ReadingService {
         return list;
     }
 
+    public ArrayList<ShortContemplationsFile> getShortContemplationsList() {
+        Logger.debug(LOG_TAG, "Getting a list of short contemplation files");
+        ArrayList<ShortContemplationsFile> list = mShortContemplationDS.getAll();
+
+        Logger.debug(LOG_TAG, "Contemplation files found: "+ Integer.toString(list.size()));
+        return list;
+    }
+
     public void clearReadings() {
         mReadingDS.open();
         try {
@@ -80,7 +89,7 @@ public class ReadingService {
         try {
             Date contemplationsDate = determineDateOfContemplations();
 
-            String contemplationsFileName = resolveShortContemplationsFileName(contemplationsDate);
+            String contemplationsFileName = ShortContemplationsFile.getFileNameFromDate(contemplationsDate);
             Logger.debug(LOG_TAG, String.format("Filename is : %s", contemplationsFileName));
 
             int year, month;
@@ -173,11 +182,7 @@ public class ReadingService {
         return closestSunday;
     }
 
-    private String resolveShortContemplationsFileName(Date sundayDate) {
-        return DateHelper.toString("'rk'yyMMdd'_br.pdf'", sundayDate);
-    }
-
-    //</editor-fold>
+     //</editor-fold>
 
     public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort) {
         Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));

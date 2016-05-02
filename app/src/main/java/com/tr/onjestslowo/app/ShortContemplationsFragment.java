@@ -1,42 +1,37 @@
 package com.tr.onjestslowo.app;
 
+import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
-import com.joanzapata.pdfview.PDFView;
+import com.tr.onjestslowo.model.ShortContemplationsFile;
+import com.tr.onjestslowo.service.PdfViewer;
+import com.tr.onjestslowo.service.ReadingService;
+import com.tr.tools.Logger;
+import com.tr.tools.UIHelper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ShortContemplationsFragment.OnFragmentInteractionListener} interface
+ * {@link ShortContemplationsFragment.OnShortContempationsListener} interface
  * to handle interaction events.
  * Use the {@link ShortContemplationsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShortContemplationsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class ShortContemplationsFragment extends Fragment
+        implements AdapterView.OnItemClickListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
+    private static String LOG_TAG = "ShortContemplationsFragment";
+    private OnShortContempationsListener mListener;
 
     public ShortContemplationsFragment() {
         // Required empty public constructor
@@ -54,8 +49,7 @@ public class ShortContemplationsFragment extends Fragment {
     public static ShortContemplationsFragment newInstance(String param1, String param2) {
         ShortContemplationsFragment fragment = new ShortContemplationsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,10 +57,10 @@ public class ShortContemplationsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+//        if (getArguments() != null) {
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
+//        }
     }
 
     @Override
@@ -75,44 +69,62 @@ public class ShortContemplationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_short_contemplations, container, false);
 
-        PDFView pdfView = (PDFView) rootView.findViewById(R.id.pdf_short_contemplations);
-
-        String pdfName;
-
-
-        String externalStP = android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-
-        File pdf = new File(externalStP + "/rk160403_br.pdf");
-
-//        pdfView.fromAsset(pdf.getAbsolutePath())
-//                .pages(0, 2, 1, 3, 3, 3)
-//                .defaultPage(1)
-//                .showMinimap(false)
-//                .enableSwipe(true)
-//                        //.onDraw(onDrawListener)
-//                        //.onLoad(onLoadCompleteListener)
-//                        //.onPageChange(onPageChangeListener)
-//                .load();
+        Activity activity = getActivity();
+        if (activity != null)
+            populateContent(rootView, activity);
 
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    private void populateContent(View rootView, Context context) {
+        View noPdf = rootView.findViewById(R.id.noPdfView);
+        ListView pdfList = (ListView) rootView.findViewById(R.id.shortContemplationsList);
+
+        if (PdfViewer.getInstance((Activity) context).canDisplayPdf()) {
+            noPdf.setVisibility(View.GONE);
+            pdfList.setVisibility(View.VISIBLE);
+            loadFilenamesAndShow(pdfList, (Activity) context);
+        } else {
+            noPdf.setVisibility(View.VISIBLE);
+            pdfList.setVisibility(View.GONE);
+        }
+    }
+
+    private void loadFilenamesAndShow(ListView pdfListView, Activity activity) {
+        ArrayList<ShortContemplationsFile> files = mListener.onGetReadingService().getShortContemplationsList();
+
+        ShortContemplationsAdapter adapter = new ShortContemplationsAdapter(activity, files);
+
+        pdfListView.setOnItemClickListener(this);
+
+        pdfListView.setAdapter(adapter);
+    }
+
+    public void onItemClick(AdapterView<?> listView, View v, int position, long arg3) {
+        ShortContemplationsFile fileObject = (ShortContemplationsFile) listView.getAdapter().getItem(position);
+        displayPdf(fileObject);
+    }
+
+    private void displayPdf(ShortContemplationsFile fileObject) {
+        try {
+
+            PdfViewer.getInstance(getActivity()).showFileIfExists(fileObject.FilePath);
+        }
+        catch (Exception ex) {
+            Logger.debug(LOG_TAG, "Failed to show PDS: "+ex.getMessage());
+            UIHelper.showToast(getActivity(), R.string.pdf_failed, Toast.LENGTH_SHORT);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof OnShortContempationsListener) {
+            mListener = (OnShortContempationsListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnShortContempationsListener");
+        }
     }
 
     @Override
@@ -121,26 +133,7 @@ public class ShortContemplationsFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public interface OnShortContempationsListener {
+        ReadingService onGetReadingService();
     }
 }
-
-/*
-https://github.com/JoanZapata/android-pdfview
-
-http://stackoverflow.com/questions/2456344/display-pdf-within-app-on-android
-(PdfRenderer class etc.)
-
- */

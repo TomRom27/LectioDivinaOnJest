@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/app_backgroundImg"
-    tools:context="com.tr.onjestslowo.app.ReadingsActivity.ReadingPlaceholderFragment">
+    tools:context="com.tr.onjestslowo.app.ReadingPlaceholderFragment">
 
     <LinearLayout
         android:layout_width="fill_parent"

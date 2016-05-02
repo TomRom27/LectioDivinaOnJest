@@ -1,18 +1,37 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/app_backgroundImg"
     tools:context=".ShortContemplationsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Short contemplations fragment" />
+    <LinearLayout
+        android:id="@+id/pdfParent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="?scrollView_marginBottom"
+        android:layout_marginLeft="?attr/scrollView_marginLeft"
+        android:layout_marginRight="?attr/scrollView_marginRight"
+        android:background="?attr/webViewHost_backgroundImg"
+        android:orientation="vertical">
 
-    <com.joanzapata.pdfview.PDFView
-        android:id="@+id/pdf_short_contemplations"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/noPdfView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/text_pdf_app_needed"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/reading_title_color_brownish"
+            android:textStyle="bold|italic" />
 
-</FrameLayout>
+        <!-- styling for items inside the list_app_color layout !!! -->
+        <ListView
+            android:id="@+id/shortContemplationsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

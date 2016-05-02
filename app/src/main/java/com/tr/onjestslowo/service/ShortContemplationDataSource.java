@@ -3,11 +3,14 @@ package com.tr.onjestslowo.service;
 import android.content.Context;
 import android.os.Environment;
 
+import com.tr.onjestslowo.model.ShortContemplationsFile;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 /**
  * Created by bpl2111 on 2016-04-19.
@@ -22,6 +25,23 @@ public class ShortContemplationDataSource {
     public String defaultDestinationFolder() {
         return android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
 
+    }
+
+    public ArrayList<ShortContemplationsFile> getAll() {
+        ArrayList<ShortContemplationsFile> list = new ArrayList<ShortContemplationsFile>();
+
+        // todo
+        try {
+            list.add(new ShortContemplationsFile("rk160410_br"));
+            list.add(new ShortContemplationsFile("rk160417_br"));
+            list.add(new ShortContemplationsFile("rk160424_br"));
+            list.add(new ShortContemplationsFile("rk160501_br"));
+        }
+        catch (Exception ex) {
+
+        }
+
+        return list;
     }
 
     public void saveFromStream(String fileName, InputStream input) throws IOException {

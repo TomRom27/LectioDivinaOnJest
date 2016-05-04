@@ -30,7 +30,9 @@
         <ListView
             android:id="@+id/shortContemplationsList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:divider="?attr/colorPrimary"
+            android:dividerHeight="1dp"/>
 
     </LinearLayout>
 

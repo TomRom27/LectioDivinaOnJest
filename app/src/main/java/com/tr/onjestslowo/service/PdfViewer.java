@@ -12,7 +12,7 @@ import java.io.File;
  * Created by bpl2111 on 2016-04-29.
  */
 public class PdfViewer {
-    private static final String MIME_TYPE_PDF = "application/pdf";
+    private static final String MIME_TYPE_PDF = "application/pdf_logo";
 
     Activity mActivity;
 

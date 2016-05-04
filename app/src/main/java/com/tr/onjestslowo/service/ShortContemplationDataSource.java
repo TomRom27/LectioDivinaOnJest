@@ -31,6 +31,8 @@ public class ShortContemplationDataSource {
             throws Exception {
         ArrayList<ShortContemplationsFile> list = new ArrayList<ShortContemplationsFile>();
 
+        list.add(new ShortContemplationsFile("rk151227_br"));
+        list.add(new ShortContemplationsFile("rk160228_br"));
         list.add(new ShortContemplationsFile("rk160410_br"));
         list.add(new ShortContemplationsFile("rk160417_br"));
         list.add(new ShortContemplationsFile("rk160424_br"));

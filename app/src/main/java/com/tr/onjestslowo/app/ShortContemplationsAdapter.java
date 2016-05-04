@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.tr.onjestslowo.model.ShortContemplationsFile;
+import com.tr.tools.DateHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,17 +61,15 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
     }
 
     private String getStartEndDateString(ShortContemplationsFile fileObject) {
-        Calendar cal=Calendar.getInstance();
-        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
-        String month_name = month_date.format(fileObject.FirstDate);
 
-        return fileObject.FileName; // todo
+        return "Rozważania "+DateHelper.periodToShortestString(fileObject.FirstDate, fileObject.LastDate);
     }
 
     private String getStartDateString(ShortContemplationsFile fileObject) {
-        SimpleDateFormat month_date = new SimpleDateFormat("dddd, dd MMMM yyyy");
+        // Sunday, 24 April 2016
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM yyyy");
 
-        return month_date.format(fileObject.FirstDate);
+        return dateFormat.format(fileObject.FirstDate);
     }
 
     public ShortContemplationsFile getItem(int position) {

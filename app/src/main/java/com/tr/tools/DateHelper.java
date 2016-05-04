@@ -34,6 +34,38 @@ public class DateHelper {
         return new SimpleDateFormat(formatString).format(date);
 
     }
+
+    public static String periodToShortestString(Date firstDate, Date lastDate) {
+        String fullDateFormat = "d.MM.yyyy";
+        String dayMonthFormat = "d.MM";
+        String dayOnlyFormt = "d";
+
+        SimpleDateFormat dateFirstFormat;
+        SimpleDateFormat dateLastFormat;
+
+        Calendar dateFirstCalendar = Calendar.getInstance();
+        dateFirstCalendar.setTime(firstDate);
+
+        Calendar dateLastCalendar = Calendar.getInstance();
+        dateLastCalendar.setTime(lastDate);
+
+        dateLastFormat = new SimpleDateFormat(fullDateFormat);
+        if (dateFirstCalendar.get(Calendar.YEAR)!=dateLastCalendar.get(Calendar.YEAR)) {
+            // different years - we show full date for each
+            dateFirstFormat = new SimpleDateFormat(fullDateFormat);
+        }
+        else {
+            if (dateFirstCalendar.get(Calendar.MONTH)!=dateLastCalendar.get(Calendar.MONTH)) {
+                // year the same, but different months
+                dateFirstFormat = new SimpleDateFormat(dayMonthFormat);
+            }
+            else
+            // year, month the same
+                dateFirstFormat = new SimpleDateFormat(dayOnlyFormt);
+        }
+
+        return dateFirstFormat.format(firstDate)+" - "+dateLastFormat.format(lastDate);
+    }
     /**
      * @return date with hour:min set to 00:00
      */

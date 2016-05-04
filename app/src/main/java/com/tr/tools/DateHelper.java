@@ -5,6 +5,7 @@ import android.text.format.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by bpl2111 on 2014-05-29.
@@ -33,6 +34,21 @@ public class DateHelper {
     public static String toString(String formatString,  Date date){
         return new SimpleDateFormat(formatString).format(date);
 
+    }
+
+    public static int compareDates(Date d1, Date d2) {
+        Calendar c1 = new GregorianCalendar();
+        c1.setTime(d1);
+        Calendar c2 = new GregorianCalendar();
+        c2.setTime(d2);
+
+        if (c1.before(c2))
+            return -1;
+        else
+            if (c1.after(c2))
+                    return 1;
+            else
+                return 0;
     }
 
     public static String periodToShortestString(Date firstDate, Date lastDate) {

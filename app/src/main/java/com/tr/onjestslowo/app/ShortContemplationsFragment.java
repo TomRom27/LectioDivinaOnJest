@@ -15,10 +15,13 @@ import com.tr.onjestslowo.model.OnJestPreferences;
 import com.tr.onjestslowo.model.ShortContemplationsFile;
 import com.tr.onjestslowo.service.PdfViewer;
 import com.tr.onjestslowo.service.ReadingService;
+import com.tr.tools.DateHelper;
 import com.tr.tools.Logger;
 import com.tr.tools.UIHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,6 +98,14 @@ public class ShortContemplationsFragment extends Fragment
         OnJestPreferences prefs = AppPreferences.getInstance(activity).get();
 
         ArrayList<ShortContemplationsFile> files = mListener.onGetReadingService().getShortContemplationsList(prefs.ShortContemplationDownloadPath);
+
+        // sort
+        Collections.sort(files, new Comparator<ShortContemplationsFile>() {
+            @Override
+            public int compare(ShortContemplationsFile o1, ShortContemplationsFile o2) {
+                return DateHelper.compareDates(o1.FirstDate,o2.FirstDate);
+            }
+        });
 
         ShortContemplationsAdapter adapter = new ShortContemplationsAdapter(activity, files);
 

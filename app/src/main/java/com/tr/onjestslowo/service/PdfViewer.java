@@ -12,7 +12,7 @@ import java.io.File;
  * Created by bpl2111 on 2016-04-29.
  */
 public class PdfViewer {
-    private static final String MIME_TYPE_PDF = "application/pdf_logo";
+    private static final String MIME_TYPE_PDF = "application/pdf";
 
     Activity mActivity;
 
@@ -41,16 +41,16 @@ public class PdfViewer {
     }
 
     public boolean canDisplayPdf() {
-        return true; // todo
+//        return true; // todo
 
-//        PackageManager packageManager = ((Context)mActivity).getPackageManager();
-//        Intent testIntent = new Intent(Intent.ACTION_VIEW);
-//        testIntent.setType(MIME_TYPE_PDF);
-//        if (packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
-//            return true;
-//        } else {
-//            return false;
-//        }
+        PackageManager packageManager = ((Context)mActivity).getPackageManager();
+        Intent testIntent = new Intent(Intent.ACTION_VIEW);
+        testIntent.setType(MIME_TYPE_PDF);
+        if (packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

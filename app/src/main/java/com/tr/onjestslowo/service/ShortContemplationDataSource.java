@@ -49,10 +49,8 @@ public class ShortContemplationDataSource {
                 }
             });
             for (File f : flists)
-                list.add(new ShortContemplationsFile(f.getName()));
+                list.add(new ShortContemplationsFile(f.getPath()));
         }
-        // todo sorting
-
         return list;
     }
 

@@ -6,11 +6,13 @@ import android.os.Environment;
 import com.tr.onjestslowo.model.ShortContemplationsFile;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * Created by bpl2111 on 2016-04-19.
@@ -27,18 +29,36 @@ public class ShortContemplationDataSource {
 
     }
 
-    public ArrayList<ShortContemplationsFile> getAll()
+    public ArrayList<ShortContemplationsFile> getAllFrom(String path)
             throws Exception {
+
+
         ArrayList<ShortContemplationsFile> list = new ArrayList<ShortContemplationsFile>();
 
-        list.add(new ShortContemplationsFile("rk151227_br"));
-        list.add(new ShortContemplationsFile("rk160228_br"));
-        list.add(new ShortContemplationsFile("rk160410_br"));
-        list.add(new ShortContemplationsFile("rk160417_br"));
-        list.add(new ShortContemplationsFile("rk160424_br"));
-        list.add(new ShortContemplationsFile("rk160501_br")); // todo
+        File directory = new File(path);
+        if (directory.exists() && directory.isDirectory()) {
+            final Pattern p = Pattern.compile(ShortContemplationsFile.FileNameRegEx);
+            File[] flists = directory.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    p.matcher(file.getName()).matches();
+
+
+                    return p.matcher(file.getName()).matches();
+
+                }
+            });
+            for (File f : flists)
+                list.add(new ShortContemplationsFile(f.getName()));
+        }
+        // todo sorting
 
         return list;
+    }
+
+    public ArrayList<ShortContemplationsFile> getAll()
+            throws Exception {
+        return getAllFrom(defaultDestinationFolder());
     }
 
     public void saveFromStream(String fileName, InputStream input) throws IOException {

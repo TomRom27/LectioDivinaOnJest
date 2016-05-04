@@ -12,6 +12,9 @@ import java.util.Date;
  */
 public class ShortContemplationsFile {
 
+    public static String FileNamePattern = "rk*_br.pdf";
+
+    public static String FileNameRegEx = "rk[0-9]{6}_br\\.pdf";
     public ShortContemplationsFile(String fullName)
             throws ParseException
     {
@@ -36,8 +39,8 @@ public class ShortContemplationsFile {
     // rk160526_br
     public static Date getDateFromName(String fileName)
     throws ParseException {
-        if (fileName.length()!=11)
-            throw new IllegalArgumentException("Incorrect name, must be at like rk160526_br");
+        if (fileName.length()!=15)
+            throw new IllegalArgumentException("Incorrect name, must be at like rk160526_br.pdf");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(fileNameDatePattern);
         String datePart = fileName.substring(2, 8);

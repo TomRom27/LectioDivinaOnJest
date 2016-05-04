@@ -66,10 +66,10 @@ public class ReadingService {
         return list;
     }
 
-    public ArrayList<ShortContemplationsFile> getShortContemplationsList() {
-        Logger.debug(LOG_TAG, "Getting a list of short contemplation files");
+    public ArrayList<ShortContemplationsFile> getShortContemplationsList(String path) {
+        Logger.debug(LOG_TAG, "Getting a list of short contemplation files from "+path);
         try {
-            ArrayList<ShortContemplationsFile> list = mShortContemplationDS.getAll();
+            ArrayList<ShortContemplationsFile> list = mShortContemplationDS.getAllFrom(path);
 
             Logger.debug(LOG_TAG, "Contemplation files found: " + Integer.toString(list.size()));
             return list;

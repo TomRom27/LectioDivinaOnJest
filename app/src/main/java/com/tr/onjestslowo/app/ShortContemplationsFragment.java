@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.tr.onjestslowo.model.OnJestPreferences;
 import com.tr.onjestslowo.model.ShortContemplationsFile;
 import com.tr.onjestslowo.service.PdfViewer;
 import com.tr.onjestslowo.service.ReadingService;
@@ -91,7 +92,9 @@ public class ShortContemplationsFragment extends Fragment
     }
 
     private void loadFilenamesAndShow(ListView pdfListView, Activity activity) {
-        ArrayList<ShortContemplationsFile> files = mListener.onGetReadingService().getShortContemplationsList();
+        OnJestPreferences prefs = AppPreferences.getInstance(activity).get();
+
+        ArrayList<ShortContemplationsFile> files = mListener.onGetReadingService().getShortContemplationsList(prefs.ShortContemplationDownloadPath);
 
         ShortContemplationsAdapter adapter = new ShortContemplationsAdapter(activity, files);
 

@@ -163,7 +163,7 @@ public class LectioDivinaFragment extends Fragment {
     }
 
     private int getInitialZoom() {
-        return 100; // todo??? to get from Preferences
+        return 100; // to do??? to get from Preferences
     }
 
     private void increaseWebViewZoom(View rootView, int percentIncrease) {
@@ -250,7 +250,6 @@ public class LectioDivinaFragment extends Fragment {
     }
 
     private void setZoomForChildren() {
-        // todo
         for (Fragment f : getChildFragmentManager().getFragments()) {
             ReadingPlaceholderFragment readingPlaceholderFragment = (ReadingPlaceholderFragment) f;
             if (readingPlaceholderFragment != null)

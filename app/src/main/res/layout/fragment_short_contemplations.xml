@@ -5,7 +5,6 @@
     android:background="?attr/app_backgroundImg"
     tools:context=".ShortContemplationsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:id="@+id/pdfParent"
         android:layout_width="fill_parent"

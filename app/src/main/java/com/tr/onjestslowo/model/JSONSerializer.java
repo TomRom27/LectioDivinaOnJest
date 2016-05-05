@@ -53,7 +53,7 @@ public class JSONSerializer {
 
         try {
             post.content = jsonPost.getString("content");
-            post.date = jsonPost.getString("date"); //todo
+            post.date = jsonPost.getString("date");
             post.title = jsonPost.getString("title");
 
         /  *

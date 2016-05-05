@@ -318,11 +318,6 @@ public class ReadingService {
         return sdf.format(d);
     }
 
-    private int getKeepLastReadingsNumber() {
-
-        return 10; // todo
-    }
-
     private String getOnJestForOneDayUrl() {
         // http://www.onjest.pl/slowo/?json=get_date_posts&date=201406&count=30&include=date,title,content
         // http://www.onjest.pl/slowo/api/core/get_posts/?count=7&page=1&include=date,title,content

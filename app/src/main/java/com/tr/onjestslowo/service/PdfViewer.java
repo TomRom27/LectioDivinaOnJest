@@ -41,16 +41,11 @@ public class PdfViewer {
     }
 
     public boolean canDisplayPdf() {
-//        return true; // todo
 
-        PackageManager packageManager = ((Context)mActivity).getPackageManager();
+        PackageManager packageManager = mActivity.getPackageManager();
         Intent testIntent = new Intent(Intent.ACTION_VIEW);
         testIntent.setType(MIME_TYPE_PDF);
-        if (packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
 
 }

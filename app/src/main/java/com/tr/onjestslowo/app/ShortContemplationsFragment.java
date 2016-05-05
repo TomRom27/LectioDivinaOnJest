@@ -49,7 +49,7 @@ public class ShortContemplationsFragment extends Fragment
      * @param param2 Parameter 2.
      * @return A new instance of fragment ShortContemplationsFragment.
      */
-    // TODO: Rename and change types and number of parameters
+    // TO DO: Rename and change types and number of parameters
     public static ShortContemplationsFragment newInstance(String param1, String param2) {
         ShortContemplationsFragment fragment = new ShortContemplationsFragment();
         Bundle args = new Bundle();

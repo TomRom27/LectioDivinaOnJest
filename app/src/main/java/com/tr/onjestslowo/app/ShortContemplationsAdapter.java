@@ -80,7 +80,7 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
     }
 
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         return position;
     }
 }

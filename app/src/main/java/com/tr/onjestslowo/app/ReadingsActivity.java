@@ -299,6 +299,14 @@ public class ReadingsActivity extends AppCompatActivity
         this.setTheme(themeId);
     }
 
+    private ShortContemplationsFragment findShortContemplationsFragment() {
+        for (Fragment f : getSupportFragmentManager().getFragments())
+            if (f instanceof ShortContemplationsFragment)
+                return (ShortContemplationsFragment) f;
+
+        return null;
+    }
+
     private LectioDivinaFragment findLectioDivinaFragment() {
         for (Fragment f : getSupportFragmentManager().getFragments())
             if (f instanceof LectioDivinaFragment)
@@ -308,17 +316,19 @@ public class ReadingsActivity extends AppCompatActivity
     }
 
     private void displayReadings(List<Reading> loadedReadings) {
-        // todo use Lectio Fragment
+
         LectioDivinaFragment lectioFragment = findLectioDivinaFragment();
-        if ((lectioFragment != null) &&
-                (lectioFragment.isVisible()))
+        if ((lectioFragment != null))
+            //&& (lectioFragment.isVisible()))
             lectioFragment.displayReadings((ArrayList<Reading>) loadedReadings);
     }
 
-    private void displayShortContemplations(String fileName)
-    {
-        // todo
+    private void refreshShortContemplations() {
+        ShortContemplationsFragment contemplationsFragment = findShortContemplationsFragment();
+        if (contemplationsFragment != null)
+            contemplationsFragment.refresh();
     }
+
     private void disableAppMenu() {
         mMenuEnabled = false;
     }
@@ -332,9 +342,8 @@ public class ReadingsActivity extends AppCompatActivity
 
     //<editor-fold desc="refresh progress bar">
 
-    public void showHideProgress(boolean show)
-    {
-        ProgressBar progressBar =  (ProgressBar) findViewById(R.id.progressBar);
+    public void showHideProgress(boolean show) {
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (progressBar != null)
             if (show)
                 progressBar.setVisibility(View.VISIBLE);
@@ -436,8 +445,7 @@ public class ReadingsActivity extends AppCompatActivity
                     Logger.debug(LOG_TAG, "Downloading current short contemplations");
                     refreshResult.ShortContemplationsFilename = mActivity.get().
                             mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
-                }
-                else
+                } else
                     Logger.debug(LOG_TAG, "Skipped to download short contemplations");
 
                 Logger.debug(LOG_TAG, String.format("Data refreshing ended (%d readings, %b new short contemplations)",
@@ -470,9 +478,8 @@ public class ReadingsActivity extends AppCompatActivity
 
                 if (refreshResult.ShortContemplationsFilename != "") {
                     Logger.debug(LOG_TAG, "Showing short contemplations file");
-                    mActivity.get().displayShortContemplations(refreshResult.ShortContemplationsFilename);
-                }
-                else
+                    mActivity.get().refreshShortContemplations();
+                } else
                     Logger.debug(LOG_TAG, "Short contemplations filename is empty");
 
                 mActivity.get().enableAppMenu();
@@ -486,11 +493,11 @@ public class ReadingsActivity extends AppCompatActivity
 
     private static class RefreshResult {
 
-        public RefreshResult()
-        {
+        public RefreshResult() {
             Readings = new ArrayList<>();
             ShortContemplationsFilename = "";
         }
+
         public List<Reading> Readings;
         public String ShortContemplationsFilename;
     }

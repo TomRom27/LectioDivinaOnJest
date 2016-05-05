@@ -88,6 +88,8 @@ public class AppPreferences {
         key = mContext.getResources().getString(R.string.pref_download_short_contemplation);
         mPreferences.DownloadShortContemplation = prefStore.getBoolean(key, true);
 
+        key = mContext.getResources().getString(R.string.pref_short_contemplation_list_always);
+        mPreferences.ShortContemplationsFileListAlways = prefStore.getBoolean(key, false);
 
         key = mContext.getResources().getString(R.string.pref_short_contemplation_download_path);
         mPreferences.ShortContemplationDownloadPath = prefStore.getString(key, "/storage/sdcard/Download");

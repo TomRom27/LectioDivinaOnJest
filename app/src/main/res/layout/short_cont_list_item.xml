@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+
+    >
     <!-- this XML structure affects version of ArrayAdapter constructor used !!! -->
     <ImageView
         android:id="@+id/pdfImageView"
@@ -27,9 +29,20 @@
         android:id="@+id/list_item_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Subtitle here "
+        android:text="Subtitle here"
         android:layout_alignLeft="@id/list_item_title"
         android:layout_below="@id/list_item_title"
         android:textColor="?attr/colorPrimaryDark"
         android:textSize="12sp" />
+    <!-- the below is hidden and should be made visible programmatically -->
+    <TextView
+        android:id="@+id/list_item_is_current"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current"
+        android:layout_below="@id/list_item_title"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="visible"/>
 </RelativeLayout>

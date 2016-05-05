@@ -47,7 +47,7 @@ public class ShortContemplationsFile {
         return dateFormat.parse(datePart);
     }
 
-    static String fileNamePattern = "'rk'yyMMdd'_br.pdf_logo'";
+    static String fileNamePattern = "'rk'yyMMdd'_br.pdf'";
 
     public static String getFileNameFromDate(Date sundayDate) {
         return DateHelper.toString(fileNamePattern, sundayDate);

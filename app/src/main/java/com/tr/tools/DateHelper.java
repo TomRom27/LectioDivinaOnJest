@@ -31,7 +31,7 @@ public class DateHelper {
         }
     }
 
-    public static String toString(String formatString,  Date date){
+    public static String toString(String formatString, Date date) {
         return new SimpleDateFormat(formatString).format(date);
 
     }
@@ -44,11 +44,17 @@ public class DateHelper {
 
         if (c1.before(c2))
             return -1;
+        else if (c1.after(c2))
+            return 1;
         else
-            if (c1.after(c2))
-                    return 1;
-            else
-                return 0;
+            return 0;
+    }
+
+    public static boolean isInRange(Date d, Date d1, Date d2) {
+        if (compareDates(d1, d) <= 0 && compareDates(d, d2) <= 0)
+            return true;
+        else
+            return false;
     }
 
     public static String periodToShortestString(Date firstDate, Date lastDate) {
@@ -66,22 +72,21 @@ public class DateHelper {
         dateLastCalendar.setTime(lastDate);
 
         dateLastFormat = new SimpleDateFormat(fullDateFormat);
-        if (dateFirstCalendar.get(Calendar.YEAR)!=dateLastCalendar.get(Calendar.YEAR)) {
+        if (dateFirstCalendar.get(Calendar.YEAR) != dateLastCalendar.get(Calendar.YEAR)) {
             // different years - we show full date for each
             dateFirstFormat = new SimpleDateFormat(fullDateFormat);
-        }
-        else {
-            if (dateFirstCalendar.get(Calendar.MONTH)!=dateLastCalendar.get(Calendar.MONTH)) {
+        } else {
+            if (dateFirstCalendar.get(Calendar.MONTH) != dateLastCalendar.get(Calendar.MONTH)) {
                 // year the same, but different months
                 dateFirstFormat = new SimpleDateFormat(dayMonthFormat);
-            }
-            else
-            // year, month the same
+            } else
+                // year, month the same
                 dateFirstFormat = new SimpleDateFormat(dayOnlyFormt);
         }
 
-        return dateFirstFormat.format(firstDate)+" - "+dateLastFormat.format(lastDate);
+        return dateFirstFormat.format(firstDate) + " - " + dateLastFormat.format(lastDate);
     }
+
     /**
      * @return date with hour:min set to 00:00
      */
@@ -104,7 +109,7 @@ public class DateHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        return calendar.get(Calendar.MONTH)+1;// calendar's set uses 0-based month value !!!
+        return calendar.get(Calendar.MONTH) + 1;// calendar's set uses 0-based month value !!!
     }
 
     /**
@@ -157,25 +162,25 @@ public class DateHelper {
         return c.getTime();
     }
 
-    public static  Date getNextSaturday(Date date) {
+    public static Date getNextSaturday(Date date) {
         Calendar c = Calendar.getInstance();
 
         c.setTime(date);
 
         int moreDays = Calendar.SATURDAY - c.get(Calendar.DAY_OF_WEEK);
-        if (moreDays <=0)
+        if (moreDays <= 0)
             moreDays = 7;
 
         return addDay(date, moreDays);
     }
 
-    public static  Date getPreviousSunday(Date date) {
+    public static Date getPreviousSunday(Date date) {
         Calendar c = Calendar.getInstance();
 
         c.setTime(date);
 
         int lessDays = Calendar.SUNDAY - c.get(Calendar.DAY_OF_WEEK);
-        if (lessDays >=0)
+        if (lessDays >= 0)
             lessDays = -7;
 
         return addDay(date, lessDays);

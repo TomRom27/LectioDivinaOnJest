@@ -9,7 +9,8 @@ public class OnJestPreferences {
     public String ProxyHost;
     public int ProxyPort;
     public boolean ShowZoomOnStart;
-    public boolean DownloadShortContemplation;
     public boolean KeepScreenOn;
+    public boolean DownloadShortContemplation;
     public String ShortContemplationDownloadPath;
+    public boolean ShortContemplationsFileListAlways;
 }

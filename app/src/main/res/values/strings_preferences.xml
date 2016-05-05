@@ -27,5 +27,6 @@
     <string name="pref_keep_screen_on_summary">Zablokuj przyciemnianie i wygaszanie ekranu w trakcie działania aplikacji</string>
     <string name="pref_download_short_contemplation">Pobieranie rozważań krótkich</string>
     <string name="pref_download_short_contemplation_summary">Pobierać PDF z rozważaniami krótkimi (do czytania wymagana dodatkowa aplikacja)</string>
-
+    <string name="pref_short_contemplation_list_always">Zawsze pokazywać listę rozważań krótkich</string>
+    <string name="pref_short_contemplation_list_always_summary">Pokazuj listę rozważań krótkich nawet, gdy brak aplikacji do PDF</string>
 </resources>

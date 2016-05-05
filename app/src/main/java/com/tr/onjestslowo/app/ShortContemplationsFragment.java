@@ -80,11 +80,20 @@ public class ShortContemplationsFragment extends Fragment
         return rootView;
     }
 
+    public void refresh() {
+        Activity activity = getActivity();
+        View rootView = this.getView();
+        if (activity != null)
+            populateContent(rootView, activity);
+    }
+
     private void populateContent(View rootView, Context context) {
+        OnJestPreferences prefs = AppPreferences.getInstance((Activity)context).get();
+
         View noPdf = rootView.findViewById(R.id.noPdfView);
         ListView pdfList = (ListView) rootView.findViewById(R.id.shortContemplationsList);
 
-        if (PdfViewer.getInstance((Activity) context).canDisplayPdf()) {
+        if (PdfViewer.getInstance((Activity) context).canDisplayPdf()|| prefs.ShortContemplationsFileListAlways) {
             noPdf.setVisibility(View.GONE);
             pdfList.setVisibility(View.VISIBLE);
             loadFilenamesAndShow(pdfList, (Activity) context);

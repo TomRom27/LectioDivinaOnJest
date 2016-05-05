@@ -12,8 +12,6 @@ import com.tr.tools.DateHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Objects;
 
 /**
  * Created by bpl2111 on 2016-05-02.
@@ -43,7 +41,7 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
     {
         // inflate the layout for each item of listView
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = inflater.inflate(R.layout.list_app_color, null);
+        view = inflater.inflate(R.layout.short_cont_list_item, null);
 
         // move the cursor to required position
         ShortContemplationsFile fileObject = mObjectList.get(position);
@@ -51,11 +49,15 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
         // get the reference of textViews
         TextView titleView=(TextView)view.findViewById(R.id.list_item_title);
         TextView subtitleView=(TextView)view.findViewById(R.id.list_item_subtitle);
+        TextView isCurrentView=(TextView)view.findViewById(R.id.list_item_is_current);
 
         // Set the Sender number and smsBody to respective TextViews
         titleView.setText(getStartEndDateString(fileObject));
         subtitleView.setText(getStartDateString(fileObject));
-
+        if (DateHelper.isInRange(DateHelper.getToday(), fileObject.FirstDate, fileObject.LastDate))
+            isCurrentView.setVisibility(View.VISIBLE);
+        else
+            isCurrentView.setVisibility(View.GONE);
 
         return view;
     }

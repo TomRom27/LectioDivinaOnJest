@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.support.v4.app.Fragment;
 
 import com.tr.tools.DateHelper;
+import com.tr.tools.UIHelper;
 
 import java.util.Date;
 
@@ -85,23 +86,24 @@ public class ReadingPlaceholderFragment extends Fragment {
         setWebViewZoom(rootView, zoom);
 
         // we must use some trick in order to display content in wanted (not black" color
-        String color = "white";
-        if (rootView.getContext() != null) {
-            // here we retrieve a color, defined in the app them by custom attr. webView_textColor
-            Context context = rootView.getContext();
-            TypedValue typedValue = new TypedValue();
+//        String color = "white";
+//        if (rootView.getContext() != null) {
+//            // here we retrieve a color, defined in the app them by custom attr. webView_textColor
+//            Context context = rootView.getContext();
+//            TypedValue typedValue = new TypedValue();
+//
+//            Resources.Theme theme = context.getTheme();
+//            theme.resolveAttribute(R.attr.webView_textColor, typedValue, true);
+//            int webviewTextColor = typedValue.data;
+//
+//            //now convert the int color to hex string
+//            color = String.format("#%06X", (0xFFFFFF & webviewTextColor));
+//        }
+//        String coloredContent = "<font color=\"" +
+//                color +
+//                "\">" + content + "</font>";
 
-            Resources.Theme theme = context.getTheme();
-            theme.resolveAttribute(R.attr.webView_textColor, typedValue, true);
-            int webviewTextColor = typedValue.data;
-
-            //now convert the int color to hex string
-            color = String.format("#%06X", (0xFFFFFF & webviewTextColor));
-        }
-        String coloredContent = "<font color=\"" +
-                color +
-                "\">" + content + "</font>";
-
+        String coloredContent = UIHelper.setThemeColorForHtml(rootView, R.attr.webView_textColor, content);
         // we use loadDataWithBaseURL rather then loadData as the latter doesn't display
         // national characters correctly
         contentView.loadDataWithBaseURL(null, coloredContent, "text/html", "UTF-8", null);

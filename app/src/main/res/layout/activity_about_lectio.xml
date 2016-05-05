@@ -5,19 +5,23 @@
     android:background="?attr/app_backgroundImg"
     tools:context="com.tr.onjestslowo.app.AboutLectioActivity">
 
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimaryDark"/>
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/aboutLectioToolBar"
+            style="?attr/actionBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+    </android.support.design.widget.AppBarLayout>
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_marginBottom="?attr/scrollView_marginBottom"
-        android:layout_marginLeft  ="?attr/scrollView_marginLeft"
-        android:layout_marginRight ="?attr/scrollView_marginRight">
+        android:layout_marginLeft="?attr/scrollView_marginLeft"
+        android:layout_marginRight="?attr/scrollView_marginRight">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -36,7 +40,7 @@
                 android:id="@+id/buttonClose"
                 style="@style/closeButton_style"
                 android:onClick="onCloseClick"
-                android:visibility="?attr/closeButton_visibility"/>
+                android:visibility="?attr/closeButton_visibility" />
 
         </LinearLayout>
     </ScrollView>

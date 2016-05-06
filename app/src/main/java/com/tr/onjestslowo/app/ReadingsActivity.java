@@ -222,12 +222,22 @@ public class ReadingsActivity extends AppCompatActivity
 
     private void showAboutLectio() {
         Intent intent = new Intent(this, AboutLectioActivity.class);
+
+        Bundle params = new Bundle();
+        params.putBoolean(ARG_IS_THEME_NIGHT, mIsThemeNight);
+        intent.putExtra("params", params);
+
         startActivity(intent);
     }
 
 
     private void showAboutUs() {
         Intent intent = new Intent(this, AboutUsActivity.class);
+
+        Bundle params = new Bundle();
+        params.putBoolean(ARG_IS_THEME_NIGHT, mIsThemeNight);
+        intent.putExtra("params", params);
+
         startActivity(intent);
     }
 

@@ -14,27 +14,29 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ReadingsActivity"
-            android:label="@string/title_activity_readings">
+            android:label="@string/title_activity_readings"
+            android:launchMode="singleTop">
+            <!-- the above sets "supremacy" of the Reading (main) activity, sot that
+                it is not destroyed when launching child activities -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/menu_activity_settings"
-            android:parentActivityName=".ReadingsActivity"/>
+            android:parentActivityName=".ReadingsActivity" />
         <activity
             android:name=".AboutLectioActivity"
             android:label="@string/title_activity_about_lectio"
-            android:theme="@style/AppTheme"
-            android:parentActivityName=".ReadingsActivity"/>
+            android:parentActivityName=".ReadingsActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".AboutUsActivity"
             android:label="@string/title_activity_about_us"
-            android:theme="@style/AppTheme"
-            android:parentActivityName=".ReadingsActivity"/>
+            android:parentActivityName=".ReadingsActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

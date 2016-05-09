@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.tr.onjestslowo.model.OnJestPreferences;
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.service.ReadingService;
+import com.tr.onjestslowo.service.ShortContemplationDataSource;
 import com.tr.tools.UIHelper;
 import com.tr.tools.Logger;
 
@@ -220,8 +221,19 @@ public class ReadingsActivity extends AppCompatActivity
     }
 
     private void initiateApp() {
+        AppPreferences appPreferences = AppPreferences.getInstance(this);
+
+        // set and save default download path
+        OnJestPreferences prefs = appPreferences.get();
+        ShortContemplationDataSource ds = new ShortContemplationDataSource(this);
+        prefs.ShortContemplationDownloadPath = ds.defaultDestinationFolder();
+
+        Logger.debug(LOG_TAG, "Saving path for short contemplations as: "+prefs.ShortContemplationDownloadPath);
+        appPreferences.setShortContemplationDownloadPath(prefs.ShortContemplationDownloadPath);
+
+        // show info
         showAboutLectio();
-        AppPreferences.getInstance(this).setAppFirstLaunch(false);
+        appPreferences.setAppFirstLaunch(false);
     }
 
     private void showAboutLectio() {
@@ -458,7 +470,7 @@ public class ReadingsActivity extends AppCompatActivity
                 if (prefs.DownloadShortContemplation) {
                     Logger.debug(LOG_TAG, "Downloading current short contemplations");
                     refreshResult.ShortContemplationsFilename = mActivity.get().
-                            mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
+                            mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.ShortContemplationDownloadPath);
                 } else
                     Logger.debug(LOG_TAG, "Skipped to download short contemplations");
 

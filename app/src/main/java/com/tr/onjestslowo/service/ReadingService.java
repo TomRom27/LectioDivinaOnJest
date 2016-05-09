@@ -17,6 +17,7 @@ import com.tr.tools.HttpConnection;
 import com.tr.tools.NetworkHelper;
 import com.tr.tools.Logger;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -67,7 +68,7 @@ public class ReadingService {
     }
 
     public ArrayList<ShortContemplationsFile> getShortContemplationsList(String path) {
-        Logger.debug(LOG_TAG, "Getting a list of short contemplation files from "+path);
+        Logger.debug(LOG_TAG, "Getting a list of short contemplation files from " + path);
         try {
             ArrayList<ShortContemplationsFile> list = mShortContemplationDS.getAllFrom(path);
 
@@ -88,7 +89,7 @@ public class ReadingService {
         }
     }
 
-    public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort) {
+    public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort, String destination) {
         Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", Boolean.toString(useProxy)));
 
         try {
@@ -102,7 +103,7 @@ public class ReadingService {
             month = DateHelper.getMonth(contemplationsDate);
 
             // complete logging inside the mothod, no need to do it here
-            Boolean ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
+            Boolean ok = downloadShortContemplations(year, month, contemplationsFileName, destination, useProxy, proxyHost, proxyPort);
 
 
             if (ok) {
@@ -112,7 +113,7 @@ public class ReadingService {
                 year = DateHelper.getYear(DateHelper.addDay(contemplationsDate, -15));
                 month = DateHelper.getMonth(DateHelper.addDay(contemplationsDate, -15));
 
-                ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
+                ok = downloadShortContemplations(year, month, contemplationsFileName, destination, useProxy, proxyHost, proxyPort);
                 if (!ok) {
                     Logger.debug(LOG_TAG, "Failed for previous month");
                     contemplationsFileName = ""; // empty filename means file not downloaded
@@ -126,7 +127,7 @@ public class ReadingService {
         }
     }
 
-    private Boolean downloadShortContemplations(int year, int month, String fileName,
+    private Boolean downloadShortContemplations(int year, int month, String fileName, String destination,
                                                 boolean useProxy, String proxyHost, int proxyPort) {
         Boolean isOk = false;
         String fileUrlString = String.format("http://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s", year, month, fileName);
@@ -158,7 +159,8 @@ public class ReadingService {
             // start to download the file
             input = connection.getInputStream();
             // ... and save it
-            mShortContemplationDS.saveFromStream(fileName, input);
+            ensureFolder(destination);
+            mShortContemplationDS.saveFromStream(fileName, destination, input);
             isOk = true;
 
         } catch (Exception ex) {
@@ -185,6 +187,15 @@ public class ReadingService {
         return closestSunday;
     }
 
+    private void ensureFolder(String path) {
+        File file = new File(path);
+
+        if (!file.exists()) {
+            Logger.debug(LOG_TAG, "Folder " + path + " not exists, will be created");
+            file.mkdirs();
+        } else
+            Logger.debug(LOG_TAG, "Folder " + path + " exists already");
+    }
     //</editor-fold>
 
     public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort) {

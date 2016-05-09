@@ -46,6 +46,17 @@ public class AppPreferences {
         editor.putBoolean(PREF_IS_APP_FIRST, isFirst);
         editor.apply(); // persist changes
     }
+
+
+    public void setShortContemplationDownloadPath(String path) {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        SharedPreferences.Editor editor = prefStore.edit();
+        String key = mContext.getResources().getString(R.string.pref_short_contemplation_download_path);
+        editor.putString(key, path);
+        editor.apply(); // persist changes
+    }
+
     //</editor-fold>
 
     public OnJestPreferences get() {

@@ -387,7 +387,7 @@ public class ReadingsActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return LectioDivinaFragment.newInstance();
+                    return LectioDivinaFragment.newInstance(mZoomVisible);
                 case 1:
                     return new ShortContemplationsFragment();
                 default:

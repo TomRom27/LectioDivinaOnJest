@@ -55,10 +55,13 @@ public class LectioDivinaFragment extends Fragment {
     /**
      * @return A new instance of fragment LectioDivinaFragment.
      */
-    public static LectioDivinaFragment newInstance() {
+    public static LectioDivinaFragment newInstance(boolean isZoomVivisble) {
         LectioDivinaFragment fragment = new LectioDivinaFragment();
 
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_ZOOM_VISIBLE, isZoomVivisble);
 
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -73,8 +76,11 @@ public class LectioDivinaFragment extends Fragment {
         } else {
             mSelectedDate = DateHelper.getToday();
             mZoom = getInitialZoom();
-            mZoomVisible = true;
             mLoadedReadings = null;
+            if (getArguments() != null)
+                mZoomVisible = getArguments().getBoolean(ARG_ZOOM_VISIBLE);
+            else
+                mZoomVisible = true;
         }
 
     }
@@ -145,7 +151,7 @@ public class LectioDivinaFragment extends Fragment {
         showZoomForView(getView());
     }
 
-    private void showZoomForView(View rootView ) {
+    private void showZoomForView(View rootView) {
         View zoomView = rootView.findViewById(R.id.zoom_buttons);
         if (zoomView != null) {
             if (mZoomVisible)
@@ -154,6 +160,7 @@ public class LectioDivinaFragment extends Fragment {
                 zoomView.setVisibility(View.GONE);
         }
     }
+
     @Override
     public void onSaveInstanceState(Bundle args) {
         args.putParcelableArrayList(ARG_READINGS, mLoadedReadings);
@@ -172,7 +179,7 @@ public class LectioDivinaFragment extends Fragment {
             mZoom = 1;
         setZoomForChildren();
         Bundle args = getArguments();
-        if (args !=null)
+        if (args != null)
             args.putInt(ARG_ZOOM, mZoom);
     }
 

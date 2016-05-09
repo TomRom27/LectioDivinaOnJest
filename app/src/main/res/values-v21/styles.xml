@@ -3,7 +3,7 @@
     <!-- Base application theme.
     actual is decided in the code, see AppThemeHelper
     -->
-    <style name="AppTheme" parent="AppThemeDark"/>
+    <style name="AppTheme" parent="AppThemeLight"/>
 
     <style name="AppThemeLight" parent="Theme.AppCompat">
         <item name="app_backgroundImg">@color/lectioCream</item>

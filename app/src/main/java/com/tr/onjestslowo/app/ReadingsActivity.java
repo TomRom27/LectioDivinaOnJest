@@ -118,8 +118,7 @@ public class ReadingsActivity extends AppCompatActivity
         // AboutLectio activity
         if (AppPreferences.getInstance(this).isAppFirstLaunch()) {
             Logger.debug(LOG_TAG, "Launched first time, show AboutLectio");
-            showAboutLectio();
-            AppPreferences.getInstance(this).setAppFirstLaunch(false);
+            initiateApp();
         } else
             Logger.debug(LOG_TAG, "Another launch, no need to show AboutLectio");
     }
@@ -218,6 +217,11 @@ public class ReadingsActivity extends AppCompatActivity
     //<editor-fold desc="menu handling methods and reading display">
     private void exitApp() {
         finish();
+    }
+
+    private void initiateApp() {
+        showAboutLectio();
+        AppPreferences.getInstance(this).setAppFirstLaunch(false);
     }
 
     private void showAboutLectio() {

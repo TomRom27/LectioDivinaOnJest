@@ -24,5 +24,7 @@
     <color name="lectioDarkBrown">#5F2D17</color>
     <color name="lectioCream">#F7E8CB</color>
 
-    <color name="lectioDirtyCream">#d9d1c1</color>
+    <color name="lectioNightBrown">#876356</color>
+    <color name="lectioNightDarkBrown">#61493d</color>
+    <color name="lectioDirtyCream">#c6baa1</color>
 </resources>

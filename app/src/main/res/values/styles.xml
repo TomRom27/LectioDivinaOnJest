@@ -45,8 +45,8 @@
 
         <item name="webViewHost_backgroundImg">@color/lectioDirtyCream</item>
 
-        <item name="colorPrimary">@color/lectioBrown</item>
-        <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
+        <item name="colorPrimary">@color/lectioNightBrown</item>
+        <item name="colorPrimaryDark">@color/lectioNightDarkBrown</item>
         <item name="colorAccent">@color/lectioDirtyCream</item>
 
 

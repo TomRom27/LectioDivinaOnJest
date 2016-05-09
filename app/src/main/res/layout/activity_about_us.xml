@@ -20,6 +20,7 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:fillViewport="true"
         android:layout_marginBottom="@dimen/reading_inner_margin"
         android:layout_marginLeft="@dimen/reading_inner_margin"
         android:layout_marginRight="@dimen/reading_inner_margin">
@@ -34,14 +35,14 @@
             <WebView
                 android:id="@+id/aboutUsWebView"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:fontFamily="sans-serif-condensed" />
 
             <TextView
                 android:id="@+id/versionView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
                 android:text="@string/versionTextFormat"
                 android:textColor="?attr/colorPrimaryDark" />
 

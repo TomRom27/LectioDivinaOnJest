@@ -108,11 +108,11 @@ public class ShortContemplationsFragment extends Fragment
 
         ArrayList<ShortContemplationsFile> files = mListener.onGetReadingService().getShortContemplationsList(prefs.ShortContemplationDownloadPath);
 
-        // sort
+        // sort - in descending order (we want the newest one at the top
         Collections.sort(files, new Comparator<ShortContemplationsFile>() {
             @Override
             public int compare(ShortContemplationsFile o1, ShortContemplationsFile o2) {
-                return DateHelper.compareDates(o1.FirstDate,o2.FirstDate);
+                return -1*DateHelper.compareDates(o1.FirstDate,o2.FirstDate);
             }
         });
 

@@ -1,13 +1,8 @@
 package com.tr.onjestslowo.service;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 
 import com.tr.onjestslowo.app.R;
 import com.tr.onjestslowo.model.Converter;
@@ -18,6 +13,7 @@ import com.tr.onjestslowo.model.ReadingListResult;
 import com.tr.onjestslowo.model.ShortContemplationsFile;
 import com.tr.tools.DateHelper;
 import com.tr.tools.HttpConnection;
+import com.tr.tools.IOHelper;
 import com.tr.tools.NetworkHelper;
 import com.tr.tools.Logger;
 
@@ -31,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Exchanger;
 
 /**
  * Created by bpl2111 on 2014-05-29.
@@ -44,13 +39,13 @@ public class ReadingService {
 
     private ReadingDataSource mReadingDS;
     private ShortContemplationDataSource mShortContemplationDS;
-    private Activity activity;
+    private Activity mActivity;
 
     public ReadingService(Activity activity) {
 
         mReadingDS = new ReadingDataSource(activity);
         mShortContemplationDS = new ShortContemplationDataSource(activity);
-        this.activity = activity;
+        mActivity = activity;
     }
 
     public ArrayList<Reading> loadReadings() {
@@ -162,7 +157,7 @@ public class ReadingService {
             }
 
             // ensure app can save the file, is fo
-            verifyStoragePermissions(activity);
+            IOHelper.verifyStoragePermissions(mActivity);
             // start to download the file
             input = connection.getInputStream();
             // ... and save it
@@ -187,29 +182,7 @@ public class ReadingService {
         return isOk;
     }
 
-    // Storage Permissions
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-    /**
-     * Checks if the app has permission to write to device storage
-     * If the app does not has permission then the user will be prompted to grant permissions
-     */
-    private static void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-        }
-    }
     //<editor-fold> downloadCurrentShortContemplations private methods>
     private Date determineDateOfContemplations() {
         Date closestSunday = DateHelper.getPreviousSunday(DateHelper.getToday());
@@ -262,7 +235,7 @@ public class ReadingService {
     //<editor-fold> refreshReadings private methods
     private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
         ArrayList<Reading> newReadings = new ArrayList<>();
-        HttpConnection httpConnection = new HttpConnection(this.activity);
+        HttpConnection httpConnection = new HttpConnection(this.mActivity);
 
         prepareConnection(useProxy, proxyHost, proxyPort, httpConnection);
 
@@ -386,8 +359,8 @@ public class ReadingService {
     }
 
     private String getPreferenceString(int preferenceResourceId, String defValue) {
-        String prefKey = activity.getResources().getString(preferenceResourceId);
-        SharedPreferences prefsStore = PreferenceManager.getDefaultSharedPreferences(activity);
+        String prefKey = mActivity.getResources().getString(preferenceResourceId);
+        SharedPreferences prefsStore = PreferenceManager.getDefaultSharedPreferences(mActivity);
 
         return prefsStore.getString(prefKey, defValue);
     }

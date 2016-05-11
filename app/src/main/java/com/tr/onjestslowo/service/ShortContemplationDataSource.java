@@ -1,9 +1,9 @@
 package com.tr.onjestslowo.service;
 
 import android.content.Context;
-import android.os.Environment;
 
 import com.tr.onjestslowo.model.ShortContemplationsFile;
+import com.tr.tools.IOHelper;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -25,10 +25,11 @@ public class ShortContemplationDataSource {
     }
 
     public String defaultDestinationFolder() {
-        if (android.os.Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED)
-            return android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        String folder = IOHelper.getExternalPublicDownloadDir(context);
+        if (folder!= null)
+            return folder;
         else
-            return "";
+            return IOHelper.getSystemDefaultDownloadDir(context);
     }
 
     public ArrayList<ShortContemplationsFile> getAllFrom(String path)

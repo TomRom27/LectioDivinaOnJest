@@ -25,8 +25,10 @@ public class ShortContemplationDataSource {
     }
 
     public String defaultDestinationFolder() {
-        return android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-
+        if (android.os.Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED)
+            return android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        else
+            return "";
     }
 
     public ArrayList<ShortContemplationsFile> getAllFrom(String path)

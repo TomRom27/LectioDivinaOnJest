@@ -9,9 +9,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
@@ -224,16 +222,28 @@ public class ReadingsActivity extends AppCompatActivity
         AppPreferences appPreferences = AppPreferences.getInstance(this);
 
         // set and save default download path
-        OnJestPreferences prefs = appPreferences.get();
-        ShortContemplationDataSource ds = new ShortContemplationDataSource(this);
-        prefs.ShortContemplationDownloadPath = ds.defaultDestinationFolder();
-
-        Logger.debug(LOG_TAG, "Saving path for short contemplations as: "+prefs.ShortContemplationDownloadPath);
-        appPreferences.setShortContemplationDownloadPath(prefs.ShortContemplationDownloadPath);
+//        OnJestPreferences prefs = appPreferences.get();
+//        ShortContemplationDataSource ds = new ShortContemplationDataSource(this);
+//        prefs.ShortContemplationDownloadPath = ds.defaultDestinationFolder();
+//
+//        Logger.debug(LOG_TAG, "Saving path for short contemplations as: " + prefs.ShortContemplationDownloadPath);
+//        appPreferences.setShortContemplationDownloadPath(prefs.ShortContemplationDownloadPath);
+        setDefaultShortContemplationDownloadPath(this, appPreferences);
 
         // show info
         showAboutLectio();
         appPreferences.setAppFirstLaunch(false);
+    }
+
+    private String setDefaultShortContemplationDownloadPath(Context context, AppPreferences appPreferences) {
+        OnJestPreferences prefs = appPreferences.get();
+        ShortContemplationDataSource ds = new ShortContemplationDataSource(context);
+        prefs.ShortContemplationDownloadPath = ds.defaultDestinationFolder();
+
+        Logger.debug(LOG_TAG, "Saving path for short contemplations as: " + prefs.ShortContemplationDownloadPath);
+        appPreferences.setShortContemplationDownloadPath(prefs.ShortContemplationDownloadPath);
+
+        return prefs.ShortContemplationDownloadPath;
     }
 
     private void showAboutLectio() {
@@ -461,13 +471,17 @@ public class ReadingsActivity extends AppCompatActivity
             mRefreshTaskCancelled = false;
             try {
                 Logger.debug(LOG_TAG, "Getting preferences");
-                OnJestPreferences prefs = AppPreferences.getInstance(mActivity.get()).get();
+                AppPreferences appPreferences = AppPreferences.getInstance(mActivity.get());
+
+                OnJestPreferences prefs = appPreferences.get();
 
                 Logger.debug(LOG_TAG, "Refreshing readings");
                 mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
                         prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
 
                 if (prefs.DownloadShortContemplation) {
+                    ensureShortContemplationDownloadPath(appPreferences, prefs);
+
                     Logger.debug(LOG_TAG, "Downloading current short contemplations");
                     refreshResult.ShortContemplationsFilename = mActivity.get().
                             mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.ShortContemplationDownloadPath);
@@ -489,20 +503,31 @@ public class ReadingsActivity extends AppCompatActivity
             return refreshResult;
         }
 
+        private void ensureShortContemplationDownloadPath(AppPreferences appPreferences, OnJestPreferences prefs) {
+            if (prefs.ShortContemplationDownloadPath == null || prefs.ShortContemplationDownloadPath.isEmpty()) {
+                prefs.ShortContemplationDownloadPath = mActivity.get().setDefaultShortContemplationDownloadPath(mActivity.get(), appPreferences);
+            }
+        }
+
         protected void onPostExecute(RefreshResult refreshResult) {
 
             // the task is ended, so hide notification
             mActivity.get().showHideProgress(false);
 
             if (!mRefreshTaskCancelled) {
-                String refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended);
+                String refreshEnded;
+                // display result info text relevant to Lectio only or all
+                if (!refreshResult.ShortContemplationsFilename.isEmpty())
+                    refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_all);
+                else
+                    refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_Lectio);
                 UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
 
                 Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
                 mActivity.get().displayReadings(refreshResult.Readings);
                 Logger.debug(LOG_TAG, "Readings displayed");
 
-                if (refreshResult.ShortContemplationsFilename != "") {
+                if (!refreshResult.ShortContemplationsFilename.isEmpty()) {
                     Logger.debug(LOG_TAG, "Showing short contemplations file");
                     mActivity.get().refreshShortContemplations();
                 } else

@@ -27,7 +27,7 @@ public class IOHelper {
     }
 
     public static String getSystemDefaultDownloadDir(Context context) {
-        String filePath = createDeleteTempFile(context);
+        String filePath = createDeleteTempAppFile(context);
         if (filePath != "") {
             File file = new File(filePath);
             return file.getParent();
@@ -59,7 +59,7 @@ public class IOHelper {
         }
     }
 
-    private static String createDeleteTempFile(Context context) {
+    private static String createDeleteTempAppFile(Context context) {
         String tempFileName = DateHelper.toString("yyyyMMdd_HHmmssSSS'.tmp'", new Date());
         File file = new File(context.getFilesDir(), tempFileName);
         OutputStream o = null;

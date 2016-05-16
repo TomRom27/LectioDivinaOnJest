@@ -22,7 +22,8 @@
     <string name="html_empty_reading_content"><![CDATA[<html><p>Brak rozważań</p>Użyj opcji Odśwież z menu aby pobrać najnowsze rozważania</html>]]></string>
     <string name="text_refreshing_started">Rozpoczęto pobieranie rozważań</string>
     <string name="text_refreshing_in_progress">Trwa pobieranie rozważań</string>
-    <string name="text_refreshing_ended">Pobrano %d nowych rozważań</string>
+    <string name="text_refreshing_ended_Lectio">Pobrano %d nowych Lectio</string>
+    <string name="text_refreshing_ended_all">Pobrano %d nowych Lectio i rozważania krótkie</string>
     <string name="title_activity_about_lectio">Lectio Divina</string>
     <string name="button_close">Zamknij</string>
     <string name="title_activity_about_us">O autorach</string>

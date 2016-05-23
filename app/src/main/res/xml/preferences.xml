@@ -63,7 +63,7 @@
                 android:title="@string/pref_short_contemplation_list_always" />
 
             <EditTextPreference
-                android:defaultValue="/storage/sdcard/Download"
+                android:defaultValue=""
                 android:inputType="textUri"
                 android:key="@string/pref_short_contemplation_download_path"
                 android:maxLines="1"

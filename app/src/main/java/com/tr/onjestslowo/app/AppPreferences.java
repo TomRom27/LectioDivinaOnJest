@@ -103,7 +103,7 @@ public class AppPreferences {
         mPreferences.ShortContemplationsFileListAlways = prefStore.getBoolean(key, false);
 
         key = mContext.getResources().getString(R.string.pref_short_contemplation_download_path);
-        mPreferences.ShortContemplationDownloadPath = prefStore.getString(key, "/storage/sdcard/Download");
+        mPreferences.ShortContemplationDownloadPath = prefStore.getString(key, "");
         mIsValid = true;
     }
 }

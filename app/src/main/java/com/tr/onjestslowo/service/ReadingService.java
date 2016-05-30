@@ -185,7 +185,7 @@ public class ReadingService {
 
     //<editor-fold> downloadCurrentShortContemplations private methods>
     private Date determineDateOfContemplations() {
-        Date closestSunday = DateHelper.getPreviousSunday(DateHelper.getToday());
+        Date closestSunday = DateHelper.getClosestSunday(DateHelper.getToday());
 
         return closestSunday;
     }

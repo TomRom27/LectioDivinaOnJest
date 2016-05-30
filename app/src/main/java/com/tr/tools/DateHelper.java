@@ -186,4 +186,16 @@ public class DateHelper {
         return addDay(date, lessDays);
     }
 
+    public static Date getClosestSunday(Date date) {
+        Calendar c = Calendar.getInstance();
+
+        c.setTime(date);
+
+        int lessDays = Calendar.SUNDAY - c.get(Calendar.DAY_OF_WEEK);
+        if (lessDays > 0)
+            lessDays = -7;
+
+        return addDay(date, lessDays);
+    }
+
 }

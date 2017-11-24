@@ -97,7 +97,7 @@ public class AppPreferences {
         mPreferences.KeepScreenOn = prefStore.getBoolean(key, true);
 
         key = mContext.getResources().getString(R.string.pref_download_short_contemplation);
-        mPreferences.DownloadShortContemplation = prefStore.getBoolean(key, true);
+        mPreferences.DownloadShortContemplation = prefStore.getBoolean(key, false);
 
         key = mContext.getResources().getString(R.string.pref_short_contemplation_list_always);
         mPreferences.ShortContemplationsFileListAlways = prefStore.getBoolean(key, false);

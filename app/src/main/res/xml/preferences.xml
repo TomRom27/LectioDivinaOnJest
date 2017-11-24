@@ -15,7 +15,7 @@
             android:title="@string/pref_reading_store_how_long" />
 
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="@string/pref_download_short_contemplation"
             android:summary="@string/pref_download_short_contemplation_summary"
             android:title="@string/pref_download_short_contemplation" />

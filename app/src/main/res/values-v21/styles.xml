@@ -28,9 +28,10 @@
     </style>
 
     <style name="AppThemeDark" parent="AppThemeLight">
-        <item name="app_backgroundImg">@color/lectioDirtyCream</item>
+        <item name="app_backgroundImg">@color/black</item>
 
-        <item name="webViewHost_backgroundImg">@color/lectioDirtyCream</item>
+        <item name="webViewHost_backgroundImg">@color/black</item>
+        <item name="webView_textColor">@color/white</item>
 
         <item name="colorPrimary">@color/lectioNightBrown</item>
         <item name="colorPrimaryDark">@color/lectioNightDarkBrown</item>

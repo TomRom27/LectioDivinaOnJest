@@ -14,6 +14,8 @@
     <string name="pref_wifi_proxy_host">Host proxy Wi-Fi</string>
     <string name="pref_wifi_proxy_port">Port proxy Wi-Fi</string>
 
+    <string name="pref_send_app_stats">Wysyłaj statystyki (anonimowo)</string>
+    <string name="pref_send_app_stats_summary">Wysyłaj statystyki użycia aplikacji (anonimowo)</string>
 
     <string name="pref_category_title_advanced">Zaawansowane</string>
     <string name="pref_adv_title">Ustawienia zaawansowane</string>

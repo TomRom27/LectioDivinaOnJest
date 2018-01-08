@@ -46,7 +46,43 @@ public class AppPreferences {
         editor.putBoolean(PREF_IS_APP_FIRST, isFirst);
         editor.apply(); // persist changes
     }
+    //</editor-fold>
 
+    //<editor-fold app stats info related >
+    public static String PREF_IS_STATSINFO_SHOWN = "IsStatsInfoShown";
+
+    public Boolean isStatsInfoShown() {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        return prefStore.getBoolean(PREF_IS_STATSINFO_SHOWN, false);
+    }
+
+    public void setStatsInfoShown(Boolean isShown) {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        SharedPreferences.Editor editor = prefStore.edit();
+        editor.putBoolean(PREF_IS_STATSINFO_SHOWN, isShown);
+        editor.apply(); // persist changes
+    }
+    //</editor-fold>
+
+    //<editor-fold last theme related >
+    public static String PREF_IS_LAST_THEME_NIGHT= "IsLastThemeNight";
+
+    public Boolean isLastThemeNight() {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        return prefStore.getBoolean(PREF_IS_LAST_THEME_NIGHT, false);
+    }
+
+    public void setLastThemeNight(Boolean isShown) {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        SharedPreferences.Editor editor = prefStore.edit();
+        editor.putBoolean(PREF_IS_LAST_THEME_NIGHT, isShown);
+        editor.apply(); // persist changes
+    }
+    //</editor-fold>
 
     public void setShortContemplationDownloadPath(String path) {
         SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -57,7 +93,13 @@ public class AppPreferences {
         editor.apply(); // persist changes
     }
 
-    //</editor-fold>
+    public void setStatsInfoEnabled(Boolean isEnabled) {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        SharedPreferences.Editor editor = prefStore.edit();
+        editor.putBoolean(mContext.getResources().getString(R.string.pref_send_app_stats), isEnabled);
+        editor.apply(); // persist changes
+    }
 
     public OnJestPreferences get() {
         if (!mIsValid)
@@ -104,6 +146,9 @@ public class AppPreferences {
 
         key = mContext.getResources().getString(R.string.pref_short_contemplation_download_path);
         mPreferences.ShortContemplationDownloadPath = prefStore.getString(key, "");
+
+        key = mContext.getResources().getString(R.string.pref_send_app_stats);
+        mPreferences.SendAppStats = prefStore.getBoolean(key, true);
         mIsValid = true;
     }
 }

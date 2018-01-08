@@ -13,4 +13,5 @@ public class OnJestPreferences {
     public boolean DownloadShortContemplation;
     public String ShortContemplationDownloadPath;
     public boolean ShortContemplationsFileListAlways;
+    public boolean SendAppStats;
 }

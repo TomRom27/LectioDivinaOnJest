@@ -31,6 +31,13 @@
             android:key="@string/pref_zoom_on_start"
             android:summary="@string/pref_zoom_on_start_summary"
             android:title="@string/pref_zoom_on_start" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_send_app_stats"
+            android:summary="@string/pref_send_app_stats_summary"
+            android:title="@string/pref_send_app_stats" />
+
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_title_advanced">
 

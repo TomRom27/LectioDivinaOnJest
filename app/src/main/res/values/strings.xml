@@ -33,6 +33,6 @@
     <string name="text_pdf_app_needed">Musisz zainstalować aplikację do pokazywania PDF (np. Adobe Acrobat) aby przeglądać rozważania krótkie!</string>
     <string name="pdf_failed">Nie udało się pokazać rozważań z PDF</string>
     <string name="current">Na dziś</string>
-
-
+    <string name="text_stats_sendig">Na potrzeby dalszego usprawniania aplikacja będzie wysyłać anonimowe statystyki użycia</string>
+    <string name="text_allow">Zezwalam</string>
 </resources>

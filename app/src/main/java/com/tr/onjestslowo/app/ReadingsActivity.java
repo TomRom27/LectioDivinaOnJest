@@ -19,13 +19,20 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tr.onjestslowo.model.OnJestPreferences;
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.service.ReadingService;
@@ -61,17 +68,17 @@ public class ReadingsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // restore state of the theme flag and then apply theme
+        // restore state of the theme flag and then apply theme, either from savedInstance
+        // or from preferences (after app re-launch)
         if ((savedInstanceState != null) && (savedInstanceState.containsKey(ARG_IS_THEME_NIGHT)))
             mIsThemeNight = savedInstanceState.getBoolean(ARG_IS_THEME_NIGHT);
         else
-            mIsThemeNight = false;
+            mIsThemeNight = AppPreferences.getInstance(this).isLastThemeNight();
         // setting the theme must be done before any view output, also before super.onCreate() !!!
         setAppTheme();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_readings);
-
 
         // set toolbar as actionbar for the activity
         Toolbar toolbar = (Toolbar) findViewById(R.id.readingsToolBar);
@@ -112,6 +119,7 @@ public class ReadingsActivity extends AppCompatActivity
         // prevent screen turn off
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        enableAppStatsSending(AppPreferences.getInstance(this).get().SendAppStats);
 
         // if the app is launched for very first time, we force user to see
         // AboutLectio activity
@@ -213,6 +221,23 @@ public class ReadingsActivity extends AppCompatActivity
 
     //</editor-fold>
 
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        // the code below can result in displaying a popup window, attached to
+        // Readings Activity so the latter must have a window
+        // that's why the code must be here, not in onCreate (that would be too early)
+
+        // check whether we need to get consent for analytics from user
+        // AboutLectio activity
+        if (!AppPreferences.getInstance(this).isStatsInfoShown()) {
+            Logger.debug(LOG_TAG, "Stats info not shown yet, doing now");
+            getAppStatsConfirmation(findViewById(R.id.activityReadings));
+        } else
+            Logger.debug(LOG_TAG, "Stats info already shown");
+    }
+
     //<editor-fold desc="menu handling methods and reading display">
     private void exitApp() {
         finish();
@@ -234,6 +259,7 @@ public class ReadingsActivity extends AppCompatActivity
         showAboutLectio();
         appPreferences.setAppFirstLaunch(false);
     }
+
 
     private String setDefaultShortContemplationDownloadPath(Context context, AppPreferences appPreferences) {
         OnJestPreferences prefs = appPreferences.get();
@@ -272,12 +298,79 @@ public class ReadingsActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+
+    //<editor-fold getAppStatsConfirmation related >
+    private void getAppStatsConfirmation(View parentView) {
+        // stats info is displayed as pop-up i.e. it is not separate activity
+        // so we must prepare current axtivity for it
+
+
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View popupView = inflater.inflate(R.layout.activity_confirm_analytics, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        popupWindow.showAtLocation(parentView , Gravity.CENTER, 0, 0);
+
+        Button closeButton = (Button) popupView.findViewById(R.id.buttonPopupClose);
+        // Set a click listener for the popup window close button
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                setAppStatsSending(((CheckBox)popupView.findViewById(R.id.checkboxPopupAllow)).isChecked());
+                // Dismiss the popup window
+                popupWindow.dismiss();
+            }
+        });
+
+    }
+
+    private void setAppStatsSending(boolean enabled) {
+        Logger.debug(LOG_TAG,String.format("User has enabled to send app stats = %b",enabled));
+        AppPreferences appPreferences =  AppPreferences.getInstance(this);
+        appPreferences.setStatsInfoShown(true);
+
+        Logger.debug(LOG_TAG,"Saving current state to settings");
+        appPreferences.setStatsInfoEnabled(enabled);
+
+        enableAppStatsSending(enabled);
+    }
+     //</editor-fold>
+
+    //<editor-fold> app analytics
+    private void enableAppStatsSending(boolean enabled) {
+        Logger.debug(LOG_TAG,String.format("Setting analytics in Firebase =%b", enabled));
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(enabled);
+    }
+
+    private void logRefreshInAnalytics() {
+        if (AppPreferences.getInstance(this).get().SendAppStats)
+        {
+            Logger.debug(LOG_TAG,"Sending analytics to Firebase about Refresh");
+            FirebaseAnalytics.getInstance(this).logEvent("Get_Readings", null);
+        }
+        else
+            Logger.debug(LOG_TAG,"Sending analytics is disabled");
+    }
+    //</editor-fold>
+
     private void refreshReadingsAsync() {
         showHideProgress(true);
         // show info
         UIHelper.showToast(this, R.string.text_refreshing_started, Toast.LENGTH_SHORT);
         // disable menu
         disableAppMenu();
+
+        logRefreshInAnalytics();
+
         // start the refresh task
         new RefreshAndDisplayReadingsTask(this).execute();
     }
@@ -319,6 +412,8 @@ public class ReadingsActivity extends AppCompatActivity
         setAppTheme();
         // udpdate menu
         onPrepareOptionsMenu(mMenu);
+        // save to
+        AppPreferences.getInstance(this).setLastThemeNight(mIsThemeNight);
         // the theme changes effect
         this.recreate();
     }

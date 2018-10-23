@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="AppTheme.Classics"/>
+    <style name="AppTheme" parent="AppTheme.Classics" />
 
     <!-- style -->
     <style name="AppTheme.Classics" parent="Theme.AppCompat.NoActionBar">
@@ -32,6 +32,7 @@
         -->
         <item name="webView_textColor">?attr/colorPrimary</item>
     </style>
+
     <style name="ClassicMenuButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
@@ -85,4 +86,8 @@
         <item name="android:minHeight">0dp</item>
         <item name="android:minWidth">0dp</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

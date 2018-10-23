@@ -7,9 +7,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <!--  analytics turn off in the manifest, but will be turn on programatically -->
-    <!--  once confirmed by user on the confirm_analytics screen -->
-    <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
+    <!-- analytics turn off in the manifest, but will be turn on programatically -->
+    <!-- once confirmed by user on the confirm_analytics screen -->
+    <meta-data
+        android:name="firebase_analytics_collection_enabled"
+        android:value="false" />
 
     <application
         android:allowBackup="true"
@@ -20,10 +22,14 @@
             android:name=".ReadingsActivity"
             android:label="@string/title_activity_readings"
             android:launchMode="singleTop">
-            <!-- the above sets "supremacy" of the Reading (main) activity, sot that
-                it is not destroyed when launching child activities -->
+
+            <!--
+                 the above sets "supremacy" of the Reading (main) activity, sot that
+                it is not destroyed when launching child activities
+            -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -40,6 +46,10 @@
             android:name=".AboutUsActivity"
             android:label="@string/title_activity_about_us"
             android:parentActivityName=".ReadingsActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ConfirmAnalytics"
+            android:label="@string/title_activity_confirm_analytics"
             android:theme="@style/AppTheme" />
     </application>
 

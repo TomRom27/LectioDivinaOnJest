@@ -1,47 +1,52 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="@drawable/bg_red"
-tools:context="com.tr.onjestslowo.app.AboutUsActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_backgroundImg"
+    android:orientation="vertical"
+    tools:context="com.tr.onjestslowo.app.AboutUsActivity">
 
-<ScrollView
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_marginBottom="@dimen/reading_inner_margin"
-    android:layout_marginLeft="@dimen/reading_inner_margin"
-    android:layout_marginRight="@dimen/reading_inner_margin">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/aboutUsToolBar"
+            style="?attr/actionBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@drawable/bg_w_old_paper"
-        android:orientation="vertical">
+        android:fillViewport="true"
+        android:layout_marginBottom="@dimen/reading_inner_margin"
+        android:layout_marginLeft="@dimen/reading_inner_margin"
+        android:layout_marginRight="@dimen/reading_inner_margin">
 
-        <!-- the web view is transparent thanks to programmatically setting the background color-->
-        <WebView
-            android:id="@+id/aboutUsWebView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-condensed" />
-
-        <Button
-            android:id="@+id/buttonClose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="@dimen/reading_inner_margin"
-            android:background="@color/reading_title_color_brownish"
-            android:onClick="onCloseClick"
-            android:text="@string/button_close"
-            android:textColor="@color/cream_white" />
-        <TextView
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/versionTextFormat"
-            android:id="@+id/versionView"
-            android:textColor="@color/reading_title_color_brownish"/>
-    </LinearLayout>
-</ScrollView>
+            android:layout_height="match_parent"
+            android:background="?attr/webViewHost_backgroundImg"
+            android:orientation="vertical">
 
-</RelativeLayout>
+            <!-- the web view is transparent thanks to programmatically setting the background color-->
+            <WebView
+                android:id="@+id/aboutUsWebView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-condensed" />
+
+            <TextView
+                android:id="@+id/versionView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/versionTextFormat"
+                android:textColor="?attr/colorPrimaryDark" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

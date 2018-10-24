@@ -3,82 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/app_backgroundImg"
-    tools:context="com.tr.onjestslowo.app.ReadingsActivity.ReadingPlaceholderFragment">
-        <LinearLayout
+    tools:context="com.tr.onjestslowo.app.ReadingPlaceholderFragment">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="?scrollView_marginBottom"
+        android:layout_marginLeft="?attr/scrollView_marginLeft"
+        android:layout_marginRight="?attr/scrollView_marginRight"
+        android:background="?attr/webViewHost_backgroundImg"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleView"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical"
-            android:background="?attr/webViewHost_backgroundImg"
-            android:layout_marginLeft="?attr/scrollView_marginLeft"
-            android:layout_marginRight="?attr/scrollView_marginRight"
-            android:layout_marginBottom="?scrollView_marginBottom">
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/text_no_readings"
-                android:id="@+id/titleView"
-                android:textColor="@color/reading_title_color_brownish"
-                android:fontFamily="sans-serif-condensed"
-                android:textStyle="bold|italic" />
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <!-- the web view is transparent thanks to programmatically setting the background color-->
-                <WebView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/readingWebView"
-                    android:fontFamily="sans-serif-condensed"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_horizontal|bottom"
-                    android:weightSum="2">
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/text_no_readings"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/reading_title_color_brownish"
+            android:textStyle="bold|italic" />
 
-                    <!-- LinearLayout is used instead of ordinary button, as the latter displays
-                     icon on the left and no easy way to change it
-                     onClickListener assigned programmatically
-                     -->
-                    <LinearLayout
-                        android:id="@+id/button_zoomIn"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:clickable="true"
-                        android:descendantFocusability="blocksDescendants"
-                        android:gravity="center"
-                        android:orientation="horizontal" >
+        <!-- the web view is transparent thanks to programmatically setting the background color-->
+        <WebView
+            android:id="@+id/readingWebView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed" />
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="@string/app_name"
-                            android:src="@drawable/ic_zoom_in_black" />
-
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/button_zoomOut"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:clickable="true"
-                        android:descendantFocusability="blocksDescendants"
-                        android:gravity="center"
-                        android:orientation="horizontal" >
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="@string/app_name"
-                            android:src="@drawable/ic_zoom_out_black"/>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

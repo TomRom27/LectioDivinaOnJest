@@ -11,6 +11,10 @@
     <string name="action_clear">Usuń rozważania</string>
     <string name="action_exit">Zakończ</string>
     <string name="action_zooming">Zoom</string>
+    <string name="action_zoomin">Powiększanie</string>
+    <string name="action_zoomout">Pomniejszanie</string>
+    <string name="action_theme_to_night">Ustaw tryb nocny</string>
+    <string name="action_theme_to_day">Ustaw tryb dzienny</string>
     <string name="text_are_you_sure_to_delete">Usunąć wszystkie rozważania?</string>
     <string name="text_yes">Tak</string>
     <string name="text_no">Nie</string>
@@ -18,10 +22,19 @@
     <string name="html_empty_reading_content"><![CDATA[<html><p>Brak rozważań</p>Użyj opcji Odśwież z menu aby pobrać najnowsze rozważania</html>]]></string>
     <string name="text_refreshing_started">Rozpoczęto pobieranie rozważań</string>
     <string name="text_refreshing_in_progress">Trwa pobieranie rozważań</string>
-    <string name="text_refreshing_ended">Pobrano %d nowych rozważań</string>
+    <string name="text_refreshing_ended_Lectio">Pobrano %d nowych Lectio</string>
+    <string name="text_refreshing_ended_all">Pobrano %d nowych Lectio i rozważania krótkie</string>
     <string name="title_activity_about_lectio">Lectio Divina</string>
     <string name="button_close">Zamknij</string>
     <string name="title_activity_about_us">O autorach</string>
-    <string name="versionTextFormat" >Wersja: %1$s (%2$d)</string>
-
+    <string name="versionTextFormat">Wersja: %1$s (%2$d)</string>
+    <string name="tab_LectioDivina">Lectio Divina</string>
+    <string name="tab_ShortContemplation">Rozważania krótkie</string>
+    <string name="text_pdf_app_needed">Musisz zainstalować aplikację do pokazywania PDF (np. Adobe Acrobat) aby przeglądać rozważania krótkie!</string>
+    <string name="pdf_failed">Nie udało się pokazać rozważań z PDF</string>
+    <string name="current">Na dziś</string>
+    <string name="text_stats_sendig">Na potrzeby dalszego usprawniania aplikacja będzie wysyłać anonimowe statystyki użycia</string>
+    <string name="title_activity_confirm_analytics">Potwierdź statystyki</string>
+    <string name="text_html_policyLink">www.onjest.pl/slowo/o-rozwazaniach/polityka-prywatnosci</string>
+    <string name="text_allow">Zezwalam</string>
 </resources>

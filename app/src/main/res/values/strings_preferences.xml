@@ -1,5 +1,5 @@
 <resources>
-        <string name="menu_activity_settings">Ustawienia</string>
+    <string name="menu_activity_settings">Ustawienia</string>
 
     <!-- Strings related to Settings -->
     <!-- String for  General settings -->
@@ -14,11 +14,21 @@
     <string name="pref_wifi_proxy_host">Host proxy Wi-Fi</string>
     <string name="pref_wifi_proxy_port">Port proxy Wi-Fi</string>
 
+    <string name="pref_send_app_stats">Wysyłaj statystyki (anonimowo)</string>
+    <string name="pref_send_app_stats_summary">Wysyłaj statystyki użycia aplikacji (anonimowo)</string>
 
     <string name="pref_category_title_advanced">Zaawansowane</string>
     <string name="pref_adv_title">Ustawienia zaawansowane</string>
     <string name="pref_adv_summary">Ustawienia przeznaczone dla zaawansowanych użytkowników</string>
     <string name="pref_adv_server_uri">Adres (uri) serwisu REST na OnJest/Slowo</string>
+    <string name="pref_short_contemplation_download_path">Rozważania krótkie zapisywać w</string>
 
-
+    <string name="pref_zoom_on_start">Przyciski zoom</string>
+    <string name="pref_zoom_on_start_summary">Przyciski zoom widoczne na ekranie przy starcie aplikacji</string>
+    <string name="pref_keep_screen_on">Blokada wygaszania ekranu</string>
+    <string name="pref_keep_screen_on_summary">Zablokuj przyciemnianie i wygaszanie ekranu w trakcie działania aplikacji</string>
+    <string name="pref_download_short_contemplation">Pobieranie rozważań krótkich</string>
+    <string name="pref_download_short_contemplation_summary">Pobierać PDF z rozważaniami krótkimi (do czytania wymagana dodatkowa aplikacja)</string>
+    <string name="pref_short_contemplation_list_always">Zawsze pokazywać listę rozważań krótkich</string>
+    <string name="pref_short_contemplation_list_always_summary">Pokazuj listę rozważań krótkich nawet, gdy brak aplikacji do PDF</string>
 </resources>

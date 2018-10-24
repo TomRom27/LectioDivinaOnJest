@@ -10,5 +10,7 @@
 
     <attr name="webViewHost_backgroundImg" format="string"/>
 
+    <attr name="webView_textColor" format="string"/>
+
     <attr name="closeButton_visibility" format="integer"/> <!-- 0 visible,1 - invisible, 2 - gone -->
 </resources>

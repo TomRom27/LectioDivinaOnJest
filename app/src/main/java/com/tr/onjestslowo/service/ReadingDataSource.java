@@ -87,9 +87,9 @@ public class ReadingDataSource {
         return foundReading;
     }
 
-    public List<Reading> getAllReadingsSortByDate() {
+    public ArrayList<Reading> getAllReadingsSortByDate() {
         String orderBy =ReadingSQLiteHelper.COLUMN_DATE_PARSED;
-        List<Reading> Readings = new ArrayList<Reading>();
+        ArrayList<Reading> Readings = new ArrayList<Reading>();
 
         Cursor cursor = database.query(ReadingSQLiteHelper.TABLE_READINGS,
                 allColumns, null, null, null, null, orderBy);

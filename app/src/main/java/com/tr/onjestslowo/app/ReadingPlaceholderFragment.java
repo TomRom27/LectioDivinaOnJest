@@ -2,7 +2,10 @@ package com.tr.onjestslowo.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 import android.support.v4.app.Fragment;
 
 import com.tr.tools.DateHelper;
+import com.tr.tools.UIHelper;
 
 import java.util.Date;
 
@@ -29,35 +33,10 @@ public class ReadingPlaceholderFragment extends Fragment {
     private static final String ARG_READING_DATE = "fragment_reading_date";
     private static final String ARG_READING_CONTENT = "fragment_reading_content";
     private static final String ARG_READING_ZOOM = "fragment_reading_zoom";
-    private static final int ZOOM_STEP_PERCENT = 10;
 
-    OnZoomChangedListener mZoomCallback;
+    private static final String SAVED_READING_ZOOM = "fragment_saved_reading_zoom";
 
-
-    // Container Activity must implement this interface
-    public interface OnZoomChangedListener {
-        void OnZoomChanged(int newZoom);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        Activity activity;
-
-        if (context instanceof Activity) {
-            activity = (Activity) context;
-
-            // This makes sure that the container activity has implemented
-            // the callback interface. If not, it throws an exception
-            try {
-                mZoomCallback = (OnZoomChangedListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString()
-                        + " must implement OnZoomChangedListener interface");
-            }
-        }
-    }
+    int mZoom;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -80,77 +59,78 @@ public class ReadingPlaceholderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_readings, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_readings, container, false);
 
         TextView titleView = (TextView) rootView.findViewById(R.id.titleView);
         WebView contentView = (WebView) rootView.findViewById(R.id.readingWebView);
 
         String title;
         String content;
+        int zoom;
+
         Bundle args = this.getArguments();
         if (args != null) {
             title = this.getArguments().getString(ARG_READING_TITLE);
-            //String date = this.getArguments().getString(ARG_READING_DATE);
             content = this.getArguments().getString(ARG_READING_CONTENT);
-            setWebViewZoom(rootView, this.getArguments().getInt(ARG_READING_ZOOM,100));
+            zoom = this.getArguments().getInt(ARG_READING_ZOOM, 100);
         } else {
             title = rootView.getContext().getResources().getString(R.string.text_no_readings);
             content = rootView.getContext().getResources().getString(R.string.html_empty_reading_content);
-            setWebViewZoom(rootView, 100); // default zoom = 100%
+            zoom = 100; // default zoom = 100%
         }
+        if ((savedInstanceState != null) && (savedInstanceState.containsKey(SAVED_READING_ZOOM)))
+            zoom = savedInstanceState.getInt(SAVED_READING_ZOOM);
 
         titleView.setText(title);
+
+        setWebViewZoom(rootView, zoom);
+
+        // we must use some trick in order to display content in wanted (not black" color
+//        String color = "white";
+//        if (rootView.getContext() != null) {
+//            // here we retrieve a color, defined in the app them by custom attr. webView_textColor
+//            Context context = rootView.getContext();
+//            TypedValue typedValue = new TypedValue();
+//
+//            Resources.Theme theme = context.getTheme();
+//            theme.resolveAttribute(R.attr.webView_textColor, typedValue, true);
+//            int webviewTextColor = typedValue.data;
+//
+//            //now convert the int color to hex string
+//            color = String.format("#%06X", (0xFFFFFF & webviewTextColor));
+//        }
+//        String coloredContent = "<font color=\"" +
+//                color +
+//                "\">" + content + "</font>";
+
+        String coloredContent = UIHelper.setThemeColorForHtml(rootView, R.attr.webView_textColor, content);
         // we use loadDataWithBaseURL rather then loadData as the latter doesn't display
         // national characters correctly
-        contentView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
+        contentView.loadDataWithBaseURL(null, coloredContent, "text/html", "UTF-8", null);
 
         // the below makes the web view transparent !!!
         contentView.setBackgroundColor(0x00000000);
 
-        // assign handlers for zooming buttons
-        // zoom in
-        LinearLayout zoomButton;
-        zoomButton = (LinearLayout) rootView.findViewById(R.id.button_zoomIn);
-        zoomButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int newZoom = increaseWebViewZoom(rootView, ZOOM_STEP_PERCENT);
-
-            }
-        });
-        // zoom out
-        zoomButton = (LinearLayout) rootView.findViewById(R.id.button_zoomOut);
-        zoomButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int newZoom = increaseWebViewZoom(rootView,-ZOOM_STEP_PERCENT);
-            }
-        });
-
         return rootView;
     }
 
-    public WebView findWebView(View rootView) {
-        return (WebView) rootView.findViewById(R.id.readingWebView);
+    public void onSaveInstanceState(Bundle args) {
+        args.putInt(SAVED_READING_ZOOM, mZoom);
     }
-    public int increaseWebViewZoom(View rootView, int percentIncrease) {
-        int textZoom = 100;
-        WebView contentView = findWebView(rootView);
-        if (contentView != null) {
-            WebSettings settings = contentView.getSettings();
-            textZoom = settings.getTextZoom();
-            textZoom = textZoom +Math.round(textZoom*percentIncrease/100);
-            if (textZoom<0)
-                textZoom=1;
-            settings.setTextZoom(textZoom);
 
-            this.getArguments().putInt(ARG_READING_ZOOM, textZoom);
-            mZoomCallback.OnZoomChanged(textZoom);
-        }
-        return textZoom;
+    public void setWebViewZoom(int textZoom) {
+        View view = getView();
+
+        if (view != null)
+            setWebViewZoom(view, textZoom);
     }
-    public void setWebViewZoom(View rootView, int textZoom) {
-        WebView contentView = (WebView) rootView.findViewById(R.id.readingWebView);
-        contentView.getSettings().setTextZoom(textZoom);
+
+    public void setWebViewZoom(View view, int textZoom) {
+        WebView contentView = (WebView) view.findViewById(R.id.readingWebView);
+
+        if (contentView != null)
+            contentView.getSettings().setTextZoom(textZoom);
+        mZoom = textZoom;
     }
+
 }

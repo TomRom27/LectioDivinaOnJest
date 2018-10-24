@@ -1,6 +1,6 @@
 package com.tr.onjestslowo.service;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -10,11 +10,19 @@ import com.tr.onjestslowo.model.JSONSerializer;
 import com.tr.onjestslowo.model.Post;
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.model.ReadingListResult;
+import com.tr.onjestslowo.model.ShortContemplationsFile;
 import com.tr.tools.DateHelper;
 import com.tr.tools.HttpConnection;
+import com.tr.tools.IOHelper;
 import com.tr.tools.NetworkHelper;
 import com.tr.tools.Logger;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
@@ -30,18 +38,20 @@ public class ReadingService {
     public static String LOG_TAG = "ReadingService";
 
     private ReadingDataSource mReadingDS;
-    private Context context;
+    private ShortContemplationDataSource mShortContemplationDS;
+    private Activity mActivity;
 
-    public ReadingService(Context context) {
+    public ReadingService(Activity activity) {
 
-        mReadingDS = new ReadingDataSource(context);
-        this.context = context;
+        mReadingDS = new ReadingDataSource(activity);
+        mShortContemplationDS = new ShortContemplationDataSource(activity);
+        mActivity = activity;
     }
 
-    public List<Reading> loadReadings() {
+    public ArrayList<Reading> loadReadings() {
         Logger.debug(LOG_TAG, "Starting to load readings from db.");
 
-        List<Reading> list = new ArrayList<Reading>();
+        ArrayList<Reading> list = new ArrayList<>();
         int count = 0;
         mReadingDS.open();
 
@@ -56,6 +66,141 @@ public class ReadingService {
         return list;
     }
 
+    public ArrayList<ShortContemplationsFile> getShortContemplationsList(String path) {
+        Logger.debug(LOG_TAG, "Getting a list of short contemplation files from " + path);
+        try {
+            ArrayList<ShortContemplationsFile> list = mShortContemplationDS.getAllFrom(path);
+
+            Logger.debug(LOG_TAG, "Contemplation files found: " + Integer.toString(list.size()));
+            return list;
+        } catch (Exception ex) {
+            Logger.debug(LOG_TAG, "Failed to get contemplation files: " + ex.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public void clearReadings() {
+        mReadingDS.open();
+        try {
+            mReadingDS.deleteAllReadings();
+        } finally {
+            mReadingDS.close();
+        }
+    }
+
+    public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort, String destination) {
+        Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", Boolean.toString(useProxy)));
+
+        try {
+
+            Date contemplationsDate = determineDateOfContemplations();
+
+            String contemplationsFileName = ShortContemplationsFile.getFileNameFromDate(contemplationsDate);
+            Logger.debug(LOG_TAG, String.format("Filename is : %s", contemplationsFileName));
+
+            int year, month;
+            year = DateHelper.getYear(contemplationsDate);
+            month = DateHelper.getMonth(contemplationsDate);
+
+            // complete logging inside the mothod, no need to do it here
+            Boolean ok = downloadShortContemplations(year, month, contemplationsFileName, destination, useProxy, proxyHost, proxyPort);
+
+
+            if (ok) {
+                Logger.debug(LOG_TAG, "Short contemplation downloaded Ok");
+            } else {
+                Logger.debug(LOG_TAG, "The previous try didn't work, trying previous month");
+                year = DateHelper.getYear(DateHelper.addDay(contemplationsDate, -15));
+                month = DateHelper.getMonth(DateHelper.addDay(contemplationsDate, -15));
+
+                ok = downloadShortContemplations(year, month, contemplationsFileName, destination, useProxy, proxyHost, proxyPort);
+                if (!ok) {
+                    Logger.debug(LOG_TAG, "Failed for previous month");
+                    contemplationsFileName = ""; // empty filename means file not downloaded
+                }
+            }
+
+            return contemplationsFileName;
+        } catch (Exception ex) {
+            Logger.error(LOG_TAG, "Error when trying to download: " + ex.getMessage());
+            return "";
+        }
+    }
+
+    private Boolean downloadShortContemplations(int year, int month, String fileName, String destination,
+                                                boolean useProxy, String proxyHost, int proxyPort) {
+        Boolean isOk = false;
+        String fileUrlString = String.format("http://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s", year, month, fileName);
+        Logger.debug(LOG_TAG, String.format("Trying to get from %d of %d at %s", month, year, fileUrlString));
+
+        InputStream input = null;
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(fileUrlString);
+
+            if (useProxy) {
+                Logger.debug(LOG_TAG, "Proxy used for connections");
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+                connection = (HttpURLConnection) url.openConnection(proxy);
+            } else
+                connection = (HttpURLConnection) url.openConnection();
+
+            connection.connect();
+
+            // expect HTTP 200 OK, so we don't mistakenly save error report
+            // instead of the file
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                Logger.debug(LOG_TAG, String.format("Error, server returned HTTP %s",
+                        connection.getResponseCode() + " " + connection.getResponseMessage()));
+                connection.disconnect();
+                return false;
+            }
+
+            // ensure app can save the file, is fo
+            IOHelper.verifyStoragePermissions(mActivity);
+            // start to download the file
+            input = connection.getInputStream();
+            // ... and save it
+            ensureFolder(destination);
+            mShortContemplationDS.saveFromStream(fileName, destination, input);
+            isOk = true;
+
+        } catch (Exception ex) {
+            Logger.debug(LOG_TAG, "Something went wrong: " + ex.getMessage());
+            isOk = false;
+
+        } finally {
+            if (connection != null)
+                connection.disconnect();
+            try {
+                if (input != null)
+                    input.close();
+            } catch (Exception ignored) {
+            }
+
+        }
+        return isOk;
+    }
+
+
+    //<editor-fold> downloadCurrentShortContemplations private methods>
+    private Date determineDateOfContemplations() {
+        Date closestSunday = DateHelper.getClosestSunday(DateHelper.getToday());
+
+        return closestSunday;
+    }
+
+    private void ensureFolder(String path) {
+        File file = new File(path);
+
+        if (!file.exists()) {
+            Logger.debug(LOG_TAG, "Folder " + path + " not exists, will be created");
+            file.mkdirs();
+        } else
+            Logger.debug(LOG_TAG, "Folder " + path + " exists already");
+    }
+    //</editor-fold>
+
     public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort) {
         Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));
         int count = 0;
@@ -66,7 +211,7 @@ public class ReadingService {
             Date firstDate, lastDate;
             List<Reading> newReadings;
 
-            rangeDates = determineDateRange(keepLastReadingDaysNumber);
+            rangeDates = determineDateRangeForReadings(keepLastReadingDaysNumber);
             firstDate = rangeDates[0];
             lastDate = rangeDates[1];
 
@@ -87,29 +232,13 @@ public class ReadingService {
     }
 
 
-    public void clearReadings() {
-        mReadingDS.open();
-        try {
-            mReadingDS.deleteAllReadings();
-        } finally {
-            mReadingDS.close();
-        }
-    }
+    //<editor-fold> refreshReadings private methods
+    private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
+        ArrayList<Reading> newReadings = new ArrayList<>();
+        HttpConnection httpConnection = new HttpConnection(this.mActivity);
 
-    private List<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
-        List<Reading> newReadings = new ArrayList<Reading>();
-        HttpConnection httpConnection = new HttpConnection(this.context);
+        prepareConnection(useProxy, proxyHost, proxyPort, httpConnection);
 
-        // set proxy, if needed - only for WiFi connections
-        if (NetworkHelper.isWiFiConnection()) {
-            if (useProxy) {
-                Logger.debug(LOG_TAG, String.format("Proxy:%s, %d", proxyHost, proxyPort));
-                httpConnection.setProxyServer(proxyHost, proxyPort);
-            } else {
-                Logger.debug(LOG_TAG, "No proxy used");
-                httpConnection.resetProxyServer();
-            }
-        }
         if (httpConnection.checkConnectivity()) {
             HttpConnection.CONNECTION_TIMEOUT = 10000; // increase time to 10 secs.
 
@@ -133,8 +262,8 @@ public class ReadingService {
         return newReadings;
     }
 
-    private List<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection) {
-        List<Reading> readings = new ArrayList<Reading>();
+    private ArrayList<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection) {
+        ArrayList<Reading> readings = new ArrayList<>();
 
         // prepare specific url for current date
         String actualOnJestUrl = String.format(onJestUrlForOneDay, formatDateForOnJestServer(currentDate));
@@ -159,11 +288,11 @@ public class ReadingService {
         Date limitDate = DateHelper.addDay(DateHelper.getToday(), -1 * keepLastReadingDaysNumber + 1);
         // remove obsolete readings
         int count = mReadingDS.removeOlderReadings(limitDate);
-        Logger.debug(LOG_TAG, Integer.toString(count)+" rows deleted");
+        Logger.debug(LOG_TAG, Integer.toString(count) + " rows deleted");
     }
 
 
-    private Date[] determineDateRange(int keepLastReadingDaysNumber) {
+    private Date[] determineDateRangeForReadings(int keepLastReadingDaysNumber) {
         Date[] rangeDates = new Date[2];
         Reading lastReading;
         Date firstDate, lastDate;
@@ -179,7 +308,7 @@ public class ReadingService {
             lastDate = firstDate;
             do
                 lastDate = DateHelper.getNextSaturday(lastDate);
-            while (lastDate.compareTo(DateHelper.getToday())<0);
+            while (lastDate.compareTo(DateHelper.getToday()) < 0);
 
             Logger.debug(LOG_TAG, "Last reading is from " + lastReading.DateParsed.toString());
         } else {
@@ -203,11 +332,6 @@ public class ReadingService {
         return sdf.format(d);
     }
 
-    private int getKeepLastReadingsNumber() {
-
-        return 10; // todo
-    }
-
     private String getOnJestForOneDayUrl() {
         // http://www.onjest.pl/slowo/?json=get_date_posts&date=201406&count=30&include=date,title,content
         // http://www.onjest.pl/slowo/api/core/get_posts/?count=7&page=1&include=date,title,content
@@ -217,10 +341,26 @@ public class ReadingService {
                 "http://www.onjest.pl/slowo/?json=get_date_posts&date=%s&include=title,date,content");
         return uri;
     }
+    //</editor-fold> refreshReadings private methods
+
+
+    private void prepareConnection(boolean useProxy, String proxyHost, int proxyPort, HttpConnection httpConnection) {
+        // set proxy, if needed - only for WiFi connections
+        if (NetworkHelper.isWiFiConnection()) {
+            if (useProxy) {
+                Logger.debug(LOG_TAG, String.format("Proxy:%s, %d", proxyHost, proxyPort));
+                httpConnection.setProxyServer(proxyHost, proxyPort);
+            } else {
+                Logger.debug(LOG_TAG, "No proxy used");
+                httpConnection.resetProxyServer();
+            }
+        }
+
+    }
 
     private String getPreferenceString(int preferenceResourceId, String defValue) {
-        String prefKey = context.getResources().getString(preferenceResourceId);
-        SharedPreferences prefsStore = PreferenceManager.getDefaultSharedPreferences(context);
+        String prefKey = mActivity.getResources().getString(preferenceResourceId);
+        SharedPreferences prefsStore = PreferenceManager.getDefaultSharedPreferences(mActivity);
 
         return prefsStore.getString(prefKey, defValue);
     }

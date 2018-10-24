@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="AppTheme.Classics"/>
+    <style name="AppTheme" parent="AppTheme.Classics" />
 
     <!-- style -->
     <style name="AppTheme.Classics" parent="Theme.AppCompat.NoActionBar">
@@ -20,23 +20,53 @@
 
         <item name="actionOverflowButtonStyle">@style/ClassicMenuButton</item>
         <item name="android:actionOverflowButtonStyle">@style/ClassicMenuButton</item>
+
+        <item name="colorPrimary">@color/lectioBrown</item>
+        <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
+        <item name="colorAccent">@color/lectioCream</item>
         <!-- the below declaration is for API level >=11
             (so it can cause warning displayed if min target is 10)
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         -->
-
+        <item name="webView_textColor">?attr/colorPrimary</item>
     </style>
+
     <style name="ClassicMenuButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
+    <style name="AppTheme.Classics.Dark" parent="AppTheme.Classics">
+        <item name="app_backgroundImg">@color/lectioDirtyCream</item>
+
+        <item name="scrollView_marginBottom">5dp</item>
+        <item name="scrollView_marginLeft">5dp</item>
+        <item name="scrollView_marginRight">5dp</item>
+
+        <item name="webViewHost_backgroundImg">@color/lectioDirtyCream</item>
+
+        <item name="colorPrimary">@color/lectioNightBrown</item>
+        <item name="colorPrimaryDark">@color/lectioNightDarkBrown</item>
+        <item name="colorAccent">@color/lectioDirtyCream</item>
+
+
+    </style>
     <!-- ActionBar styles -->
     <style name="ActionBar.Classic" parent="">
         <item name="android:background">@drawable/bg_red_top_long</item>
     </style>
 
+    <style name="AppTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/AppTabTextAppearance</item>
+        <item name="tabSelectedTextColor">?attr/colorPrimaryDark</item>
+        <item name="android:background">?attr/colorAccent</item>
+        <item name="tabIndicatorColor">?attr/colorPrimaryDark</item>
+    </style>
+
+    <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
     <!-- buttons styles -->
     <!-- Close button style -->
     <style name="closeButton_style">
@@ -56,4 +86,8 @@
         <item name="android:minHeight">0dp</item>
         <item name="android:minWidth">0dp</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

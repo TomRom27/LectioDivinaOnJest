@@ -35,6 +35,6 @@
     <string name="current">Na dziś</string>
     <string name="text_stats_sendig">Na potrzeby dalszego usprawniania aplikacja będzie wysyłać anonimowe statystyki użycia</string>
     <string name="title_activity_confirm_analytics">Potwierdź statystyki</string>
-    <string name="text_html_policyLink"><a href="www.onjest.pl/slowo/o-rozwazaniach/polityka-prywatnosci/">Polityka prywatności</a></string>
+    <string name="text_html_policyLink">www.onjest.pl/slowo/o-rozwazaniach/polityka-prywatnosci</string>
     <string name="text_allow">Zezwalam</string>
 </resources>

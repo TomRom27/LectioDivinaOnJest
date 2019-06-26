@@ -149,6 +149,10 @@ public class AppPreferences {
 
         key = mContext.getResources().getString(R.string.pref_send_app_stats);
         mPreferences.SendAppStats = prefStore.getBoolean(key, true);
+
+        key = mContext.getResources().getString(R.string.pref_show_download_error);
+        mPreferences.ShowDownloadErrors = prefStore.getBoolean(key, true);
+
         mIsValid = true;
     }
 }

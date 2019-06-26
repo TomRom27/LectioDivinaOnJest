@@ -201,7 +201,7 @@ public class ReadingService {
     }
     //</editor-fold>
 
-    public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort) {
+    public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort, boolean showErrors ) throws Exception  {
         Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));
         int count = 0;
 
@@ -217,14 +217,23 @@ public class ReadingService {
 
             Logger.debug(LOG_TAG, String.format("Dates are: 1st:%s, last:%s ", firstDate.toString(), lastDate.toString()));
 
-            newReadings = downloadReadingsForRange(firstDate, lastDate, useProxy, proxyHost, proxyPort);
-            if (newReadings.size() > 0) {
-                mReadingDS.addReadings(newReadings);
-            }
-            count = newReadings.size();
-            deleteOutdatedreadings(keepLastReadingDaysNumber);
+            try {
+                newReadings = downloadReadingsForRange(firstDate, lastDate, useProxy, proxyHost, proxyPort, showErrors);
+                if (newReadings.size() > 0) {
+                    mReadingDS.addReadings(newReadings);
+                }
+                count = newReadings.size();
+                deleteOutdatedreadings(keepLastReadingDaysNumber);
+                return count;
 
-            return count;
+            } catch (Exception ex) {
+                if (showErrors)
+                    throw ex;
+                else
+                    return 0;
+            }
+
+
         } finally {
             mReadingDS.close();
             Logger.debug(LOG_TAG, String.format("Refreshing of readings ended with %d new.", count));
@@ -233,7 +242,7 @@ public class ReadingService {
 
 
     //<editor-fold> refreshReadings private methods
-    private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort) {
+    private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort, boolean showErrors) throws Exception {
         ArrayList<Reading> newReadings = new ArrayList<>();
         HttpConnection httpConnection = new HttpConnection(this.mActivity);
 
@@ -249,11 +258,13 @@ public class ReadingService {
                 // we get readings day by day - in the loop until we reach lastDate
                 for (Date currentDate = firstDate; !currentDate.after(lastDate); currentDate = DateHelper.addDay(currentDate, 1)) {
 
-                    newReadings.addAll(downloadReadingsForOneDate(onJestUrlForOneDay, currentDate, httpConnection));
+                    newReadings.addAll(downloadReadingsForOneDate(onJestUrlForOneDay, currentDate, httpConnection, showErrors));
                 }
             } catch (Exception ex) {
-                // in case of error we just silently finish the operation
                 Logger.error(LOG_TAG, ex.getMessage());
+                // in case of error we just silently finish the operation or not
+                if (showErrors)
+                    throw ex;
             }
         } else
             Logger.debug(LOG_TAG, "No connection available, download terminated");
@@ -262,7 +273,7 @@ public class ReadingService {
         return newReadings;
     }
 
-    private ArrayList<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection) {
+    private ArrayList<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection, boolean showErrors) throws Exception {
         ArrayList<Reading> readings = new ArrayList<>();
 
         // prepare specific url for current date
@@ -278,6 +289,8 @@ public class ReadingService {
         } catch (Exception ex) {
             // in case of error we just silently finish the operation
             Logger.error(LOG_TAG, ex.getMessage());
+            if (showErrors)
+                throw ex;
         }
         return readings;
     }

@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -572,7 +573,7 @@ public class ReadingsActivity extends AppCompatActivity
 
                 Logger.debug(LOG_TAG, "Refreshing readings");
                 mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
-                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
+                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.ShowDownloadErrors);
 
                 if (prefs.DownloadShortContemplation) {
                     ensureShortContemplationDownloadPath(appPreferences, prefs);
@@ -592,8 +593,10 @@ public class ReadingsActivity extends AppCompatActivity
                 // log it
                 Logger.error(ReadingsActivity.LOG_TAG, "Exception when refreshing the data", ex);
 
-                // the task is ended, so hide notification
-                mActivity.get().showHideProgress(false);
+                refreshResult.ErrorMessage = ex.getMessage();
+
+                // exception handling can't interact with UI since it is async task
+                // UI operations can be continued in the OnPostExecute only!!!
             }
             return refreshResult;
         }
@@ -610,23 +613,31 @@ public class ReadingsActivity extends AppCompatActivity
             mActivity.get().showHideProgress(false);
 
             if (!mRefreshTaskCancelled) {
-                String refreshEnded;
-                // display result info text relevant to Lectio only or all
-                if (!refreshResult.ShortContemplationsFilename.isEmpty())
-                    refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_all);
+                if (TextUtils.isEmpty (refreshResult.ErrorMessage) ) {
+                    // error message emoty, we've got readings
+
+                    String refreshEnded;
+                    // display result info text relevant to Lectio only or all
+                    if (!refreshResult.ShortContemplationsFilename.isEmpty())
+                        refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_all);
+                    else
+                        refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_Lectio);
+                    UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
+
+                    Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
+                    mActivity.get().displayReadings(refreshResult.Readings);
+                    Logger.debug(LOG_TAG, "Readings displayed");
+
+                    if (!refreshResult.ShortContemplationsFilename.isEmpty()) {
+                        Logger.debug(LOG_TAG, "Showing short contemplations file");
+                        mActivity.get().refreshShortContemplations();
+                    } else
+                        Logger.debug(LOG_TAG, "Short contemplations filename is empty");
+                }
                 else
-                    refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_Lectio);
-                UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
-
-                Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
-                mActivity.get().displayReadings(refreshResult.Readings);
-                Logger.debug(LOG_TAG, "Readings displayed");
-
-                if (!refreshResult.ShortContemplationsFilename.isEmpty()) {
-                    Logger.debug(LOG_TAG, "Showing short contemplations file");
-                    mActivity.get().refreshShortContemplations();
-                } else
-                    Logger.debug(LOG_TAG, "Short contemplations filename is empty");
+                {
+                    UIHelper.showToast(mActivity.get(), "Błąd pobierania rozważań: "+refreshResult.ErrorMessage, Toast.LENGTH_LONG);
+                }
 
                 mActivity.get().enableAppMenu();
             } else
@@ -646,6 +657,7 @@ public class ReadingsActivity extends AppCompatActivity
 
         public List<Reading> Readings;
         public String ShortContemplationsFilename;
+        public String ErrorMessage;
     }
 
     //</editor-fold>

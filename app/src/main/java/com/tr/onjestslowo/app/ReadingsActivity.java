@@ -24,6 +24,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -43,7 +44,10 @@ import com.tr.tools.Logger;
 
 
 public class ReadingsActivity extends AppCompatActivity
-        implements LectioDivinaFragment.OnLectioDivinaFragmentListener, ShortContemplationsFragment.OnShortContempationsListener {
+        implements
+        LectioDivinaFragment.OnLectioDivinaFragmentListener,
+        ShortContemplationsFragment.OnShortContempationsListener,
+        SimpleGestureFilter.SimpleGestureListener {
 
     public static String LOG_TAG = "ReadingActivity";
     private static String ARG_ZOOM_VISIBLE = "ZoomVisible";
@@ -66,6 +70,9 @@ public class ReadingsActivity extends AppCompatActivity
     // when activity was re-created
     // ('cause in this case we should start everything from the beginning)
     static Boolean mRefreshTaskCancelled = true;
+
+    SimpleGestureFilter mDetector;
+    Boolean mDetectorEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +136,10 @@ public class ReadingsActivity extends AppCompatActivity
             initiateApp();
         } else
             Logger.debug(LOG_TAG, "Another launch, no need to show AboutLectio");
+
+        // Detect touched area
+        mDetector = new SimpleGestureFilter(this,this);
+        mDetectorEnabled = true;
     }
 
     // implementation of OnLectioDivinaFragmentListener interface
@@ -221,6 +232,15 @@ public class ReadingsActivity extends AppCompatActivity
     }
 
     //</editor-fold>
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent motionEvent) {
+        if (mDetectorEnabled) {
+            mDetector.onTouchEvent(motionEvent);
+        }
+        return super.dispatchTouchEvent(motionEvent);
+    }
+
 
     @Override
     public void onAttachedToWindow() {
@@ -369,6 +389,8 @@ public class ReadingsActivity extends AppCompatActivity
         UIHelper.showToast(this, R.string.text_refreshing_started, Toast.LENGTH_SHORT);
         // disable menu
         disableAppMenu();
+        // disable custom gesture handling
+        mDetectorEnabled = false;
 
         logRefreshInAnalytics();
 
@@ -471,9 +493,21 @@ public class ReadingsActivity extends AppCompatActivity
 
     //</editor-fold>
 
+    //<editor-fold desc="SimpleGestureListener interface methods">
+    @Override
+    public void onSwipe(int direction) {
+        if (direction == SimpleGestureFilter.SWIPE_DOWN) {
+            refreshReadingsAsync();
+        }
+    }
+
+    @Override
+    public void onDoubleTap() {
+        refreshReadingsAsync();
+    }
+    //</editor-fold>
 
     //<editor-fold desc="refresh progress bar">
-
     public void showHideProgress(boolean show) {
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (progressBar != null)
@@ -483,8 +517,7 @@ public class ReadingsActivity extends AppCompatActivity
                 progressBar.setVisibility(View.GONE);
     }
 
-
-    //<editor-fold> refresh progress bar
+    //</editor-fold> refresh progress bar
 
     //<editor-fold desc="MainTabsPagerAdapter implementation">
     public class MainTabsPagerAdapter extends FragmentPagerAdapter {
@@ -640,6 +673,7 @@ public class ReadingsActivity extends AppCompatActivity
                 }
 
                 mActivity.get().enableAppMenu();
+                mActivity.get().mDetectorEnabled = true;
             } else
                 Logger.debug(LOG_TAG, "Task is cancelled, nothing displayed");
 

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tr.onjestslowo.app.ReadingsActivity.LectioDivinaFragment">
+    tools:context="com.tr.onjestslowo.app.LectioDivinaFragment">
 
     <!-- the below frame layout is to combine view pager and the zoom buttons.
     The latter must be last one, otherwise doesn't show!!! -->
@@ -38,6 +38,7 @@
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:clickable="true"
+                android:focusable="true"
                 android:descendantFocusability="blocksDescendants"
                 android:gravity="center"
                 android:orientation="horizontal">
@@ -47,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/action_zoomout"
                     android:alpha=".75"
-                    android:src="@drawable/ic_zoom_out_black" />
+                    android:src="?attr/zoom_out_icon" />
 
             </LinearLayout>
 
@@ -58,6 +59,7 @@
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:clickable="true"
+                android:focusable="true"
                 android:descendantFocusability="blocksDescendants"
                 android:gravity="center"
                 android:orientation="horizontal">
@@ -67,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/action_zoomin"
                     android:alpha=".75"
-                    android:src="@drawable/ic_zoom_in_black" />
+                    android:src="?attr/zoom_in_icon" />
 
             </LinearLayout>
 

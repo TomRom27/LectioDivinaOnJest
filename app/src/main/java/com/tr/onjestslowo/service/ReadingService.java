@@ -129,8 +129,8 @@ public class ReadingService {
 
     private Boolean downloadShortContemplations(int year, int month, String fileName, String destination,
                                                 boolean useProxy, String proxyHost, int proxyPort) {
-        Boolean isOk = false;
-        String fileUrlString = String.format("http://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s", year, month, fileName);
+        boolean isOk = false;
+        String fileUrlString = String.format("https://www.onjest.pl/slowo/wp-content/uploads/%d/%02d/%s", year, month, fileName);
         Logger.debug(LOG_TAG, String.format("Trying to get from %d of %d at %s", month, year, fileUrlString));
 
         InputStream input = null;
@@ -346,12 +346,12 @@ public class ReadingService {
     }
 
     private String getOnJestForOneDayUrl() {
-        // http://www.onjest.pl/slowo/?json=get_date_posts&date=201406&count=30&include=date,title,content
-        // http://www.onjest.pl/slowo/api/core/get_posts/?count=7&page=1&include=date,title,content
-        // http://www.onjest.pl/slowo/api/core/get_posts/?count=7&page=1&include=date,title&post_status=future OR any
+        // https://www.onjest.pl/slowo/?json=get_date_posts&date=201406&count=30&include=date,title,content
+        // https://www.onjest.pl/slowo/api/core/get_posts/?count=7&page=1&include=date,title,content
+        // https://www.onjest.pl/slowo/api/core/get_posts/?count=7&page=1&include=date,title&post_status=future OR any
 
         String uri = getPreferenceString(R.string.pref_adv_server_uri,
-                "http://www.onjest.pl/slowo/?json=get_date_posts&date=%s&include=title,date,content");
+                "https://www.onjest.pl/slowo/?json=get_date_posts&date=%s&include=title,date,content");
         return uri;
     }
     //</editor-fold> refreshReadings private methods

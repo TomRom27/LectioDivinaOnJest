@@ -52,8 +52,8 @@
         <item name="colorPrimaryDark">@color/lectioNightDarkBrown</item>
         <item name="colorAccent">@color/lectioDirtyCream</item>
 
-        <item name="zoom_in_icon" >@drawable/ic_zoom_in_white</item>
-        <item name="zoom_out_icon">@drawable/ic_zoom_out_white</item>
+        <item name="zoom_in_icon" >@drawable/ic_zoom_in_gold</item>
+        <item name="zoom_out_icon">@drawable/ic_zoom_out_gold</item>
     </style>
     <!-- ActionBar styles -->
     <style name="ActionBar.Classic" parent="">

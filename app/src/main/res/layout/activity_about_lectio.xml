@@ -22,7 +22,9 @@
         android:layout_height="fill_parent"
         android:layout_marginBottom="?attr/scrollView_marginBottom"
         android:layout_marginLeft="?attr/scrollView_marginLeft"
-        android:layout_marginRight="?attr/scrollView_marginRight">
+        android:layout_marginRight="?attr/scrollView_marginRight"
+        android:scrollbarThumbVertical="?attr/colorPrimary"
+        android:fadeScrollbars="false">
 
         <LinearLayout
             android:layout_width="fill_parent"

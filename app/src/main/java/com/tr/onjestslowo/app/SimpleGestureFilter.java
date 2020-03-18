@@ -96,39 +96,39 @@ public class SimpleGestureFilter extends SimpleOnGestureListener{
         return this.swipe_Min_Velocity;
     }
 
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                           float velocityY) {
-
-        final float xDistance = Math.abs(e1.getX() - e2.getX());
-        final float yDistance = Math.abs(e1.getY() - e2.getY());
-
-        if(xDistance > this.swipe_Max_Distance || yDistance > this.swipe_Max_Distance)
-            return false;
-
-        velocityX = Math.abs(velocityX);
-        velocityY = Math.abs(velocityY);
-        boolean result = false;
-
-        if(velocityX > this.swipe_Min_Velocity && xDistance > this.swipe_Min_Distance){
-            if(e1.getX() > e2.getX()) // right to left
-                this.listener.onSwipe(SWIPE_LEFT);
-            else
-                this.listener.onSwipe(SWIPE_RIGHT);
-
-            result = true;
-        }
-        else if(velocityY > this.swipe_Min_Velocity && yDistance > this.swipe_Min_Distance){
-            if(e1.getY() > e2.getY()) // bottom to up
-                this.listener.onSwipe(SWIPE_UP);
-            else
-                this.listener.onSwipe(SWIPE_DOWN);
-
-            result = true;
-        }
-
-        return result;
-    }
+//    @Override
+//    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+//                           float velocityY) {
+//
+//        final float xDistance = Math.abs(e1.getX() - e2.getX());
+//        final float yDistance = Math.abs(e1.getY() - e2.getY());
+//
+//        if(xDistance > this.swipe_Max_Distance || yDistance > this.swipe_Max_Distance)
+//            return false;
+//
+//        velocityX = Math.abs(velocityX);
+//        velocityY = Math.abs(velocityY);
+//        boolean result = false;
+//
+//        if(velocityX > this.swipe_Min_Velocity && xDistance > this.swipe_Min_Distance){
+//            if(e1.getX() > e2.getX()) // right to left
+//                this.listener.onSwipe(SWIPE_LEFT);
+//            else
+//                this.listener.onSwipe(SWIPE_RIGHT);
+//
+//            result = true;
+//        }
+//        else if(velocityY > this.swipe_Min_Velocity && yDistance > this.swipe_Min_Distance){
+//            if(e1.getY() > e2.getY()) // bottom to up
+//                this.listener.onSwipe(SWIPE_UP);
+//            else
+//                this.listener.onSwipe(SWIPE_DOWN);
+//
+//            result = true;
+//        }
+//
+//        return result;
+//    }
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
@@ -159,6 +159,10 @@ public class SimpleGestureFilter extends SimpleOnGestureListener{
     }
 
     static interface SimpleGestureListener{
+        /* todo
+          as it is now swipe sometimes is triggered when trying to scroll verbose lectio
+         */
+
         void onSwipe(int direction);
         void onDoubleTap();
     }

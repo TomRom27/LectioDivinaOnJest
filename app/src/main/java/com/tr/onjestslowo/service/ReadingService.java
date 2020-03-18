@@ -352,6 +352,8 @@ public class ReadingService {
 
         String uri = getPreferenceString(R.string.pref_adv_server_uri,
                 "https://www.onjest.pl/slowo/?json=get_date_posts&date=%s&include=title,date,content");
+        if (true)
+            uri = uri.replace("http:","https:");
         return uri;
     }
     //</editor-fold> refreshReadings private methods

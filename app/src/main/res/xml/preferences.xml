@@ -55,7 +55,7 @@
 
                  -->
             <EditTextPreference
-                android:defaultValue="http://www.onjest.pl/slowo/?json=get_date_posts&amp;date=%s&amp;include=title,date,content"
+                android:defaultValue="https://www.onjest.pl/slowo/?json=get_date_posts&amp;date=%s&amp;include=title,date,content"
                 android:inputType="textUri"
                 android:key="@string/pref_adv_server_uri"
                 android:maxLines="1"

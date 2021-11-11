@@ -58,13 +58,28 @@
                 android:defaultValue="https://www.onjest.pl/slowo/?json=get_date_posts&amp;date=%s&amp;include=title,date,content"
                 android:inputType="textUri"
                 android:key="@string/pref_adv_server_uri"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:selectAllOnFocus="true"
                 android:singleLine="true"
                 android:title="@string/pref_adv_server_uri" />
 
+            <EditTextPreference
+                android:defaultValue="https://www.onjest.pl/slowo/?json=get_dates_posts&amp;fromdate=%s&amp;todate=%s&amp;include=title,date,content&amp;count=%d"
+                android:inputType="textUri"
+                android:key="@string/pref_adv_server_uri2"
+                android:maxLines="2"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/pref_adv_server_uri2" />
+
             <SwitchPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
+                android:key="@string/pref_adv_use_uri2"
+                android:summary="@string/pref_adv_use_uri2_summary"
+                android:title="@string/pref_adv_use_uri2" />
+
+            <SwitchPreference
+                android:defaultValue="true"
                 android:key="@string/pref_show_download_error"
                 android:summary="@string/pref_show_download_error_summary"
                 android:title="@string/pref_show_download_error" />

@@ -250,6 +250,9 @@ public class ReadingsActivity extends AppCompatActivity
         // Readings Activity so the latter must have a window
         // that's why the code must be here, not in onCreate (that would be too early)
 
+        /* disabled on 11.11.2021 - we don't want stats anymore
+        Firebase is false by default the code below can activate it
+
         // check whether we need to get consent for analytics from user
         // AboutLectio activity
         if (!AppPreferences.getInstance(this).isStatsInfoShown()) {
@@ -257,6 +260,7 @@ public class ReadingsActivity extends AppCompatActivity
             getAppStatsConfirmation(findViewById(R.id.activityReadings));
         } else
             Logger.debug(LOG_TAG, "Stats info already shown");
+        */
     }
 
     //<editor-fold desc="menu handling methods and reading display">
@@ -606,7 +610,7 @@ public class ReadingsActivity extends AppCompatActivity
 
                 Logger.debug(LOG_TAG, "Refreshing readings");
                 mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
-                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.ShowDownloadErrors);
+                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.UseURI2, prefs.ShowDownloadErrors);
 
                 if (prefs.DownloadShortContemplation) {
                     ensureShortContemplationDownloadPath(appPreferences, prefs);

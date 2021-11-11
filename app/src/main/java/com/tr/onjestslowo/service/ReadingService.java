@@ -201,7 +201,7 @@ public class ReadingService {
     }
     //</editor-fold>
 
-    public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort, boolean showErrors ) throws Exception  {
+    public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort, boolean useURI2, boolean showErrors ) throws Exception  {
         Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));
         int count = 0;
 
@@ -218,7 +218,7 @@ public class ReadingService {
             Logger.debug(LOG_TAG, String.format("Dates are: 1st:%s, last:%s ", firstDate.toString(), lastDate.toString()));
 
             try {
-                newReadings = downloadReadingsForRange(firstDate, lastDate, useProxy, proxyHost, proxyPort, showErrors);
+                newReadings = downloadReadingsForRange(firstDate, lastDate, useProxy, proxyHost, proxyPort, useURI2, showErrors);
                 if (newReadings.size() > 0) {
                     mReadingDS.addReadings(newReadings);
                 }
@@ -242,7 +242,7 @@ public class ReadingService {
 
 
     //<editor-fold> refreshReadings private methods
-    private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort, boolean showErrors) throws Exception {
+    private ArrayList<Reading> downloadReadingsForRange(Date firstDate, Date lastDate, boolean useProxy, String proxyHost, int proxyPort,boolean useURI2, boolean showErrors) throws Exception {
         ArrayList<Reading> newReadings = new ArrayList<>();
         HttpConnection httpConnection = new HttpConnection(this.mActivity);
 
@@ -251,50 +251,90 @@ public class ReadingService {
         if (httpConnection.checkConnectivity()) {
             HttpConnection.CONNECTION_TIMEOUT = 10000; // increase time to 10 secs.
 
-            String onJestUrlForOneDay = getOnJestForOneDayUrl();
-            Logger.debug(LOG_TAG, String.format("Server base url is:%s", onJestUrlForOneDay));
-
             try {
-                // we get readings day by day - in the loop until we reach lastDate
-                for (Date currentDate = firstDate; !currentDate.after(lastDate); currentDate = DateHelper.addDay(currentDate, 1)) {
 
-                    newReadings.addAll(downloadReadingsForOneDate(onJestUrlForOneDay, currentDate, httpConnection, showErrors));
-                }
+                if (useURI2)
+                    newReadings = downloadReadingsForDates(firstDate, lastDate, httpConnection);
+                else
+                    newReadings = downloadReadingsOneByOne(firstDate, lastDate, httpConnection);
+
             } catch (Exception ex) {
                 Logger.error(LOG_TAG, ex.getMessage());
                 // in case of error we just silently finish the operation or not
                 if (showErrors)
                     throw ex;
             }
-        } else
+        } else {
             Logger.debug(LOG_TAG, "No connection available, download terminated");
+            if (showErrors)
+                throw new Exception("Brak połączenia z internetem");
+        }
+        return newReadings;
+    }
 
+    private ArrayList<Reading> downloadReadingsOneByOne(Date firstDate, Date lastDate, HttpConnection httpConnection) throws Exception {
+        String onJestUrlForOneDay = getOnJestForOneDayUrl();
+        ArrayList<Reading> newReadings = new ArrayList<>();
+
+        Logger.debug(LOG_TAG, String.format("Server base url is:%s", onJestUrlForOneDay));
+
+        // we get readings day by day - in the loop until we reach lastDate
+        for (Date currentDate = firstDate; !currentDate.after(lastDate); currentDate = DateHelper.addDay(currentDate, 1)) {
+
+            newReadings.addAll(downloadReadingsForOneDate(onJestUrlForOneDay, currentDate, httpConnection));
+        }
 
         return newReadings;
     }
 
-    private ArrayList<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection, boolean showErrors) throws Exception {
+    private ArrayList<Reading> downloadReadingsForOneDate(String onJestUrlForOneDay, Date currentDate, HttpConnection httpConnection) throws Exception {
         ArrayList<Reading> readings = new ArrayList<>();
 
         // prepare specific url for current date
         String actualOnJestUrl = String.format(onJestUrlForOneDay, formatDateForOnJestServer(currentDate));
-        try {
+
+        // retrieve JSON
+        String response = httpConnection.requestFromService(actualOnJestUrl);
+
+        ReadingListResult result = JSONSerializer.deserializePostListResult(response);
+        if (result.status.equals("ok"))
+            for (Post post : result.posts)
+                readings.add(Converter.Convert(post));
+
+        return readings;
+    }
+
+    private ArrayList<Reading> downloadReadingsForDates(Date fromDate, Date toDate, HttpConnection httpConnection) throws Exception {
+        String onJestUrlForDates = getOnJestForDatesUrl();
+        ArrayList<Reading> newReadings = new ArrayList<>();
+
+        Logger.debug(LOG_TAG, String.format("Server base url is:%s", onJestUrlForDates));
+        ArrayList<Reading> readings = new ArrayList<>();
+        Date currentToDate;
+
+        while ( !fromDate.after(toDate) ) {
+            int maxPosts = DateHelper.days(toDate,fromDate,true);
+            maxPosts = Math.min(maxPosts,31); // we never take more then 31 posts in one shot to server
+            currentToDate = DateHelper.addDay(fromDate,maxPosts);
+
+            String actualOnJestUrl = String.format(onJestUrlForDates,
+                    formatDateForOnJestServer(fromDate),
+                    formatDateForOnJestServer(currentToDate), maxPosts);
+
             // retrieve JSON
             String response = httpConnection.requestFromService(actualOnJestUrl);
 
             ReadingListResult result = JSONSerializer.deserializePostListResult(response);
-            if (result.status.equals("ok"))
+            if (result.status.equals("ok")) {
                 for (Post post : result.posts)
                     readings.add(Converter.Convert(post));
-        } catch (Exception ex) {
-            // in case of error we just silently finish the operation
-            Logger.error(LOG_TAG, ex.getMessage());
-            if (showErrors)
-                throw ex;
+            }
+
+            fromDate = DateHelper.addDay(currentToDate,1);
         }
+
         return readings;
     }
-
 
     private void deleteOutdatedreadings(int keepLastReadingDaysNumber) {
         // calculate the date of readings to keep
@@ -352,6 +392,16 @@ public class ReadingService {
 
         String uri = getPreferenceString(R.string.pref_adv_server_uri,
                 "https://www.onjest.pl/slowo/?json=get_date_posts&date=%s&include=title,date,content");
+        if (true)
+            uri = uri.replace("http:","https:");
+        return uri;
+    }
+
+    private String getOnJestForDatesUrl() {
+         // https://www.onjest.pl/slowo/?json=get_dates_posts&fromdate=2021-10-29&todate=20211103&include=title,date,content&count=30
+
+        String uri = getPreferenceString(R.string.pref_adv_server_uri2,
+                "https://www.onjest.pl/slowo/?json=get_dates_posts&fromdate=%s&todate=%s&include=title,date,content&count=%d");
         if (true)
             uri = uri.replace("http:","https:");
         return uri;

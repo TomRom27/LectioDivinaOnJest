@@ -33,7 +33,6 @@ public class DateHelper {
 
     public static String toString(String formatString, Date date) {
         return new SimpleDateFormat(formatString).format(date);
-
     }
 
     public static int compareDates(Date d1, Date d2) {
@@ -55,6 +54,13 @@ public class DateHelper {
             return true;
         else
             return false;
+    }
+
+    public static int days(Date d1 , Date d2, boolean inclusive) {
+        int days = (int)((d1.getTime() - d2.getTime() ) / (1000 * 60 * 60 * 24));
+        if (inclusive)
+            days = days + 1;
+        return days;
     }
 
     public static String periodToShortestString(Date firstDate, Date lastDate) {

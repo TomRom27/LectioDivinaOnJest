@@ -28,8 +28,8 @@ import org.json.JSONObject;
 public class HttpConnection {
     public static String HTTP_CONNECTION_TAG="Tr.HttpConnection";
 
-    public static int CONNECTION_TIMEOUT = 5000;
-    public static int DATARETRIEVAL_TIMEOUT = 5000;
+    public static int CONNECTION_TIMEOUT = 45000;
+    public static int DATARETRIEVAL_TIMEOUT = 45000;
 
     private Context _context;
     private Proxy _proxy;

@@ -54,6 +54,30 @@
                 android:fragment="com.tr.onjestslowo.app.SettingsActivity$AdvancedPreferenceFragment"
 
                  -->
+            <PreferenceCategory android:title="@string/pref_category_title_connection">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_wifi_proxy_enable"
+                    android:title="@string/pref_wifi_proxy_enable" />
+
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dependency="@string/pref_wifi_proxy_enable"
+                    android:inputType="textUri"
+                    android:key="@string/pref_wifi_proxy_host"
+                    android:maxLines="1"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="@string/pref_wifi_proxy_host" />
+
+                <EditTextPreference
+                    android:defaultValue="8080"
+                    android:dependency="@string/pref_wifi_proxy_enable"
+                    android:inputType="number"
+                    android:key="@string/pref_wifi_proxy_port"
+                    android:selectAllOnFocus="true"
+                    android:title="@string/pref_wifi_proxy_port" />
+            </PreferenceCategory>
             <EditTextPreference
                 android:defaultValue="https://www.onjest.pl/slowo/?json=get_date_posts&amp;date=%s&amp;include=title,date,content"
                 android:inputType="textUri"
@@ -100,28 +124,4 @@
         </PreferenceScreen>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_category_title_connection">
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="@string/pref_wifi_proxy_enable"
-            android:title="@string/pref_wifi_proxy_enable" />
-
-        <EditTextPreference
-            android:defaultValue=""
-            android:dependency="@string/pref_wifi_proxy_enable"
-            android:inputType="textUri"
-            android:key="@string/pref_wifi_proxy_host"
-            android:maxLines="1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/pref_wifi_proxy_host" />
-
-        <EditTextPreference
-            android:defaultValue="8080"
-            android:dependency="@string/pref_wifi_proxy_enable"
-            android:inputType="number"
-            android:key="@string/pref_wifi_proxy_port"
-            android:selectAllOnFocus="true"
-            android:title="@string/pref_wifi_proxy_port" />
-    </PreferenceCategory>
 </PreferenceScreen>

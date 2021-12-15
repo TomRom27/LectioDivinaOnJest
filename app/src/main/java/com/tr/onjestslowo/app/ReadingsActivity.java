@@ -602,11 +602,14 @@ public class ReadingsActivity extends AppCompatActivity
             RefreshResult refreshResult = new RefreshResult();
 
             mRefreshTaskCancelled = false;
+            String proxyInfo = "";
             try {
                 Logger.debug(LOG_TAG, "Getting preferences");
                 AppPreferences appPreferences = AppPreferences.getInstance(mActivity.get());
 
                 OnJestPreferences prefs = appPreferences.get();
+
+                proxyInfo = "proxy:"+prefs.UseProxy+", host:"+prefs.ProxyHost+", port:"+prefs.ProxyPort;
 
                 Logger.debug(LOG_TAG, "Refreshing readings");
                 mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
@@ -630,7 +633,7 @@ public class ReadingsActivity extends AppCompatActivity
                 // log it
                 Logger.error(ReadingsActivity.LOG_TAG, "Exception when refreshing the data", ex);
 
-                refreshResult.ErrorMessage = ex.getMessage();
+                refreshResult.ErrorMessage = ex.getMessage()+"; "+proxyInfo;
 
                 // exception handling can't interact with UI since it is async task
                 // UI operations can be continued in the OnPostExecute only!!!

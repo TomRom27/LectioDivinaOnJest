@@ -14,4 +14,8 @@ public class OnJestPreferences {
     public String ShortContemplationDownloadPath;
     public boolean ShortContemplationsFileListAlways;
     public boolean SendAppStats;
+    public boolean UseURI2;
+    public boolean ShowDownloadErrors;
 }
+
+// always update AppPrefences.java class !!!

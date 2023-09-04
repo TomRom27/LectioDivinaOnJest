@@ -28,8 +28,8 @@ import org.json.JSONObject;
 public class HttpConnection {
     public static String HTTP_CONNECTION_TAG="Tr.HttpConnection";
 
-    public static int CONNECTION_TIMEOUT = 5000;
-    public static int DATARETRIEVAL_TIMEOUT = 5000;
+    public static int CONNECTION_TIMEOUT = 45000;
+    public static int DATARETRIEVAL_TIMEOUT = 45000;
 
     private Context _context;
     private Proxy _proxy;
@@ -97,18 +97,26 @@ public class HttpConnection {
             // handle issues
             int statusCode = urlConnection.getResponseCode();
 
-            if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                // handle unauthorized (if service requires user login)
-                Log.d(HTTP_CONNECTION_TAG,"Request unauthorized");
+            switch (statusCode) {
+                case HttpURLConnection.HTTP_OK: break;
+                case HttpURLConnection.HTTP_UNAUTHORIZED: {
+                    // handle unauthorized (if service requires user login)
+                    Log.d(HTTP_CONNECTION_TAG, "Request unauthorized");
 
-                throw new Exception("Request unauthorized to:"+serviceUrl);
-            } else if (statusCode != HttpURLConnection.HTTP_OK) {
-                // handle any other errors, like 404, 500,..
-                Log.d(HTTP_CONNECTION_TAG,"Request failed: " + Integer.toString(statusCode));
+                    throw new Exception("Request unauthorized to:" + serviceUrl);
+                }
+                case HttpURLConnection.HTTP_USE_PROXY: {
+                    Log.d(HTTP_CONNECTION_TAG, "Proxy needed");
 
-                throw new Exception("Request failed, status: "+Integer.toString(statusCode));
+                    throw new Exception("Proxy must be set");
+                }
+                default: {
+                    // handle any other errors, like 404, 500,..
+                    Log.d(HTTP_CONNECTION_TAG, "Request failed: " + Integer.toString(statusCode));
+
+                    throw new Exception("Request failed, status: " + Integer.toString(statusCode));
+                }
             }
-
             // create JSON object from content
             InputStream inStream = new BufferedInputStream(urlConnection.getInputStream());
 

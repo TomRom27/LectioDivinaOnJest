@@ -10,9 +10,9 @@
     <!-- String for Connection settings -->
     <string name="pref_category_title_connection">Połączenie</string>
 
-    <string name="pref_wifi_proxy_enable">Włącz proxy Wi-Fi</string>
-    <string name="pref_wifi_proxy_host">Host proxy Wi-Fi</string>
-    <string name="pref_wifi_proxy_port">Port proxy Wi-Fi</string>
+    <string name="pref_wifi_proxy_enable">Używaj proxy do internetu</string>
+    <string name="pref_wifi_proxy_host">Nazwa serwera proxy</string>
+    <string name="pref_wifi_proxy_port">Port proxy</string>
 
     <string name="pref_send_app_stats">Wysyłaj statystyki (anonimowo)</string>
     <string name="pref_send_app_stats_summary">Wysyłaj statystyki użycia aplikacji (anonimowo)</string>
@@ -20,7 +20,10 @@
     <string name="pref_category_title_advanced">Zaawansowane</string>
     <string name="pref_adv_title">Ustawienia zaawansowane</string>
     <string name="pref_adv_summary">Ustawienia przeznaczone dla zaawansowanych użytkowników</string>
-    <string name="pref_adv_server_uri">Adres (uri) serwisu REST na OnJest/Slowo</string>
+    <string name="pref_adv_server_uri" >URI serwisu REST na OnJest/Slowo</string>
+    <string name="pref_adv_server_uri2">URI serwisu REST na OnJest/Slowo 2</string>
+    <string name="pref_adv_use_uri2"   >Używać URI 2 (wiele na raz)</string>
+    <string name="pref_adv_use_uri2_summary">Używać serwisu REST z URI 2 (pobiera szybciej - wiele na raz)</string>
     <string name="pref_short_contemplation_download_path">Rozważania krótkie zapisywać w</string>
 
     <string name="pref_zoom_on_start">Przyciski zoom</string>
@@ -31,4 +34,6 @@
     <string name="pref_download_short_contemplation_summary">Pobierać PDF z rozważaniami krótkimi (do czytania wymagana dodatkowa aplikacja)</string>
     <string name="pref_short_contemplation_list_always">Zawsze pokazywać listę rozważań krótkich</string>
     <string name="pref_short_contemplation_list_always_summary">Pokazuj listę rozważań krótkich nawet, gdy brak aplikacji do PDF</string>
+    <string name="pref_show_download_error">Pokazuj błąd pobierania rozważań</string>
+    <string name="pref_show_download_error_summary">Pokazuj szczegółowy komunikat gdy wystąpi błąd pobierania rozważań</string>
 </resources>

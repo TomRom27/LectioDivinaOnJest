@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.v4.content.FileProvider;
 
 import java.io.File;
 
@@ -32,9 +33,11 @@ public class PdfViewer {
     public void showFileIfExists(String filePath) {
         File file = new File(filePath);
         if (file.exists()) {
-            Uri path = Uri.fromFile(file);
+            //Uri path = Uri.fromFile(file);
+            Uri path = FileProvider.getUriForFile(mActivity , mActivity.getApplicationContext().getPackageName() + ".provider", file);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(path, MIME_TYPE_PDF);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             mActivity.startActivity(intent);
         }

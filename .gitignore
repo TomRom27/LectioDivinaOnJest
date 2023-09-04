@@ -9,5 +9,7 @@
 /build
 /app/*.iml
 /app/google-services.json
+/app/release
 *.iml
 *.keystore
+

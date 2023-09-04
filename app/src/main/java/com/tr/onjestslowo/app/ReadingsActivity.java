@@ -19,10 +19,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -42,7 +44,10 @@ import com.tr.tools.Logger;
 
 
 public class ReadingsActivity extends AppCompatActivity
-        implements LectioDivinaFragment.OnLectioDivinaFragmentListener, ShortContemplationsFragment.OnShortContempationsListener {
+        implements
+        LectioDivinaFragment.OnLectioDivinaFragmentListener,
+        ShortContemplationsFragment.OnShortContempationsListener,
+        SimpleGestureFilter.SimpleGestureListener {
 
     public static String LOG_TAG = "ReadingActivity";
     private static String ARG_ZOOM_VISIBLE = "ZoomVisible";
@@ -65,6 +70,9 @@ public class ReadingsActivity extends AppCompatActivity
     // when activity was re-created
     // ('cause in this case we should start everything from the beginning)
     static Boolean mRefreshTaskCancelled = true;
+
+    SimpleGestureFilter mDetector;
+    Boolean mDetectorEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +136,10 @@ public class ReadingsActivity extends AppCompatActivity
             initiateApp();
         } else
             Logger.debug(LOG_TAG, "Another launch, no need to show AboutLectio");
+
+        // Detect touched area
+        mDetector = new SimpleGestureFilter(this,this);
+        mDetectorEnabled = true;
     }
 
     // implementation of OnLectioDivinaFragmentListener interface
@@ -222,12 +234,24 @@ public class ReadingsActivity extends AppCompatActivity
     //</editor-fold>
 
     @Override
+    public boolean dispatchTouchEvent(MotionEvent motionEvent) {
+        if (mDetectorEnabled) {
+            mDetector.onTouchEvent(motionEvent);
+        }
+        return super.dispatchTouchEvent(motionEvent);
+    }
+
+
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
         // the code below can result in displaying a popup window, attached to
         // Readings Activity so the latter must have a window
         // that's why the code must be here, not in onCreate (that would be too early)
+
+        /* disabled on 11.11.2021 - we don't want stats anymore
+        Firebase is false by default the code below can activate it
 
         // check whether we need to get consent for analytics from user
         // AboutLectio activity
@@ -236,6 +260,7 @@ public class ReadingsActivity extends AppCompatActivity
             getAppStatsConfirmation(findViewById(R.id.activityReadings));
         } else
             Logger.debug(LOG_TAG, "Stats info already shown");
+        */
     }
 
     //<editor-fold desc="menu handling methods and reading display">
@@ -368,6 +393,8 @@ public class ReadingsActivity extends AppCompatActivity
         UIHelper.showToast(this, R.string.text_refreshing_started, Toast.LENGTH_SHORT);
         // disable menu
         disableAppMenu();
+        // disable custom gesture handling
+        mDetectorEnabled = false;
 
         logRefreshInAnalytics();
 
@@ -470,9 +497,21 @@ public class ReadingsActivity extends AppCompatActivity
 
     //</editor-fold>
 
+    //<editor-fold desc="SimpleGestureListener interface methods">
+    @Override
+    public void onSwipe(int direction) {
+        if (direction == SimpleGestureFilter.SWIPE_DOWN) {
+            refreshReadingsAsync();
+        }
+    }
+
+    @Override
+    public void onDoubleTap() {
+        refreshReadingsAsync();
+    }
+    //</editor-fold>
 
     //<editor-fold desc="refresh progress bar">
-
     public void showHideProgress(boolean show) {
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         if (progressBar != null)
@@ -482,8 +521,7 @@ public class ReadingsActivity extends AppCompatActivity
                 progressBar.setVisibility(View.GONE);
     }
 
-
-    //<editor-fold> refresh progress bar
+    //</editor-fold> refresh progress bar
 
     //<editor-fold desc="MainTabsPagerAdapter implementation">
     public class MainTabsPagerAdapter extends FragmentPagerAdapter {
@@ -564,15 +602,18 @@ public class ReadingsActivity extends AppCompatActivity
             RefreshResult refreshResult = new RefreshResult();
 
             mRefreshTaskCancelled = false;
+            String proxyInfo = "";
             try {
                 Logger.debug(LOG_TAG, "Getting preferences");
                 AppPreferences appPreferences = AppPreferences.getInstance(mActivity.get());
 
                 OnJestPreferences prefs = appPreferences.get();
 
+                proxyInfo = "proxy:"+prefs.UseProxy+", host:"+prefs.ProxyHost+", port:"+prefs.ProxyPort;
+
                 Logger.debug(LOG_TAG, "Refreshing readings");
                 mNewReadingsCount = mActivity.get().mReadingService.refreshReadings(prefs.KeepReadingsHowLong,
-                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
+                        prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.UseURI2, prefs.ShowDownloadErrors);
 
                 if (prefs.DownloadShortContemplation) {
                     ensureShortContemplationDownloadPath(appPreferences, prefs);
@@ -592,8 +633,10 @@ public class ReadingsActivity extends AppCompatActivity
                 // log it
                 Logger.error(ReadingsActivity.LOG_TAG, "Exception when refreshing the data", ex);
 
-                // the task is ended, so hide notification
-                mActivity.get().showHideProgress(false);
+                refreshResult.ErrorMessage = ex.getMessage()+"; "+proxyInfo;
+
+                // exception handling can't interact with UI since it is async task
+                // UI operations can be continued in the OnPostExecute only!!!
             }
             return refreshResult;
         }
@@ -610,25 +653,34 @@ public class ReadingsActivity extends AppCompatActivity
             mActivity.get().showHideProgress(false);
 
             if (!mRefreshTaskCancelled) {
-                String refreshEnded;
-                // display result info text relevant to Lectio only or all
-                if (!refreshResult.ShortContemplationsFilename.isEmpty())
-                    refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_all);
+                if (TextUtils.isEmpty (refreshResult.ErrorMessage) ) {
+                    // error message emoty, we've got readings
+
+                    String refreshEnded;
+                    // display result info text relevant to Lectio only or all
+                    if (!refreshResult.ShortContemplationsFilename.isEmpty())
+                        refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_all);
+                    else
+                        refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_Lectio);
+                    UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
+
+                    Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
+                    mActivity.get().displayReadings(refreshResult.Readings);
+                    Logger.debug(LOG_TAG, "Readings displayed");
+
+                    if (!refreshResult.ShortContemplationsFilename.isEmpty()) {
+                        Logger.debug(LOG_TAG, "Showing short contemplations file");
+                        mActivity.get().refreshShortContemplations();
+                    } else
+                        Logger.debug(LOG_TAG, "Short contemplations filename is empty");
+                }
                 else
-                    refreshEnded = mActivity.get().getResources().getString(R.string.text_refreshing_ended_Lectio);
-                UIHelper.showToast(mActivity.get(), String.format(refreshEnded, mNewReadingsCount), Toast.LENGTH_SHORT);
-
-                Logger.debug(LOG_TAG, "Loading readings async - ended, displaying them now");
-                mActivity.get().displayReadings(refreshResult.Readings);
-                Logger.debug(LOG_TAG, "Readings displayed");
-
-                if (!refreshResult.ShortContemplationsFilename.isEmpty()) {
-                    Logger.debug(LOG_TAG, "Showing short contemplations file");
-                    mActivity.get().refreshShortContemplations();
-                } else
-                    Logger.debug(LOG_TAG, "Short contemplations filename is empty");
+                {
+                    UIHelper.showToast(mActivity.get(), "Błąd pobierania rozważań: "+refreshResult.ErrorMessage, Toast.LENGTH_LONG);
+                }
 
                 mActivity.get().enableAppMenu();
+                mActivity.get().mDetectorEnabled = true;
             } else
                 Logger.debug(LOG_TAG, "Task is cancelled, nothing displayed");
 
@@ -646,6 +698,7 @@ public class ReadingsActivity extends AppCompatActivity
 
         public List<Reading> Readings;
         public String ShortContemplationsFilename;
+        public String ErrorMessage;
     }
 
     //</editor-fold>

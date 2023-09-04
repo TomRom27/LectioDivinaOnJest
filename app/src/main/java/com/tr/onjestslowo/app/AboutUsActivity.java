@@ -3,8 +3,8 @@ package com.tr.onjestslowo.app;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
@@ -45,7 +45,7 @@ public class AboutUsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.aboutUsToolBar);
         setSupportActionBar(toolbar);
 
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
         // set to display title and subtitle only
         actionBar.setDisplayOptions(android.app.ActionBar.DISPLAY_SHOW_TITLE);
 

@@ -6,16 +6,16 @@
     android:orientation="vertical"
     tools:context="com.tr.onjestslowo.app.AboutUsActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/aboutUsToolBar"
             style="?attr/actionBarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:layout_width="fill_parent"

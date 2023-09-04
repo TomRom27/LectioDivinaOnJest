@@ -1,20 +1,18 @@
 package com.tr.onjestslowo.app;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.tr.onjestslowo.app.R;
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.service.ReadingService;
 import com.tr.tools.DateHelper;
@@ -22,7 +20,6 @@ import com.tr.tools.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Use the {@link LectioDivinaFragment#newInstance} factory method to

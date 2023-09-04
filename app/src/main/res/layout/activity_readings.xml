@@ -6,22 +6,22 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/readingsToolBar"
             style="?attr/actionBarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <!--
     application title bar (action bar) is customized in the activity's code:
     see onCreate -->
 
-    <android.support.design.widget.TabLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/mainTabs"
         style="@style/AppTabLayout"
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
         android:layout_height="match_parent">
 
 
-        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+        <androidx.viewpager.widget.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/mainTabsPager"
             android:layout_width="match_parent"

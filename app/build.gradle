@@ -3,13 +3,13 @@ apply plugin: 'com.android.application'
 /*  Android 12 (API level 31). */
 /* 13 (API level 33) */
 android {
-    compileSdkVersion 30
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 33
+    buildToolsVersion '34.0.0'
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 226
-        versionName '2.2.6'
+        minSdkVersion 24
+        targetSdkVersion 33
+        versionCode 230
+        versionName '2.3.0'
     }
 
     buildTypes {

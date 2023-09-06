@@ -26,6 +26,7 @@
         <activity
             android:name=".ReadingsActivity"
             android:label="@string/title_activity_readings"
+            android:exported="true"
             android:launchMode="singleTop">
 
             <!--

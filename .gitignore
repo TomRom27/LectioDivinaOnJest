@@ -1,15 +1,22 @@
 .gradle
+gradle/
+gradlew*
 /local.properties
-/.idea/caches
-/.idea/codestyles
-/.idea/workspace.xml
-/.idea/misc.xml
-/.idea/libraries
-.DS_Store
-/build
-/app/*.iml
-/app/google-services.json
-/app/release
+
+# IntelliJ
+.idea/
+.idea/*
+
 *.iml
+# MacOS
+.DS_Store
+
+app/*.iml
+app/google-services.json
+app/build/
+app/release
+
+build/
+
 *.keystore
 

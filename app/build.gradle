@@ -1,15 +1,17 @@
 apply plugin: 'com.android.application'
 
-/*  Android 12 (API level 31). */
-/* 13 (API level 33) */
+/*  Android 14 (API level 34). */
+/*  Android 9 (API level 28) */
 android {
-    compileSdkVersion 33
-    buildToolsVersion '34.0.0'
+    compileSdk 34
+    buildToolsVersion = '34.0.0'
+    namespace "com.tr.onjestslowo.app"
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 33
-        versionCode 230
-        versionName '2.3.0'
+        applicationId "com.tr.onjestslowo.app"
+        minSdkVersion 28
+        targetSdkVersion 34
+        versionCode 240
+        versionName '2.4.0'
     }
 
     buildTypes {

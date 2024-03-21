@@ -6,6 +6,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by bpl2111 on 2014-06-04.
  */
@@ -21,8 +24,11 @@ public class UIHelper {
         toast.show();
     }
 
-    public static String setThemeColorForHtml(View rootView, int colorResId, String html) {
+    public static String setThemeColorForHtml(View rootView, int colorResId, String htmlContent) {
+        final String htmlTag  = "html";
+
         String color = "white";
+
         if (rootView.getContext() != null) {
             // here we retrieve a color, defined in the app them by custom attr. webView_textColor
             Context context = rootView.getContext();
@@ -35,10 +41,27 @@ public class UIHelper {
             //now convert the int color to hex string
             color = String.format("#%06X", (0xFFFFFF & webviewTextColor));
         }
-        String coloredContentHtml = "<font color=\"" +
-                color +
-                "\">" + html + "</font>";
+        String colorStyle = String.format("<style> body {color: %s;}</style>", color);
 
-        return coloredContentHtml;
+        return insertAfterTag(htmlContent, "html", colorStyle);
+    }
+
+    public static String insertAfterTag(String content, String htmlTag, String stringToAdd) {
+        String tagStart = "<"+htmlTag+">";
+        String tagEnd = "</"+htmlTag+">";
+
+        Pattern pattern = Pattern.compile(tagStart, Pattern.CASE_INSENSITIVE);
+
+        Matcher matcher = pattern.matcher(content);
+
+        String modifiedString = "";
+        if (matcher.find()) {
+            modifiedString = matcher.replaceFirst(matcher.group() + stringToAdd);
+
+        } else {
+            modifiedString = tagStart + stringToAdd + content + tagEnd;
+        }
+
+        return modifiedString;
     }
 }

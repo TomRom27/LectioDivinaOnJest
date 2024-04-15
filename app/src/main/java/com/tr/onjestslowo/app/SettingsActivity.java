@@ -19,7 +19,9 @@ import androidx.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ListView;
 
 /**
@@ -59,7 +61,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     private void setupActionBar() {
 
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.list).getParent().getParent().getParent();
+        ViewParent p1 = this.getListView().getParent();
+        ViewParent p2 = p1.getParent();
+        ViewParent p3 = p2.getParent();
+
+        // here we do nasty hack namely we get root (what?) based on assumption, that
+        // this class inherits from ListView i.e. there is a list
+        ViewGroup root = (ViewGroup) this.getListView()
+                .getParent()
+                .getParent()
+                .getParent();
+
         Toolbar toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
         root.addView(toolbar, 0);
 

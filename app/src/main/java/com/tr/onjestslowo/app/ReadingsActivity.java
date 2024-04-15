@@ -322,7 +322,7 @@ public class ReadingsActivity extends AppCompatActivity
     }
 
     private void showSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
+        Intent intent = new Intent(this, SettingsActivity2.class);
         startActivity(intent);
     }
 

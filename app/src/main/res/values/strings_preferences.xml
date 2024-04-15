@@ -6,6 +6,7 @@
     <string name="pref_category_title_general">Ogólne</string>
 
     <string name="pref_reading_store_how_long">Ustaw przechowywanie czytań</string>
+    <string name="pref_reading_store_how_long_text">Liczba przechowywanych czytań</string>
 
     <!-- String for Connection settings -->
     <string name="pref_category_title_connection">Połączenie</string>
@@ -14,12 +15,13 @@
     <string name="pref_wifi_proxy_host">Nazwa serwera proxy</string>
     <string name="pref_wifi_proxy_port">Port proxy</string>
 
+    <string name="pref_category_title_other">Pozostałe</string>
     <string name="pref_send_app_stats">Wysyłaj statystyki (anonimowo)</string>
     <string name="pref_send_app_stats_summary">Wysyłaj statystyki użycia aplikacji (anonimowo)</string>
 
     <string name="pref_category_title_advanced">Zaawansowane</string>
     <string name="pref_adv_title">Ustawienia zaawansowane</string>
-    <string name="pref_adv_summary">Ustawienia przeznaczone dla zaawansowanych użytkowników</string>
+    <string name="pref_adv_summary">Kliknij aby przejść do ustawień przeznaczonych dla zaawansowanych użytkowników</string>
     <string name="pref_adv_server_uri" >URI serwisu REST na OnJest/Slowo</string>
     <string name="pref_adv_server_uri2">URI serwisu REST na OnJest/Slowo 2</string>
     <string name="pref_adv_use_uri2"   >Używać URI 2 (wiele na raz)</string>

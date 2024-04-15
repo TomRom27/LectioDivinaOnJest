@@ -4,6 +4,7 @@
     android:id="@+id/activityReadings"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:tooltipText="reading activity"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout

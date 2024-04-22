@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical"
-    tools:context="com.tr.onjestslowo.app.SettingsActivity2">
+    tools:context="com.tr.onjestslowo.app.SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"

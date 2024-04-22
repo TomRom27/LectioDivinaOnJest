@@ -3,14 +3,14 @@ package com.tr.onjestslowo.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.tr.onjestslowo.model.OnJestPreferences;
+import com.tr.tools.Logger;
 
-/**
- * Created by bpl2111 on 2014-06-20.
- */
 public class AppPreferences {
 
+    public static String LOG_TAG = "AppPreferences";
     Context mContext;
     OnJestPreferences mPreferences;
     Boolean mIsValid;
@@ -144,9 +144,6 @@ public class AppPreferences {
         key = mContext.getResources().getString(R.string.pref_short_contemplation_list_always);
         mPreferences.ShortContemplationsFileListAlways = prefStore.getBoolean(key, false);
 
-        key = mContext.getResources().getString(R.string.pref_short_contemplation_download_path);
-        mPreferences.ShortContemplationDownloadPath = prefStore.getString(key, "");
-
         key = mContext.getResources().getString(R.string.pref_send_app_stats);
         mPreferences.SendAppStats = prefStore.getBoolean(key, true);
 
@@ -157,6 +154,7 @@ public class AppPreferences {
         mPreferences.ShowDownloadErrors = prefStore.getBoolean(key, true);
 
         mIsValid = true;
+        Logger.debug(LOG_TAG, "prefs reloaded: ");
     }
 }
 

@@ -11,12 +11,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-/**
- * Created by bpl2111 on 2016-04-19.
- */
 public class ShortContemplationDataSource {
     private Context context;
 
@@ -24,9 +22,9 @@ public class ShortContemplationDataSource {
         this.context = context;
     }
 
-    public String defaultDestinationFolder() {
+    protected String defaultDestinationFolder() {
         String folder = IOHelper.getExternalPublicDownloadDir(context);
-        if (folder!= null)
+        if (folder != null)
             return folder;
         else
             return IOHelper.getSystemDefaultDownloadDir(context);
@@ -36,7 +34,7 @@ public class ShortContemplationDataSource {
             throws Exception {
 
 
-        ArrayList<ShortContemplationsFile> list = new ArrayList<ShortContemplationsFile>();
+        ArrayList<ShortContemplationsFile> list = new ArrayList<>();
 
         File directory = new File(path);
         if (directory.exists() && directory.isDirectory()) {
@@ -46,9 +44,7 @@ public class ShortContemplationDataSource {
                 public boolean accept(File file) {
                     p.matcher(file.getName()).matches();
 
-
                     return p.matcher(file.getName()).matches();
-
                 }
             });
             for (File f : flists)
@@ -72,13 +68,15 @@ public class ShortContemplationDataSource {
 
         OutputStream output = null;
         try {
-            output = new FileOutputStream(combine(destinationPath, fileName));
+            output = Files.newOutputStream(java.nio.file.Paths.get(destinationPath, fileName));
 
             byte data[] = new byte[4096];
             int count;
             while ((count = input.read(data)) != -1) {
                 output.write(data, 0, count);
             }
+        } catch (Exception ex) {
+            throw ex;
         } finally {
             try {
                 if (output != null)

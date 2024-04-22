@@ -41,15 +41,6 @@ public class ShortContemplationsFragment extends Fragment
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ShortContemplationsFragment.
-     */
-    // TO DO: Rename and change types and number of parameters
     public static ShortContemplationsFragment newInstance(String param1, String param2) {
         ShortContemplationsFragment fragment = new ShortContemplationsFragment();
         Bundle args = new Bundle();
@@ -61,10 +52,6 @@ public class ShortContemplationsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
     }
 
     @Override
@@ -106,7 +93,7 @@ public class ShortContemplationsFragment extends Fragment
     private void loadFilenamesAndShow(ListView pdfListView, Activity activity) {
         OnJestPreferences prefs = AppPreferences.getInstance(activity).get();
 
-        ArrayList<ShortContemplationsFile> files = mListener.onGetReadingService().getShortContemplationsList(prefs.ShortContemplationDownloadPath);
+        ArrayList<ShortContemplationsFile> files = mListener.onGetReadingService().getShortContemplationsList();
 
         // sort - in descending order (we want the newest one at the top
         Collections.sort(files, new Comparator<ShortContemplationsFile>() {
@@ -130,11 +117,10 @@ public class ShortContemplationsFragment extends Fragment
 
     private void displayPdf(ShortContemplationsFile fileObject) {
         try {
-
             PdfViewer.getInstance(getActivity()).showFileIfExists(fileObject.FilePath);
         }
         catch (Exception ex) {
-            Logger.debug(LOG_TAG, "Failed to show PDS: "+ex.getMessage());
+            Logger.debug(LOG_TAG, "Failed to show PDF: "+ex.getMessage());
             UIHelper.showToast(getActivity(), R.string.pdf_failed, Toast.LENGTH_SHORT);
         }
     }

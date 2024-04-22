@@ -4,13 +4,14 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -274,30 +275,9 @@ public class ReadingsActivity extends AppCompatActivity
     private void initiateApp() {
         AppPreferences appPreferences = AppPreferences.getInstance(this);
 
-        // set and save default download path
-//        OnJestPreferences prefs = appPreferences.get();
-//        ShortContemplationDataSource ds = new ShortContemplationDataSource(this);
-//        prefs.ShortContemplationDownloadPath = ds.defaultDestinationFolder();
-//
-//        Logger.debug(LOG_TAG, "Saving path for short contemplations as: " + prefs.ShortContemplationDownloadPath);
-//        appPreferences.setShortContemplationDownloadPath(prefs.ShortContemplationDownloadPath);
-        setDefaultShortContemplationDownloadPath(this, appPreferences);
-
         // show info
         showAboutLectio();
         appPreferences.setAppFirstLaunch(false);
-    }
-
-
-    private String setDefaultShortContemplationDownloadPath(Context context, AppPreferences appPreferences) {
-        OnJestPreferences prefs = appPreferences.get();
-        ShortContemplationDataSource ds = new ShortContemplationDataSource(context);
-        prefs.ShortContemplationDownloadPath = ds.defaultDestinationFolder();
-
-        Logger.debug(LOG_TAG, "Saving path for short contemplations as: " + prefs.ShortContemplationDownloadPath);
-        appPreferences.setShortContemplationDownloadPath(prefs.ShortContemplationDownloadPath);
-
-        return prefs.ShortContemplationDownloadPath;
     }
 
     private void showAboutLectio() {
@@ -322,7 +302,7 @@ public class ReadingsActivity extends AppCompatActivity
     }
 
     private void showSettings() {
-        Intent intent = new Intent(this, SettingsActivity2.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
@@ -330,7 +310,7 @@ public class ReadingsActivity extends AppCompatActivity
     //<editor-fold getAppStatsConfirmation related >
     private void getAppStatsConfirmation(View parentView) {
         // stats info is displayed as pop-up i.e. it is not separate activity
-        // so we must prepare current axtivity for it
+        // so we must prepare current activity for it
 
 
         // inflate the layout of the popup window
@@ -440,7 +420,7 @@ public class ReadingsActivity extends AppCompatActivity
 
         // apply theme
         setAppTheme();
-        // udpdate menu
+        // update menu
         onPrepareOptionsMenu(mMenu);
         // save to
         AppPreferences.getInstance(this).setLastThemeNight(mIsThemeNight);
@@ -619,11 +599,9 @@ public class ReadingsActivity extends AppCompatActivity
                         prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.UseURI2, prefs.ShowDownloadErrors);
 
                 if (prefs.DownloadShortContemplation) {
-                    ensureShortContemplationDownloadPath(appPreferences, prefs);
-
                     Logger.debug(LOG_TAG, "Downloading current short contemplations");
                     refreshResult.ShortContemplationsFilename = mActivity.get().
-                            mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort, prefs.ShortContemplationDownloadPath);
+                            mReadingService.downloadCurrentShortContemplations(prefs.UseProxy, prefs.ProxyHost, prefs.ProxyPort);
                 } else
                     Logger.debug(LOG_TAG, "Skipped to download short contemplations");
 
@@ -642,12 +620,6 @@ public class ReadingsActivity extends AppCompatActivity
                 // UI operations can be continued in the OnPostExecute only!!!
             }
             return refreshResult;
-        }
-
-        private void ensureShortContemplationDownloadPath(AppPreferences appPreferences, OnJestPreferences prefs) {
-            if (prefs.ShortContemplationDownloadPath == null || prefs.ShortContemplationDownloadPath.isEmpty()) {
-                prefs.ShortContemplationDownloadPath = mActivity.get().setDefaultShortContemplationDownloadPath(mActivity.get(), appPreferences);
-            }
         }
 
         protected void onPostExecute(RefreshResult refreshResult) {

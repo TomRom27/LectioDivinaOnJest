@@ -3,7 +3,9 @@ package com.tr.tools;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -19,11 +21,18 @@ import java.util.Date;
 public class IOHelper {
 
     public static String getExternalPublicDownloadDir(Context context) {
-
-        if (Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState()))
-            return android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-        else
-            return null;
+        if (Build.VERSION.SDK_INT >= 30) {
+            ContextWrapper contextWrapper = new ContextWrapper(context);
+            if (Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState()))
+                return contextWrapper.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+            else
+                return null;
+        } else {
+            if (Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState()))
+                return android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+            else
+                return null;
+        }
     }
 
     public static String getSystemDefaultDownloadDir(Context context) {
@@ -57,6 +66,11 @@ public class IOHelper {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+    }
+
+    public static boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     private static String createDeleteTempAppFile(Context context) {

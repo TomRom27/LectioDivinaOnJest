@@ -2,223 +2,106 @@ package com.tr.onjestslowo.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-//import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
-
-import androidx.core.app.NavUtils;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import com.tr.tools.Logger;
 
-import androidx.preference.PreferenceManager;
+public class SettingsActivity extends AppCompatActivity {
 
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.ListView;
-
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p/>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
-public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-    /**
-     * Determines whether to always show the simplified settings UI, where
-     * settings are presented in a single list. When false, settings are shown
-     * as a master/detail two-pane view on tablets. When true, a single pane is
-     * shown on tablets.
-     */
-    private static final boolean ALWAYS_SIMPLE_PREFS = false;
-
+    public static String LOG_TAG = "SettingsActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupActionBar();
+        setContentView(R.layout.activity_settings);
 
-        PreferenceManager
-                .getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(this);
-    }
-
-
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-
-    private void setupActionBar() {
-
-        ViewParent p1 = this.getListView().getParent();
-        ViewParent p2 = p1.getParent();
-        ViewParent p3 = p2.getParent();
-
-        // here we do nasty hack namely we get root (what?) based on assumption, that
-        // this class inherits from ListView i.e. there is a list
-        ViewGroup root = (ViewGroup) this.getListView()
-                .getParent()
-                .getParent()
-                .getParent();
-
-        Toolbar toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
-        root.addView(toolbar, 0);
-
+        Toolbar toolbar = findViewById(R.id.settingsToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings, new BasicPreferenceFragment())
+                .commit();
     }
 
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
-                NavUtils.navigateUpFromSameTask(this);
-            }
-            return true;
-        }
-        return super.onMenuItemSelected(featureId, item);
+    public static void notifySharedPreferenceChanged(Context ctx) {
+        Logger.debug(LOG_TAG, "notifiying in activity");
+        AppPreferences.getInstance(ctx).invalidate();
     }
 
-
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        AppPreferences.getInstance(this).invalidate();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        setupSimplePreferencesScreen();
-    }
-
-    private void setupSimplePreferencesScreen() {
-
-        // In the simplified UI, fragments are not used at all and we instead
-        // use the older PreferenceActivity APIs.
-
-        // Add 'general' preferences.
-        addPreferencesFromResource(R.xml.preferences);
-
-        // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
-        // their values. When their values change, their summaries are updated
-        // to reflect the new value, per the Android Design guidelines.
-        // here we
-        // 1. "display" preference summary i.e. summary text under the pref. title
-        // 2. start a listener which updates this summary when the preference changes
-        String prefStoreHowLongRes = this.getResources().getString(R.string.pref_reading_store_how_long);
-        bindPreferenceSummaryToValue(findPreference(prefStoreHowLongRes));
-        String preProxyHost = this.getResources().getString(R.string.pref_wifi_proxy_host);
-        bindPreferenceSummaryToValue(findPreference(prefStoreHowLongRes));
-        String prefProxyPort = this.getResources().getString(R.string.pref_wifi_proxy_port);
-        bindPreferenceSummaryToValue(findPreference(prefStoreHowLongRes));
-    }
-
-
-    // the below is to fix the Android's bug, that nested preference screen
-    // doesn't use the default theme
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-                                         Preference preference) {
-        super.onPreferenceTreeClick(preferenceScreen, preference);
-        if (preference != null) {
-            if (preference instanceof PreferenceScreen) {
-                if (((PreferenceScreen) preference).getDialog() != null) {
-                    ((PreferenceScreen) preference)
-                            .getDialog()
-                            .getWindow()
-                            .getDecorView()
-                            .setBackgroundDrawable(
-                                    this
-                                            .getWindow()
-                                            .getDecorView()
-                                            .getBackground()
-                                            .getConstantState()
-                                            .newDrawable()
-                            );
+    public static void activatePreferenceSummary(Preference pref)
+    {
+        if (pref != null) {
+            pref.setSummaryProvider(new Preference.SummaryProvider<EditTextPreference>() {
+                @Override
+                public CharSequence provideSummary(EditTextPreference preference) {
+                    return preference.getText();
                 }
-            }
+            });
         }
-        return false;
     }
 
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+    public static class BasicPreferenceFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+
         @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences, rootKey);
 
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-            }
-            return true;
+            String prefStoreHowLongRes = this.getResources().getString(R.string.pref_reading_store_how_long);
+            activatePreferenceSummary(findPreference(prefStoreHowLongRes));
         }
-    };
 
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        }
 
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+        @Override
+        public void onPause() {
+            super.onPause();
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            Logger.debug(LOG_TAG, key + " changed");
+            notifySharedPreferenceChanged(getContext());
+        }
     }
 
+    public static class AdvancedPreferenceFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_advanced, rootKey);
+
+            String preProxyHost = this.getResources().getString(R.string.pref_wifi_proxy_host);
+            activatePreferenceSummary(findPreference(preProxyHost));
+            String prefProxyPort = this.getResources().getString(R.string.pref_wifi_proxy_port);
+            activatePreferenceSummary(findPreference(prefProxyPort));
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            Logger.debug(LOG_TAG, key + " changed");
+            notifySharedPreferenceChanged(getContext());
+        }
+    }
 }

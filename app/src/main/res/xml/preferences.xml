@@ -52,7 +52,7 @@
             android:key="pref_adv"
             android:summary="@string/pref_adv_summary"
             android:title="@string/pref_adv_title"
-            android:fragment="com.tr.onjestslowo.app.SettingsActivity2$AdvancedPreferenceFragment"
+            android:fragment="com.tr.onjestslowo.app.SettingsActivity$AdvancedPreferenceFragment"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
 

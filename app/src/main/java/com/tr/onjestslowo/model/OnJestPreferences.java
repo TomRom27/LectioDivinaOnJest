@@ -11,7 +11,6 @@ public class OnJestPreferences {
     public boolean ShowZoomOnStart;
     public boolean KeepScreenOn;
     public boolean DownloadShortContemplation;
-    public String ShortContemplationDownloadPath;
     public boolean ShortContemplationsFileListAlways;
     public boolean SendAppStats;
     public boolean UseURI2;

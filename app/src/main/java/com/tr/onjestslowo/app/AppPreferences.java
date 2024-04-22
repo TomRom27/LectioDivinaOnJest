@@ -84,20 +84,19 @@ public class AppPreferences {
     }
     //</editor-fold>
 
-    public void setShortContemplationDownloadPath(String path) {
-        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
-
-        SharedPreferences.Editor editor = prefStore.edit();
-        String key = mContext.getResources().getString(R.string.pref_short_contemplation_download_path);
-        editor.putString(key, path);
-        editor.apply(); // persist changes
-    }
-
     public void setStatsInfoEnabled(Boolean isEnabled) {
         SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
 
         SharedPreferences.Editor editor = prefStore.edit();
         editor.putBoolean(mContext.getResources().getString(R.string.pref_send_app_stats), isEnabled);
+        editor.apply(); // persist changes
+    }
+
+    public void setShowContemplationList(Boolean always) {
+        SharedPreferences prefStore = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        SharedPreferences.Editor editor = prefStore.edit();
+        editor.putBoolean(mContext.getResources().getString(R.string.pref_short_contemplation_list_always), always);
         editor.apply(); // persist changes
     }
 

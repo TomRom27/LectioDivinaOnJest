@@ -29,7 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static void notifySharedPreferenceChanged(Context ctx) {
-        Logger.debug(LOG_TAG, "notifiying in activity");
+        Logger.debug(LOG_TAG, "notifying in activity");
         AppPreferences.getInstance(ctx).invalidate();
     }
 
@@ -70,7 +70,17 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             Logger.debug(LOG_TAG, key + " changed");
-            notifySharedPreferenceChanged(getContext());
+            // handle special case
+            Context currentContext = getContext();
+            String downloadShortsKey = currentContext.getResources().getString(R.string.pref_download_short_contemplation);
+            if (key.equals(downloadShortsKey)) {
+                boolean downloadShorts = sharedPreferences.getBoolean(downloadShortsKey, false);
+                if (downloadShorts) {
+                    AppPreferences.getInstance(currentContext).setShowContemplationList(true);
+                }
+            }
+            //
+            notifySharedPreferenceChanged(currentContext);
         }
     }
 

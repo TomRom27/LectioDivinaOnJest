@@ -8,7 +8,7 @@
         android:title="@string/pref_category_title_general" app:iconSpaceReserved="false">
 
         <EditTextPreference
-            android:defaultValue="10"
+            android:defaultValue="30"
             android:inputType="number"
             android:key="@string/pref_reading_store_how_long"
             android:maxLines="1"

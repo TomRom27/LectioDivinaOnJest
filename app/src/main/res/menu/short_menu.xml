@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.tr.onjestslowo.app.ReadingsActivity" >
+    <item android:id="@+id/action_delete_short"
+        android:title="@string/action_delete_short"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+</menu>

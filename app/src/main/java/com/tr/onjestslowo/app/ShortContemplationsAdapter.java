@@ -2,10 +2,13 @@ package com.tr.onjestslowo.app;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.PopupMenu;
 
 import com.tr.onjestslowo.model.ShortContemplationsFile;
 import com.tr.tools.DateHelper;
@@ -13,9 +16,6 @@ import com.tr.tools.DateHelper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-/**
- * Created by bpl2111 on 2016-05-02.
- */
 public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplationsFile> {
 
     Context mContext;
@@ -51,7 +51,6 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
         TextView subtitleView=(TextView)view.findViewById(R.id.list_item_subtitle);
         TextView isCurrentView=(TextView)view.findViewById(R.id.list_item_is_current);
 
-        // Set the Sender number and smsBody to respective TextViews
         titleView.setText(getStartEndDateString(fileObject));
         subtitleView.setText(getStartDateString(fileObject));
         if (DateHelper.isInRange(DateHelper.getToday(), fileObject.FirstDate, fileObject.LastDate))
@@ -59,9 +58,37 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
         else
             isCurrentView.setVisibility(View.GONE);
 
+        Button menuButton = view.findViewById(R.id.menu_button);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu(menuButton, fileObject);
+            }
+        });
+
         return view;
     }
 
+    private void showPopupMenu(View view, ShortContemplationsFile fileObject) {
+        PopupMenu popupMenu = new PopupMenu(mContext, view);
+        popupMenu.getMenuInflater().inflate(R.menu.short_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_delete_short:
+                        // Delete the selected item from the list
+                        mObjectList.remove(fileObject);
+                        // todo TR remove the actual file
+                        notifyDataSetChanged();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        popupMenu.show();
+    }
     private String getStartEndDateString(ShortContemplationsFile fileObject) {
 
         return "Rozważania "+DateHelper.periodToShortestString(fileObject.FirstDate, fileObject.LastDate);

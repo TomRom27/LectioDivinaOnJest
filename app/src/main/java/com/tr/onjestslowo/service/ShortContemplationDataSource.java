@@ -58,6 +58,12 @@ public class ShortContemplationDataSource {
         return getAllFrom(defaultDestinationFolder());
     }
 
+    public void delete(String fileName) throws IOException {
+        String destinationPath = defaultDestinationFolder();
+
+        Files.delete(java.nio.file.Paths.get(destinationPath, fileName));
+    }
+
     public void saveFromStream(String fileName, InputStream input) throws IOException {
         String destinationPath = defaultDestinationFolder();
 

@@ -24,19 +24,28 @@
         <item name="colorPrimary">@color/lectioBrown</item>
         <item name="colorPrimaryDark">@color/lectioDarkBrown</item>
         <item name="colorAccent">@color/lectioCream</item>
-        <!-- the below declaration is for API level >=11
-            (so it can cause warning displayed if min target is 10)
 
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        -->
         <item name="webView_textColor">?attr/colorPrimary</item>
         <item name="zoom_in_icon" >@drawable/ic_zoom_in_black</item>
         <item name="zoom_out_icon">@drawable/ic_zoom_out_black</item>
+
     </style>
 
     <style name="ClassicMenuButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
+    </style>
+
+    <style name="ActionBarMenu" parent="Widget.AppCompat.Light.ActionBar">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:background">?attr/colorPrimaryDark</item>
+    </style>
+
+    <!-- not used, was not able to make it work "statically"
+    (worked, when applying the style programmatically)
+        -->
+    <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:background">?attr/colorPrimaryDark</item>
     </style>
 
     <style name="AppTheme.Classics.Dark" parent="AppTheme.Classics">
@@ -70,6 +79,7 @@
     <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
+
     <!-- buttons styles -->
     <!-- Close button style -->
     <style name="closeButton_style">

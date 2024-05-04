@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.PopupMenu;
 
+import androidx.appcompat.view.ContextThemeWrapper;
+
 import com.tr.onjestslowo.model.ShortContemplationsFile;
 import com.tr.tools.DateHelper;
 
@@ -70,7 +72,10 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
     }
 
     private void showPopupMenu(View view, ShortContemplationsFile fileObject) {
-        PopupMenu popupMenu = new PopupMenu(mContext, view);
+        ContextThemeWrapper wrapper = new ContextThemeWrapper(mContext, R.style.ActionBarMenu);
+        // see we use wrapper, not the mContext - in order to style the menu
+        PopupMenu popupMenu = new PopupMenu(wrapper, view);
+
         popupMenu.getMenuInflater().inflate(R.menu.short_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override

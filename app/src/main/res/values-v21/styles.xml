@@ -25,8 +25,8 @@
         <item name="android:windowNoTitle">true</item>
 
         <item name="webView_textColor">?attr/colorPrimary</item>
-        <item name="zoom_in_icon" >@drawable/ic_zoom_in_black</item>
-        <item name="zoom_out_icon">@drawable/ic_zoom_out_black</item>
+        <item name="zoom_in_icon" >@drawable/ic_zoom_in_brown</item>
+        <item name="zoom_out_icon">@drawable/ic_zoom_out_brown</item>
     </style>
 
     <style name="AppThemeDark" parent="AppThemeLight">

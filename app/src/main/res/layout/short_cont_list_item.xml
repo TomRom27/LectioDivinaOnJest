@@ -9,7 +9,7 @@
         android:id="@+id/pdfImageView"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:scaleType="centerCrop"
         android:src="@drawable/pdf_logo" />
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,9 +17,9 @@
         android:layout_margin="10dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignTop="@id/pdfImageView"
-        android:layout_toRightOf="@id/pdfImageView"
+        android:layout_toEndOf="@id/pdfImageView"
         android:gravity="left"
         android:text="Title"
         android:textColor="?attr/colorPrimary"
@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Subtitle here"
-        android:layout_alignLeft="@id/list_item_title"
+        android:layout_alignStart="@id/list_item_title"
         android:layout_below="@id/list_item_title"
         android:textColor="?attr/colorPrimaryDark"
         android:textSize="12sp" />
@@ -50,10 +50,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:text="..."
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="@string/horizontal3dots"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="?attr/colorPrimaryDark"
-        android:background="?attr/colorAccent"
-        android:rotation="90" />
+        android:textColor="?attr/colorPrimary"
+        android:background="?attr/app_backgroundImg"
+        />
 </RelativeLayout>

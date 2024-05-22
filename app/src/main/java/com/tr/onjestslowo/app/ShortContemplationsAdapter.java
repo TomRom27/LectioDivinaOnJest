@@ -1,5 +1,6 @@
 package com.tr.onjestslowo.app;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -13,8 +14,10 @@ import android.widget.PopupMenu;
 import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.tr.onjestslowo.model.ShortContemplationsFile;
+import com.tr.onjestslowo.service.ShortContemplationDataSource;
 import com.tr.tools.DateHelper;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -22,14 +25,14 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
 
     Context mContext;
     ArrayList<ShortContemplationsFile> mObjectList;
-    //int mLayoutId;
+    ShortContemplationDataSource mShortContemplationDS;
 
     public ShortContemplationsAdapter(Context context, ArrayList<ShortContemplationsFile> objectList)
     {
         super(context,0);
         mContext=context;
         mObjectList = objectList;
-        //mLayoutId = layoutId;
+        mShortContemplationDS = new ShortContemplationDataSource(context);
     }
 
     public int getCount()
@@ -84,7 +87,10 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
                     case R.id.action_delete_short:
                         // Delete the selected item from the list
                         mObjectList.remove(fileObject);
-                        // todo TR remove the actual file
+                        try {
+                            mShortContemplationDS.delete(fileObject.FileName);
+                        } catch (IOException ignore) {
+                        }
                         notifyDataSetChanged();
                         return true;
                     default:
@@ -101,7 +107,7 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
 
     private String getStartDateString(ShortContemplationsFile fileObject) {
         // Sunday, 24 April 2016
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM yyyy");
 
         return dateFormat.format(fileObject.FirstDate);
     }

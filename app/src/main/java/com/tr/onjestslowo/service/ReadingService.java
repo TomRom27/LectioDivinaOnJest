@@ -37,9 +37,9 @@ public class ReadingService {
 
     public static String LOG_TAG = "ReadingService";
 
-    private ReadingDataSource mReadingDS;
-    private ShortContemplationDataSource mShortContemplationDS;
-    private Activity mActivity;
+    private final ReadingDataSource mReadingDS;
+    private final ShortContemplationDataSource mShortContemplationDS;
+    private final Activity mActivity;
 
     public ReadingService(Activity activity) {
 
@@ -89,7 +89,7 @@ public class ReadingService {
     }
 
     public String downloadCurrentShortContemplations(boolean useProxy, String proxyHost, int proxyPort) {
-        Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", Boolean.toString(useProxy)));
+        Logger.debug(LOG_TAG, String.format("Starting to download short contemplations, useProxy:%s", useProxy));
 
         try {
 
@@ -102,7 +102,7 @@ public class ReadingService {
             year = DateHelper.getYear(contemplationsDate);
             month = DateHelper.getMonth(contemplationsDate);
 
-            // complete logging inside the mothod, no need to do it here
+            // complete logging inside the method, no need to do it here
             Boolean ok = downloadShortContemplations(year, month, contemplationsFileName, useProxy, proxyHost, proxyPort);
 
 
@@ -203,7 +203,7 @@ public class ReadingService {
     //</editor-fold>
 
     public int refreshReadings(int keepLastReadingDaysNumber, boolean useProxy, String proxyHost, int proxyPort, boolean useURI2, boolean showErrors ) throws Exception  {
-        Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, Boolean.toString(useProxy)));
+        Logger.debug(LOG_TAG, String.format("Starting to refresh readings, keepLastReadingsNumber:%d, useProxy:%s", keepLastReadingDaysNumber, useProxy));
         int count = 0;
 
         mReadingDS.open();
@@ -220,7 +220,7 @@ public class ReadingService {
 
             try {
                 newReadings = downloadReadingsForRange(firstDate, lastDate, useProxy, proxyHost, proxyPort, useURI2, showErrors);
-                if (newReadings.size() > 0) {
+                if (!newReadings.isEmpty()) {
                     mReadingDS.addReadings(newReadings);
                 }
                 count = newReadings.size();
@@ -342,7 +342,7 @@ public class ReadingService {
         Date limitDate = DateHelper.addDay(DateHelper.getToday(), -1 * keepLastReadingDaysNumber + 1);
         // remove obsolete readings
         int count = mReadingDS.removeOlderReadings(limitDate);
-        Logger.debug(LOG_TAG, Integer.toString(count) + " rows deleted");
+        Logger.debug(LOG_TAG, count + " rows deleted");
     }
 
 

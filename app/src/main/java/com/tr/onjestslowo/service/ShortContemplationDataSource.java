@@ -7,7 +7,6 @@ import com.tr.tools.IOHelper;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class ShortContemplationDataSource {
-    private Context context;
+    private final Context context;
 
     public ShortContemplationDataSource(Context context) {
         this.context = context;

@@ -3,7 +3,6 @@ package com.tr.onjestslowo.app;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -64,12 +63,8 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
             isCurrentView.setVisibility(View.GONE);
 
         Button menuButton = view.findViewById(R.id.menu_button);
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupMenu(menuButton, fileObject);
-            }
-        });
+
+        menuButton.setOnClickListener(v ->  showPopupMenu(menuButton, fileObject));
 
         return view;
     }
@@ -80,23 +75,16 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
         PopupMenu popupMenu = new PopupMenu(wrapper, view);
 
         popupMenu.getMenuInflater().inflate(R.menu.short_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_delete_short:
-                        // Delete the selected item from the list
-                        mObjectList.remove(fileObject);
-                        try {
-                            mShortContemplationDS.delete(fileObject.FileName);
-                        } catch (IOException ignore) {
-                        }
-                        notifyDataSetChanged();
-                        return true;
-                    default:
-                        return false;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_delete_short) {
+                try {
+                    mShortContemplationDS.delete(fileObject.FileName);
+                    mObjectList.remove(fileObject);
+                } catch (IOException ignore) {
                 }
+                notifyDataSetChanged();
             }
+            return true;
         });
         popupMenu.show();
     }

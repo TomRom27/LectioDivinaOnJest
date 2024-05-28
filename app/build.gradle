@@ -10,8 +10,8 @@ android {
         applicationId "com.tr.onjestslowo.app"
         minSdkVersion 28
         targetSdkVersion 34
-        versionCode 240
-        versionName '2.4.0'
+        versionCode 243
+        versionName '2.4.3'
     }
 
     buildFeatures {
@@ -20,7 +20,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }

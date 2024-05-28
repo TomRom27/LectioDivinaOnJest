@@ -3,9 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.tr.onjestslowo.app.ReadingsActivity"
     >
-    <item android:id="@+id/action_delete_short"
-        android:title="@string/action_delete_short"
+    <item android:id="@+id/action_open_short"
+        android:title="@string/action_open_short"
         android:orderInCategory="100"
         app:showAsAction="never" />
-
+    <item android:id="@+id/action_delete_short"
+        android:title="@string/action_delete_short"
+        android:orderInCategory="200"
+        app:showAsAction="never" />
 </menu>

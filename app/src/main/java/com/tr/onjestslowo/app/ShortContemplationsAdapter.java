@@ -1,6 +1,7 @@
 package com.tr.onjestslowo.app;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.PopupMenu;
 import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.tr.onjestslowo.model.ShortContemplationsFile;
+import com.tr.onjestslowo.service.PdfViewer;
 import com.tr.onjestslowo.service.ShortContemplationDataSource;
 import com.tr.tools.DateHelper;
 
@@ -83,6 +85,9 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
                 } catch (IOException ignore) {
                 }
                 notifyDataSetChanged();
+            } else if (item.getItemId() == R.id.action_open_short) {
+                // todo TR - stop type casting
+                PdfViewer.getInstance((Activity)mContext).showFileIfExists(fileObject.FilePath);
             }
             return true;
         });

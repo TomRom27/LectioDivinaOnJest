@@ -57,5 +57,8 @@
         android:textStyle="bold"
         android:textColor="?attr/colorPrimary"
         android:background="?attr/app_backgroundImg"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         />
+    <!-- focusable = false allows "bubble" clicks outside button (otherwise onitem click never exists) -->
 </RelativeLayout>

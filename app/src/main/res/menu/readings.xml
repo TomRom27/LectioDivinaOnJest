@@ -35,15 +35,19 @@
         android:visible="false"
         android:orderInCategory="600"
         app:showAsAction="ifRoom" />
+
     <item android:id="@+id/action_theme_to_night"
         android:title="@string/action_theme_to_night"
-        android:icon="@drawable/ic_brightness_5_white"
+        android:icon="@drawable/ic_light_mode_vector"
+        app:iconTint="@color/white"
         android:visible="true"
         android:orderInCategory="700"
         app:showAsAction="ifRoom" />
+
     <item android:id="@+id/action_theme_to_day"
         android:title="@string/action_theme_to_day"
-        android:icon="@drawable/ic_brightness_4_white"
+        android:icon="@drawable/ic_dark_mode_vector"
+        app:iconTint="@color/white"
         android:visible="false"
         android:orderInCategory="700"
         app:showAsAction="ifRoom" />

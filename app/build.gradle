@@ -1,16 +1,13 @@
 apply plugin: 'com.android.application'
 
-/*  Android 14 (API level 34). */
-/*  Android 9 (API level 28) */
 android {
-    compileSdk 35
-    buildToolsVersion = '35.0.0'
+    compileSdk = 36
+    buildToolsVersion = '36.0.0'
     namespace "com.tr.onjestslowo.app"
     defaultConfig {
         applicationId "com.tr.onjestslowo.app"
         minSdkVersion 28
-        // todo TR must be 35 at least, Android 15
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode 246
         versionName '2.4.6'
     }
@@ -33,13 +30,13 @@ android {
 
 
 dependencies {
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     api  fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.preference:preference:1.2.1"
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'com.google.firebase:firebase-core:16.0.9'
 }
 

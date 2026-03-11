@@ -3,19 +3,17 @@
 buildscript {
     repositories {
         google()
-        // jcenter() it's deprecated
         mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.13.2'
-        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.google.gms:google-services:4.4.4'
     }
 }
 
 allprojects {
     repositories {
         google()
-        // jcenter() it's deprecated
         mavenCentral()
     }
 }

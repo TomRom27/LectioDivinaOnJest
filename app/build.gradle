@@ -3,15 +3,16 @@ apply plugin: 'com.android.application'
 /*  Android 14 (API level 34). */
 /*  Android 9 (API level 28) */
 android {
-    compileSdk 34
-    buildToolsVersion = '34.0.0'
+    compileSdk 35
+    buildToolsVersion = '35.0.0'
     namespace "com.tr.onjestslowo.app"
     defaultConfig {
         applicationId "com.tr.onjestslowo.app"
         minSdkVersion 28
-        targetSdkVersion 34
-        versionCode 245
-        versionName '2.4.5'
+        // todo TR must be 35 at least, Android 15
+        targetSdkVersion 35
+        versionCode 246
+        versionName '2.4.6'
     }
 
     buildFeatures {
@@ -23,7 +24,7 @@ android {
             minifyEnabled true
             shrinkResources true
             debuggable false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
     productFlavors {

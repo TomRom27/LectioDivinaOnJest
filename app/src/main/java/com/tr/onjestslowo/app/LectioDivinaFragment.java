@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.tr.onjestslowo.model.Reading;
 import com.tr.onjestslowo.service.ReadingService;
@@ -131,6 +133,16 @@ public class LectioDivinaFragment extends Fragment {
             public void onClick(View v) {
                 increaseWebViewZoom(rootView, -ZOOM_STEP_PERCENT);
             }
+        });
+
+        // Push zoom buttons above the system navigation bar on devices where it overlaps app content
+        View zoomButtons = rootView.findViewById(R.id.zoom_buttons);
+        ViewCompat.setOnApplyWindowInsetsListener(zoomButtons, (v, insets) -> {
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            lp.bottomMargin = bottomInset;
+            v.setLayoutParams(lp);
+            return insets;
         });
 
         showZoomForView(rootView);

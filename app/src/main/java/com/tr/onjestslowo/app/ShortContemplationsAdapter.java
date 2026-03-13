@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.PopupMenu;
 
@@ -64,7 +64,7 @@ public class ShortContemplationsAdapter extends ArrayAdapter<ShortContemplations
         else
             isCurrentView.setVisibility(View.GONE);
 
-        Button menuButton = view.findViewById(R.id.menu_button);
+        ImageButton menuButton = view.findViewById(R.id.menu_button);
 
         menuButton.setOnClickListener(v ->  showPopupMenu(menuButton, fileObject));
 

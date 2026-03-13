@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
 
@@ -45,18 +46,15 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="visible"/>
-    <Button
+    <ImageButton
         android:id="@+id/menu_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="?attr/actionOverflowButtonStyle"
+        app:tint="?attr/colorPrimary"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:gravity="center"
-        android:text="@string/horizontal3dots"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorPrimary"
-        android:background="?attr/app_backgroundImg"
+        android:contentDescription="@string/horizontal3dots"
         android:focusable="false"
         android:focusableInTouchMode="false"
         />
